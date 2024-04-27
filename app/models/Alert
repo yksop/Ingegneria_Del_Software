@@ -1,0 +1,19 @@
+var mongoose = require("mongoose");
+var Schema = mongoose.Schema;
+
+var Position = new Schema({
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+});
+
+module.exports = mongoose.model(
+  "Alert",
+  new Schema({
+    type: { type: String, required: true },
+    description: { type: String, required: true },
+    radius: { type: Number, required: true },
+    expiresIn: { type: Number, required: true },
+    timeForAmbulance: Number,
+    position: { type: Position, required: true },
+  })
+);
