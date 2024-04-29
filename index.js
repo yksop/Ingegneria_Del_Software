@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 // Import routes
-const authRoute = require("./routes/auth");
+const authRoute = require("./app/routes/auth");
 
 // Route middleware
 app.use("/api/user", authRoute);
@@ -15,6 +15,9 @@ app.use("/api/user", authRoute);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Middleware
+app.use(express.json());
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = process.env.DB_CONNECT;
