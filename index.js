@@ -1,6 +1,23 @@
+const PORT = 3000; // Change to any available port number
+
+const express = require("express");
+const app = express();
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+// Import routes
+const authRoute = require("./routes/auth");
+
+// Route middleware
+app.use("/api/user", authRoute);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri =
-  "mongodb+srv://jacopoveronese:RhAVPfUdsTL74ORY@ingegneriadelsoftware.rklgpcl.mongodb.net/?retryWrites=true&w=majority&appName=IngegneriaDelSoftware";
+const uri = process.env.DB_CONNECT;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
