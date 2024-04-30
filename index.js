@@ -2,6 +2,11 @@ const PORT = 3000; // Change to any available port number
 
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
+
+// Middleware
+app.use(express.json());
+
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -10,39 +15,22 @@ dotenv.config();
 const authRoute = require("./app/routes/auth");
 
 // Route middleware
-app.use("/api/user", authRoute);
+app.use("/api/users", authRoute);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
-// Middleware
-app.use(express.json());
+/**
+ * Configure mongoose
+ */
+// mongoose.Promise = global.Promise;
+app.locals.db = mongoose
+  .connect(process.env.DB_CONNECT, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to Database");
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const uri = process.env.DB_CONNECT;
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  });
