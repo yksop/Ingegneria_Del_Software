@@ -3,15 +3,15 @@ const User = require("../models/User");
 const { registerValidation } = require("../../validation");
 
 router.post("", async (req, res) => {
-  // Validate the data before we make a user
+  // Validate the data
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  // Check if the user is already in the database
+  // Check if email exists
   const savedEmail = await User.findOne({ email: req.body.email });
   if (savedEmail) return res.status(400).send("Email already exists");
 
-  // Check if the username is already in the database
+  // Check if username exists
   const savedUsername = await User.findOne({ username: req.body.username });
   if (savedUsername) return res.status(400).send("Username already exists");
 
