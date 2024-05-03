@@ -31,4 +31,8 @@ router.post("", async (req, res) => {
   }
 });
 
+router.get("", (req, res) => {
+  res.send('<a href="/auth/google">Authenticate with Google</a>');
+});
+
 module.exports = router; // Export the router
