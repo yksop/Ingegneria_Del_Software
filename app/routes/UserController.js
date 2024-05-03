@@ -9,11 +9,12 @@ router.post("", async (req, res) => {
 
   // Check if email exists
   const savedEmail = await User.findOne({ email: req.body.email });
-  if (savedEmail) return res.status(400).send("Email already exists");
+  if (savedEmail) return res.status(400).send(savedEmail + " already exists");
 
   // Check if username exists
   const savedUsername = await User.findOne({ username: req.body.username });
-  if (savedUsername) return res.status(400).send("Username already exists");
+  if (savedUsername)
+    return res.status(400).send(savedUsername + " already exists");
 
   const user = new User({
     name: req.body.name,
@@ -29,10 +30,6 @@ router.post("", async (req, res) => {
     console.log(err);
     res.status(400).send(err);
   }
-});
-
-router.get("", (req, res) => {
-  res.send('<a href="/auth/google">Authenticate with Google</a>');
 });
 
 module.exports = router; // Export the router
