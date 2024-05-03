@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 // Middleware
 app.use(express.json());
 
+require("dotenv").config();
+
 // Import routes
 const userRoute = require("./app/routes/UserController");
 
