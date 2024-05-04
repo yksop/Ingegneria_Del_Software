@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const { registerValidation } = require("../../validation");
+const { validateLogin } = require("../../validation");          // I use {} to extract only the validateLogin property. 
             
 // JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
 // JWT is widely useful in scenarios like Authorization and Information Exchange, to encypt and securely transmit information between parties.
@@ -47,21 +48,36 @@ router.get("", (req, res) => {
 
 
 // LOG-IN --> verb GET of HTTP, so I obtain an existing resource (CRUD operation: Read)
-router.get("", async(req,res) => {       
+router.get("", async(req,res) => { 
+      
   try{
-    const username_in = req.body.username;        // TODO: mettere controllo in input: se utente lascia campo vuoto, ....
+    const username_in = req.body.username;
     const password_in = req.body.password;
+
+    try {
+      validateLogin(username_in, password_in);
+    }catch (error) {
+      console.error(error.message); // Handling the error
+      return res.status(400).send(error.message);
+    }
+
     const user = await User.findOne({ username: username_in });           // N.B.: await allows us to write asynchronous code so that it seems synchronous.
                                                                 // the execution of the async function is paused until the Promise (here findOne()) became fulfilled (resolved) or rejected.
     // Worst case: User NOT found 
-    if( !user || user.password != password_in ){
+    if(!user){
       // HTTP error 401: indicates that the request has not been applied because it lacks valid authentication credentials for the target resource.
-      return res.status(401).send("Authentication Failed: User not Found");   // TODO: pwd sbagliata     
+      return res.status(401).send("Authentication Failed: User not Found"); 
     }
-    // Better case: User found
-    // I generate a JWT token to securely transfer encrypted data between client and server.
-    // Client could also reuse this token to authenticate subsequent requests to the server.
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: EXPIRAL_AUTH_TIME });        // payload, secret, options
+
+    // Worst case: PWD do not match
+    if(user.password != password_in ){
+      return res.status(401).send("Authentication Failed: Password Uncorrect");    
+    }
+    
+    // Better case: User found and password is correct
+    // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: EXPIRAL_AUTH_TIME });         // payload, secret, options
+    
     // I send an HTTP response to the client with status 200 (request has succeeded) and the token in JSON format
     res.status(200).json({ token });          // Convenient and powerful way to handle HTTP responses in Express
   }catch (error){
