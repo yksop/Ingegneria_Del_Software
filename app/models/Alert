@@ -1,20 +1,21 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-var tipoAlert = Enumerator(
-  "traumacranico",
-  "blabla"                  // TODO: ADD other type of Alert
-);
+// var tipoAlert = Enumerator(
+//   "traumacranico",
+//   "blabla" // TODO: ADD other type of Alert
+// );
 
-
-module.exports = mongoose.model( "Alert", new Schema({
+module.exports = mongoose.model(
+  "Alert",
+  new Schema({
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    type: { type: tipoAlert, required: true },
-    description: { type: String, required: false },
+    // type: { type: tipoAlert, required: true },
     radius: { type: Number, required: true },
     expiresIn: { type: Number, required: true },
-    isActive: {type: Boolean, required: true },
-    timeForAmbulance: { type: Number, required: false }
+    isActive: { type: Boolean, required: true },
+    description: { type: String, required: false },
+    timeForAmbulance: { type: Number, required: false },
   })
 );
