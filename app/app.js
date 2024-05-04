@@ -59,9 +59,10 @@ app.use((req, res, next) => {
 });
 
 /**
- * Authentication routing and middleware
- */
-app.use("/api/v1/authentications", authentication);
+  * Authentication routing and middleware
+  * app.use("/api/v1/authentications", authentication);
+*/
+
 
 // Protect booklendings endpoint
 // access is restricted only to authenticated users
