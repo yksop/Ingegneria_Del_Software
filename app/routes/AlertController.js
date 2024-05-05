@@ -9,8 +9,7 @@ router.get('/:id', async(req,res) => {
 	let alert = await Alert.findById(req.params.id);
     if(!alert) res.status(400).send("Alert does not exist\n");
 	res.status(200).json({
-		self: '/api/v1/alerts/' + alert.id,
-		title: book.title
+		self: '/api/v1/alerts/' + alert.id
     })
 });
 

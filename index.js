@@ -11,10 +11,10 @@ require("dotenv").config();
 
 // Import routes
 const userRoute = require("./app/routes/UserController");
-const alertRoute = require("./app/routes/UserController");
+const alertRoute = require("./app/routes/AlertController");
 // Route middleware
 app.use("/api/v1/users", userRoute);
-app.use("api/v1/alerts", alertRoute);
+app.use("/api/v1/alerts", alertRoute);
 /**
  * Configure mongoose
  */
