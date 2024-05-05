@@ -25,6 +25,20 @@ const registerValidation = (data) => {
   return schema.validate(data);
 };
 
+// Alert Validation
+const alertValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    triage: joi.number().min(1).max(5).required(),
+    radius: joi.number().min(1).required(),
+    expiresIn: joi.number().required(),
+    isActive: joi.boolean().required(),
+    description: joi.string(),
+    timeForAmbulance: joi.number(),
+  });
+  return schema.validate(data);
+};
 
 // Login validation
 const loginValidation = (data) => {
@@ -58,3 +72,4 @@ const validateLogin = (username, password) => {
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
+module.exports.alertValidation = alertValidation;
