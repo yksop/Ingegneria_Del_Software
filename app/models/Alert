@@ -1,16 +1,21 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Enum = require('enum'); // npm install enum 
 
-var tipoAlert = Enumerator(
-  "traumacranico",
-  "blabla"                  // TODO: ADD other type of Alert
-);
+// define an enum with own values
+const triageType = new Enum({
+  'Emergenza': 1, 
+  'Urgenza': 2, 
+  'Urgenza differibile': 3, 
+  'urgenza minore':4, 
+  'non urgenza':5
+});
 
 
 module.exports = mongoose.model( "Alert", new Schema({
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    type: { type: tipoAlert, required: true },
+    triage: { type: triageType, required: true },
     description: { type: String, required: false },
     radius: { type: Number, required: true },
     expiresIn: { type: Number, required: true },
