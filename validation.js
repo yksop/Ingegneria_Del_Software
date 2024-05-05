@@ -8,6 +8,8 @@ const usernameMinLength = 6;          // Minimun username length
 // Register validation
 const registerValidation = (data) => {
   const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
     name: joi.string().min(6).required(),
     surname: joi.string().min(6).required(),
     username: joi.string().min(usernameMinLength).required(),

@@ -26,6 +26,8 @@ router.post("", async (req, res) => {
     if (savedUsername) return res.status(400).send("Username already exists");
 
     const user = new User({
+      latitude: req.body.latitude,
+      longitude: req.body.longitude,
       name: req.body.name,
       surname: req.body.surname,
       username: req.body.username,
@@ -122,3 +124,17 @@ router.get("/:id/users", async (req, res) => { // Given an Alert id, I want to g
 });
 
 module.exports = router; // Export the router
+
+
+
+
+/*
+
+adb_03_id: 6637f1c6ee4ade22e1aaadee     // centrato in [10,10]
+adb_04_id: 6637f2adcaf8bc5d36868ed1     // centrato in [11,11]
+adb_05_id: 6637f2ee00fb12a0b6f57216     // centrato in [15,15]
+adb_06_id: 6637f323b09c7fdd6b704f62     // centrato in [20,20]
+
+alert_03_id: 6637f2070299deea1140355a  // centrato in [11,11] con raggio 5
+
+*/
