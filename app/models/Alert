@@ -11,11 +11,11 @@ module.exports = mongoose.model(
   new Schema({
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    //type: { type: tipoAlert, required: true },
-    description: { type: String, required: false },
+    // type: { type: tipoAlert, required: true },
     radius: { type: Number, required: true },
     expiresIn: { type: Number, required: true },
     isActive: { type: Boolean, required: true },
+    description: { type: String, required: false },
     timeForAmbulance: { type: Number, required: false },
   })
 );
