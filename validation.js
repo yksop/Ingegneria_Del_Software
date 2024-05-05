@@ -39,7 +39,7 @@ const loginValidation = (data) => {
 // Login validation 
 const validateLogin = (username, password) => {
   // Define rules
-  const usernameRegex = `/^[a-zA-Z0-9_]{${usernameMinLength},20}$/`;       // Username must be between 6 to 20 characters long and can include letters, numbers, and underscores
+  const usernameRegex = /^[a-zA-Z0-9_]{6,20}$/;       // Username must be between 6 to 20 characters long and can include letters, numbers, and underscores
   
   // Validate username
   if (!usernameRegex.test(username)) {
