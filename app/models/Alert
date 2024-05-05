@@ -17,7 +17,7 @@ module.exports = mongoose.model(
   new Schema({
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    triage: { type: triageType, required: true },
+    triage: { type: Number, required: true },
     radius: { type: Number, required: true },
     expiresIn: { type: Number, required: true },
     isActive: { type: Boolean, required: true },
