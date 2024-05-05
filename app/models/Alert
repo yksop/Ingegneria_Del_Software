@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 /*var tipoAlert = Enumerator(
-  "traumacranico",
+  "traumacranico",                              TODO: fix this (enumerator doesn't exists)
   "blabla" // TODO: ADD other type of Alert
 );*/
 
@@ -17,4 +17,5 @@ module.exports = mongoose.model(
     expiresIn: { type: Number, required: true },
     isActive: { type: Boolean, required: true },
     timeForAmbulance: { type: Number, required: false },
-  }));
+  })
+);
