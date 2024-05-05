@@ -10,6 +10,7 @@ app.use(express.json());
 require("dotenv").config();
 
 // Import routes
+
 const usersRoute = require("./app/routes/UserController");
 const alertsRoute = require("./app/routes/AlertController");
 

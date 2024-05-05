@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// var tipoAlert = Enumerator(
-//   "traumacranico",
-//   "blabla" // TODO: ADD other type of Alert
-// );
+/*var tipoAlert = Enumerator(
+  "traumacranico",                              TODO: fix this (enumerator doesn't exists)
+  "blabla" // TODO: ADD other type of Alert
+);*/
 
 module.exports = mongoose.model(
   "Alert",
