@@ -29,6 +29,7 @@ router.post("", async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
+      acceptedAlert: undefined,
     });
     const savedUser = await user.save();
     res.send(savedUser);
@@ -69,5 +70,29 @@ router.get("", async (req, res) => {
     res.status(500).send(error.message);
   }
 });
+
+// AGREE TO/DECLINE ALERT--> put here or in AlertController??
+router.put("/:id", async (req,res)=>{
+  try{
+    if (!req.params.id) return res.status(400).send("User ID is required\n");
+
+    if(req.params.id)
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+      return res.status(400).send("Invalid User ID\n");
+
+    if()
+
+    const result=await User.updateOne(
+      {_id: req.params.id},
+      {_acceptedAlert: req.params.alertId}
+    ).exec();
+
+
+  }catch(err){
+    console.log(err);
+    res.status(400).send(err);
+  }
+})
+
 
 module.exports = router; // Export the router
