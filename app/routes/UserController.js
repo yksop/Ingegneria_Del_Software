@@ -95,7 +95,7 @@ router.get("", async (req, res) => {
 router.get("/:id/users", async (req, res) => { // Given an Alert id, I want to get all the users that are in the radius of that Alert
   try{
     // I check if the request is null
-    if (!req) return res.status(400).send("Alert ");
+    if (!req) return res.status(400).send("Request is null");
     
     // Find the Alert with the given id
     const alert = await Alert.findById(req.params.id);
@@ -118,6 +118,9 @@ router.get("/:id/users", async (req, res) => { // Given an Alert id, I want to g
       latitude: { $gte: alertLatitude - alertRadius, $lte: alertLatitude + alertRadius },
       longitude: { $gte: alertLongitude - alertRadius, $lte: alertLongitude + alertRadius },
     });
+
+    // If eligibleUsers is null, return an error
+    if (eligibleUsers === null) return res.status(404).send("List of eligibleUsers is null")
 
     // If the list is empty, return an error
     if (eligibleUsers.length === 0) return res.status(404).send("No users are in the radius of the Alert");

@@ -131,3 +131,6 @@ dist
 
 # vsCode settings
 .vscode
+
+# DS store
+.DS_Store
