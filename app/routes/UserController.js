@@ -93,35 +93,47 @@ router.get("", async (req, res) => {
 
 
 router.get("/:id/users", async (req, res) => { // Given an Alert id, I want to get all the users that are in the radius of that Alert
-  // Find the Alert with the given id
-  const alert = await Alert.findById(req.params.id);
+  try{
+    // I check if the request is null
+    if (!req) return res.status(400).send("Alert ");
+    
+    // Find the Alert with the given id
+    const alert = await Alert.findById(req.params.id);
 
-  // If the Alert does not exist, return an error
-  if (!alert) return res.status(404).send("Alert not found");
+    // If the Alert does not exist, return an error
+    if (!alert) return res.status(404).send("Alert not found");
 
-  // If the Alert is not active, return an error
-  if (!alert.isActive) return res.status(400).send("Alert is not active");
+    // If the Alert is not active, return an error
+    if (!alert.isActive) return res.status(400).send("Alert is not active");
 
-  // Extract the latitude and longitude of the Alert
-  const alertLatitude = alert.latitude;
-  const alertLongitude = alert.longitude;
+    // Extract the latitude and longitude of the Alert
+    const alertLatitude = alert.latitude;
+    const alertLongitude = alert.longitude;
 
-  // Extract the radius of the Alert
-  const alertRadius = alert.radius;
-  
-  // Find all the users that are in the radius of the Alert
-  const users = await User.find({
-    latitude: { $gte: alertLatitude - alertRadius, $lte: alertLatitude + alertRadius },
-    longitude: { $gte: alertLongitude - alertRadius, $lte: alertLongitude + alertRadius },
-  });
+    // Extract the radius of the Alert
+    const alertRadius = alert.radius;
+    
+    // Find all the users that are in the radius of the Alert
+    const eligibleUsers = await User.find({
+      latitude: { $gte: alertLatitude - alertRadius, $lte: alertLatitude + alertRadius },
+      longitude: { $gte: alertLongitude - alertRadius, $lte: alertLongitude + alertRadius },
+    });
 
-  // Return the users in the radius of the Alert
-  return res.send(users);
+    // If the list is empty, return an error
+    if (eligibleUsers.length === 0) return res.status(404).send("No users are in the radius of the Alert");
+    
+    // Return the users in the radius of the Alert
+    return res.send(eligibleUsers);
 
-  // N.B.: $gte and $lte are MongoDB operators that mean "greater than or equal" and "less than or equal" respectively.
-  // $gte: alertLatitude - alertRadius means "greater than or equal to the latitude of the Alert minus the radius of the Alert".
-  // $lte: alertLatitude + alertRadius means "less than or equal to the latitude of the Alert plus the radius of the Alert".
-  // If the Alert is at latitude 10 and longitude 20, and the radius is 5, the latitude range is [5, 15] and the longitude range is [15, 25].   
+    // N.B.: $gte and $lte are MongoDB operators that mean "greater than or equal" and "less than or equal" respectively.
+    // $gte: alertLatitude - alertRadius means "greater than or equal to the latitude of the Alert minus the radius of the Alert".
+    // $lte: alertLatitude + alertRadius means "less than or equal to the latitude of the Alert plus the radius of the Alert".
+    // If the Alert is at latitude 10 and longitude 20, and the radius is 5, the latitude range is [5, 15] and the longitude range is [15, 25].   
+
+  } catch (err) {
+    console.log(err);
+    return res.status(501).send(err);
+  }
 });
 
 module.exports = router; // Export the router
