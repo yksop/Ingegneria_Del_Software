@@ -79,12 +79,6 @@ router.put("", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
-    const userId_in = req.body.userId;
-    const alertId_in = req.body.alertId;
-
-    console.log(userId_in);
-    console.log(alertId_in);
-
     if (!req.body.userId) return res.status(400).send("User ID is required\n");
 
     if (mongoose.Types.ObjectId.isValid(req.body.userId) === false)
@@ -96,35 +90,41 @@ router.put("", async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
       return res.status(400).send("Invalid Alert ID\n");
 
-    const queriedUser = User.findOne({ id: req.body.id });
+    const queriedUser = await User.findOne({ _id: req.body.userId });
 
-    if (!queriedUser)
-      return res
-        .status(404)
-        .send("User does not exist, no updates were made\n");
+    if (queriedUser === null)
+      return res.status(404).send("The given user does not exist\n");
+
+    if (queriedUser.acceptedAlert === req.body.alertId)
+      return res.status(400).send("User has already accepted the alert\n");
 
     if (queriedUser.acceptedAlert != undefined)
       return res.status(400).send("User is already busy with another alert\n");
 
-    const acceptedAlert = Alert.findOne({ id: req.body.alertId });
+    const acceptedAlert = await Alert.findOne({ _id: req.body.alertId });
 
-    console.log(acceptedAlert.Alert);
-
-    if (!acceptedAlert.Alert) {
+    if (!acceptedAlert)
       // cosa è Alert? cosa è acceptedAlert?
-      console.log("ciao");
       return res.status(400).send("Alert does not exist\n");
-    }
 
     if (acceptedAlert.isActive === false)
       return res.status(400).send("Alert is not active anymore\n");
 
     const result = await User.updateOne(
       { _id: req.body.userId },
-      { _acceptedAlert: req.body.alertId }
+      { acceptedAlert: req.body.alertId }
     ).exec();
 
-    console.log(result);
+    if (result.matchedCount === 0)
+      return res.status(404).send("User not found\n");
+
+    if (result.modifiedCount === 0) return res.status(400).send("\n");
+
+    if (result.matchedCount === 0)
+      return res.status(404).send("Alert not found, no updates were made\n");
+
+    if (result.modifiedCount === 0)
+      return res.status(400).send("User has already accepted the alert\n");
 
     return res.status(200).send("User assigned to alert successfully");
   } catch (err) {
