@@ -2,7 +2,8 @@ const router = require("express").Router();
 const User = require("../models/User");
 const { registerValidation } = require("../../validation");
 const { validateLogin } = require("../../validation");          // I use {} to extract only the validateLogin property. 
- 
+const Alert = require("../models/Alert"); 
+
 
 // JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
 // JWT is widely useful in scenarios like Authorization and Information Exchange, to encypt and securely transmit information between parties.
@@ -129,12 +130,15 @@ module.exports = router; // Export the router
 
 
 /*
+// Example of data in the DB
 
 adb_03_id: 6637f1c6ee4ade22e1aaadee     // centrato in [10,10]
 adb_04_id: 6637f2adcaf8bc5d36868ed1     // centrato in [11,11]
 adb_05_id: 6637f2ee00fb12a0b6f57216     // centrato in [15,15]
-adb_06_id: 6637f323b09c7fdd6b704f62     // centrato in [20,20]
+adb_06_id: 6637f323b09c7fdd6b704f62     // centrato in [16,16]
 
 alert_03_id: 6637f2070299deea1140355a  // centrato in [11,11] con raggio 5
+alert_04_id: 66388bfc7d4802a47bcfd755  // centrato in [15,15] con raggio 2 
+alert_05_id: 66388e52b966c2520554540c  // centrato in [12,12] con raggio 3
 
 */
