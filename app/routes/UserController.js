@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const { registerValidation } = require("../../validation");
+const mongoose = require("mongoose");
+const Alert = require("../models/Alert");
 
 // JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
 // JWT is widely useful in scenarios like Authorization and Information Exchange, to encypt and securely transmit information between parties.
@@ -71,28 +73,64 @@ router.get("", async (req, res) => {
   }
 });
 
-// AGREE TO/DECLINE ALERT--> put here or in AlertController??
-router.put("/:id", async (req,res)=>{
-  try{
-    if (!req.params.id) return res.status(400).send("User ID is required\n");
+// AGREE TO ALERT--> put here or in AlertController??
+router.put("", async (req, res) => {
+  // bisogna mettere /:id?
+  try {
+    if (!req) return res.status(400).send("Request is null\n");
 
-    if(req.params.id)
-    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+    const userId_in = req.body.userId;
+    const alertId_in = req.body.alertId;
+
+    console.log(userId_in);
+    console.log(alertId_in);
+
+    if (!req.body.userId) return res.status(400).send("User ID is required\n");
+
+    if (mongoose.Types.ObjectId.isValid(req.body.userId) === false)
       return res.status(400).send("Invalid User ID\n");
 
-    if()
+    if (!req.body.alertId)
+      return res.status(400).send("Alert ID is required\n");
 
-    const result=await User.updateOne(
-      {_id: req.params.id},
-      {_acceptedAlert: req.params.alertId}
+    if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
+      return res.status(400).send("Invalid Alert ID\n");
+
+    const queriedUser = User.findOne({ id: req.body.id });
+
+    if (!queriedUser)
+      return res
+        .status(404)
+        .send("User does not exist, no updates were made\n");
+
+    if (queriedUser.acceptedAlert != undefined)
+      return res.status(400).send("User is already busy with another alert\n");
+
+    const acceptedAlert = Alert.findOne({ id: req.body.alertId });
+
+    console.log(acceptedAlert.Alert);
+
+    if (!acceptedAlert.Alert) {
+      // cosa è Alert? cosa è acceptedAlert?
+      console.log("ciao");
+      return res.status(400).send("Alert does not exist\n");
+    }
+
+    if (acceptedAlert.isActive === false)
+      return res.status(400).send("Alert is not active anymore\n");
+
+    const result = await User.updateOne(
+      { _id: req.body.userId },
+      { _acceptedAlert: req.body.alertId }
     ).exec();
 
+    console.log(result);
 
-  }catch(err){
+    return res.status(200).send("User assigned to alert successfully");
+  } catch (err) {
     console.log(err);
-    res.status(400).send(err);
+    return res.status(400).send(err);
   }
-})
-
+});
 
 module.exports = router; // Export the router
