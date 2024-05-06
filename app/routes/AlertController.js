@@ -25,10 +25,10 @@ router.post("", async (req, res) => {
     });
 
     // If description is not provided, set it to an empty string
-    if (!newAlert.description) newAlert.description = "";
+    if (!newAlert.description) newAlert.description = null;
 
     // If timeForAmbulance is not provided, set it to 0
-    if (!newAlert.timeForAmbulance) newAlert.timeForAmbulance = 0;
+    if (!newAlert.timeForAmbulance) newAlert.timeForAmbulance = null;
 
     // Check if there is an identical active Alert in the DB
     const identicalAlert = await Alert.findOne({
@@ -44,7 +44,7 @@ router.post("", async (req, res) => {
 
     // If there is an identical active Alert in the DB, return an error
     if (identicalAlert) return res.status(400).send("Identical active Alert already exists");
-    
+
     // Save the Alert in the DB
     const savedAlert = await newAlert.save();
     console.log("Alert saved in the DB");
