@@ -44,31 +44,17 @@ router.post("", async (req, res) => {
   }
 });
 
-/*
-router.get("", (req, res) => {
-  res.send('<a href="/auth/google">Authenticate with Google</a>');
-});
-*/
-
 // LOG-IN --> verb GET of HTTP, so I obtain an existing resource (CRUD operation: Read)
 router.get("", async (req, res) => {
   try {
     const username_in = req.body.username;
     const password_in = req.body.password;
 
-    try {
-      validateLogin(username_in, password_in);
-    } catch (error) {
-      console.error(error.message); // Handling the error
-      return res.status(400).send(error.message);
-    }
+    validateLogin(username_in, password_in);
 
-    const userToLogin = await User.findOne({ username: username_in }); // N.B.: await allows us to write asynchronous code so that it seems synchronous.
-    // the execution of the async function is paused until the Promise (here findOne()) became fulfilled (resolved) or rejected.
+    const userToLogin = await User.findOne({ username: username_in });
 
-    // Worst case: User NOT found
     if (!userToLogin) {
-      // HTTP error 401: indicates that the request has not been applied because it lacks valid authentication credentials for the target resource.
       return res.status(401).send("Authentication Failed: User not Found");
     }
 
@@ -77,7 +63,6 @@ router.get("", async (req, res) => {
       return res.status(401).send("Authentication Failed: Password Uncorrect");
     }
 
-    // Better case: User found and password is correct
     // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
     const token = jwt.sign(
       { userId: userToLogin._id },
@@ -87,24 +72,21 @@ router.get("", async (req, res) => {
       }
     ); // payload, secret, options
 
-    // I send an HTTP response to the client with status 200 (request has succeeded) and the token in JSON format
-    res.status(200).json({ token }); // Convenient and powerful way to handle HTTP responses in Express
+    res.status(200).json({ token });
   } catch (error) {
-    // the server encountered an unexpected condition that prevented it from fulfilling the request. So I send the error message.
+    console.log(err);
     res.status(500).send(error.message);
   }
 });
 
 // AGREE TO ALERT--> put here or in AlertController??
 router.put("/:id", async (req, res) => {
-  // bisogna mettere /:id?
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
-    if (!req.params.userId)
-      return res.status(400).send("User ID is required\n");
+    if (!req.params.id) return res.status(400).send("User ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
       return res.status(400).send("Invalid User ID\n");
 
     if (!req.body.alertId)
@@ -113,7 +95,7 @@ router.put("/:id", async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
       return res.status(400).send("Invalid Alert ID\n");
 
-    const queriedUser = await User.findOne({ _id: req.params.userId });
+    const queriedUser = await User.findOne({ _id: req.params.id });
 
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
@@ -126,15 +108,13 @@ router.put("/:id", async (req, res) => {
 
     const acceptedAlert = await Alert.findOne({ _id: req.body.alertId });
 
-    if (!acceptedAlert)
-      // cosa è Alert? cosa è acceptedAlert?
-      return res.status(400).send("Alert does not exist\n");
+    if (!acceptedAlert) return res.status(400).send("Alert does not exist\n");
 
     if (acceptedAlert.isActive === false)
       return res.status(400).send("Alert is not active anymore\n");
 
     const result = await User.updateOne(
-      { _id: req.params.userId },
+      { _id: req.params.id },
       { acceptedAlert: req.body.alertId }
     ).exec();
 
@@ -152,6 +132,7 @@ router.put("/:id", async (req, res) => {
 });
 
 router.get("/:id/users", async (req, res) => {
+  // Chiedere al prof se è giusto
   // Given an Alert id, I want to get all the users that are in the radius of that Alert
   try {
     // I check if the request is null
