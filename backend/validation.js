@@ -2,8 +2,8 @@ const joi = require("joi");
 const { joiPasswordExtendCore } = require("joi-password");
 const joiPassword = joi.extend(joiPasswordExtendCore);
 
-const passwordMinLength = 6;          // Minimum password length
-const usernameMinLength = 6;          // Minimun username length
+const passwordMinLength = 6; // Minimum password length
+const usernameMinLength = 6; // Minimun username length
 
 // Register validation
 const registerValidation = (data) => {
@@ -51,20 +51,27 @@ const loginValidation = (data) => {
   return schema.validate(data);
 };
 
-
-// Login validation 
+// Login validation
 const validateLogin = (username, password) => {
   // Define rules
-  const usernameRegex = /^[a-zA-Z0-9_]{6,20}$/;       // Username must be between 6 to 20 characters long and can include letters, numbers, and underscores
-  
+  const usernameRegex = /^[a-zA-Z0-9_]{6,20}$/; // Username must be between 6 to 20 characters long and can include letters, numbers, and underscores
+
   // Validate username
   if (!usernameRegex.test(username)) {
-    throw new Error("Invalid username. It must be between " + usernameMinLength + " to 20 characters long and can only contain letters, numbers, and underscores.");
+    throw new Error(
+      "Invalid username. It must be between " +
+        usernameMinLength +
+        " to 20 characters long and can only contain letters, numbers, and underscores."
+    );
   }
-  
+
   // Validate password
   if (password.length < passwordMinLength) {
-    throw new Error("Invalid password. It must be at least " + passwordMinLength + " characters long.");
+    throw new Error(
+      "Invalid password. It must be at least " +
+        passwordMinLength +
+        " characters long."
+    );
   }
 
   // If everything is ok, I return true --> email & password correct!
