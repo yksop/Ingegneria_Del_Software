@@ -1,0 +1,22 @@
+const { required } = require("joi");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+var Position = new Schema({
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+});
+
+module.exports = mongoose.model(
+  "Volunteer",
+  new Schema({
+    name: { type: String, required: true },
+    surname: { type: String, required: true },
+    username: { type: String, required: true },
+    certificateCode: { type: String, required: true },
+    position: { type: Position, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    isVolunteer: { type: Boolean, required: false },
+  })
+);
