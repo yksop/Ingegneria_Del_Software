@@ -34,7 +34,23 @@ router.post("", async (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-      acceptedAlert: undefined,
+      volunteer: {
+        isVolunteer: req.body.volunteer.isVolunteer
+          ? req.body.volunteer.isVolunteer
+          : false,
+        acceptedAlert: req.body.volunteer.acceptedAlert
+          ? req.body.volunteer.acceptedAlert
+          : undefined,
+        certificateCode: req.body.volunteer.certificateCode
+          ? req.body.volunteer.certificateCode
+          : undefined,
+      },
+      certifier: {
+        isCertifier: req.body.certifier.isCertifier ? req.body.certifier.isCertifier : false,
+      },
+      operator118: {
+        isOperator118: req.body.operator118.isOperator118 ? req.body.operator118.isOperator118 : false,
+      },
     });
     const savedUser = await user.save();
     res.send(savedUser);
@@ -60,7 +76,7 @@ router.get("", async (req, res) => {
 
     // Worst case: PWD do not match
     if (userToLogin.password != password_in) {
-      return res.status(401).send("Authentication Failed: Password Uncorrect");
+      return res.status(401).send("Authentication Failed: Password incorrect");
     }
 
     // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
@@ -74,12 +90,12 @@ router.get("", async (req, res) => {
 
     res.status(200).json({ token });
   } catch (error) {
-    console.log(err);
+    console.log(error);
     res.status(500).send(error.message);
   }
 });
 
-// AGREE TO ALERT--> put here or in AlertController??
+// AGREE TO ALERT
 router.put("/:id", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
@@ -100,8 +116,11 @@ router.put("/:id", async (req, res) => {
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
 
-    if (queriedUser.acceptedAlert === req.body.alertId)
+    if (queriedUser.volunteer.acceptedAlert === req.body.alertId)
       return res.status(400).send("User has already accepted the alert\n");
+
+    if (queriedUser.volunteer.isVolunteer === false)
+      return res.status(400).send("User is not a volunteer\n");
 
     if (queriedUser.acceptedAlert != undefined)
       return res.status(400).send("User is already busy with another alert\n");
@@ -164,6 +183,7 @@ router.get("/:id/users", async (req, res) => {
         $gte: alertLongitude - alertRadius,
         $lte: alertLongitude + alertRadius,
       },
+      isVolunteer: true,
     });
 
     // If eligibleUsers is null, return an error
@@ -187,18 +207,40 @@ router.get("/:id/users", async (req, res) => {
   }
 });
 
+// change user field isVolunteer to true if I logged as certificator
+router.put("/:id/", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null\n");
+
+    if (!req.params.id) return res.status(400).send("User ID is required\n");
+
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+      return res.status(400).send("Invalid User ID\n");
+
+    const queriedUser = await User.findOne({ _id: req.params.id });
+
+    if (queriedUser === null)
+      return res.status(404).send("The given user does not exist\n");
+
+    if (queriedUser.isVolunteer === true)
+      return res.status(400).send("User is already a volunteer\n");
+
+    const result = await User.updateOne(
+      { _id: req.params.id },
+      { isVolunteer: true }
+    ).exec();
+
+    if (result.matchedCount === 0)
+      return res.status(404).send("User not found\n");
+
+    if (result.modifiedCount === 0)
+      return res.status(400).send("User is already a volunteer\n");
+
+    return res.status(200).send("User updated successfully");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = router; // Export the router
-
-/*
-// Example of data in the DB
-
-adb_03_id: 6637f1c6ee4ade22e1aaadee     // centrato in [10,10]
-adb_04_id: 6637f2adcaf8bc5d36868ed1     // centrato in [11,11]
-adb_05_id: 6637f2ee00fb12a0b6f57216     // centrato in [15,15]
-adb_06_id: 6637f323b09c7fdd6b704f62     // centrato in [16,16]
-
-alert_03_id: 6637f2070299deea1140355a  // centrato in [11,11] con raggio 5
-alert_04_id: 66388bfc7d4802a47bcfd755  // centrato in [15,15] con raggio 2 
-alert_05_id: 66388e52b966c2520554540c  // centrato in [12,12] con raggio 3
-
-*/
