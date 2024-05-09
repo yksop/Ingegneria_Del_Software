@@ -23,6 +23,19 @@ const registerValidation = (data) => {
       .noWhiteSpaces()
       .min(passwordMinLength)
       .required(),
+    volunteer: joi.object({
+      isVolunteer: joi.boolean().optional(),
+      acceptedAlert: joi.string().optional(),
+      certificateCode: joi.string().optional(),
+    }).optional(),
+    certifier: joi.object({
+      isCertifier: joi.boolean().optional(),
+    }).optional(),
+    operator118: joi.object({
+      isOperator118: joi.boolean().optional(),
+    }).optional(),
+
+
   });
   return schema.validate(data);
 };
