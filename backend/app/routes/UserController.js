@@ -211,17 +211,18 @@ router.get("/:id/users", async (req, res) => {
   }
 });
 
-// change user field isVolunteer to true if I logged as certificator
-router.put("/:id", async (req, res) => {
+// change user field isVolunteer to true
+router.put("/:idUser/users", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
-    if (!req.params.id) return res.status(400).send("User ID is required\n");
+    if (!req.params.idUser)
+      return res.status(400).send("User ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+    if (mongoose.Types.ObjectId.isValid(req.params.idUser) === false)
       return res.status(400).send("Invalid User ID\n");
 
-    const queriedUser = await User.findOne({ _id: req.params.id });
+    const queriedUser = await User.findOne({ _id: req.params.idUser });
 
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
@@ -229,9 +230,13 @@ router.put("/:id", async (req, res) => {
     if (queriedUser.isVolunteer === true)
       return res.status(400).send("User is already a volunteer\n");
 
+    if (req.body.certificateCode === undefined)
+      return res.status(400).send("Certificate code is required\n");
+
     const result = await User.updateOne(
-      { _id: req.params.id },
-      { isVolunteer: true }
+      { _id: req.params.idUser },
+      { isVolunteer: true, 
+        "volunteer.certificateCode": req.body.certificateCode}
     ).exec();
 
     if (result.modifiedCount === 0)
