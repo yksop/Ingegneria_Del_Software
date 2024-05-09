@@ -46,10 +46,14 @@ router.post("", async (req, res) => {
           : undefined,
       },
       certifier: {
-        isCertifier: req.body.certifier.isCertifier ? req.body.certifier.isCertifier : false,
+        isCertifier: req.body.certifier.isCertifier
+          ? req.body.certifier.isCertifier
+          : false,
       },
       operator118: {
-        isOperator118: req.body.operator118.isOperator118 ? req.body.operator118.isOperator118 : false,
+        isOperator118: req.body.operator118.isOperator118
+          ? req.body.operator118.isOperator118
+          : false,
       },
     });
     const savedUser = await user.save();
@@ -116,11 +120,11 @@ router.put("/:id", async (req, res) => {
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
 
-    if (queriedUser.volunteer.acceptedAlert === req.body.alertId)
-      return res.status(400).send("User has already accepted the alert\n");
-
     if (queriedUser.volunteer.isVolunteer === false)
       return res.status(400).send("User is not a volunteer\n");
+
+    if (queriedUser.volunteer.acceptedAlert === req.body.alertId)
+      return res.status(400).send("User has already accepted the alert\n");
 
     if (queriedUser.acceptedAlert != undefined)
       return res.status(400).send("User is already busy with another alert\n");
@@ -208,7 +212,7 @@ router.get("/:id/users", async (req, res) => {
 });
 
 // change user field isVolunteer to true if I logged as certificator
-router.put("/:id/", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
@@ -229,9 +233,6 @@ router.put("/:id/", async (req, res) => {
       { _id: req.params.id },
       { isVolunteer: true }
     ).exec();
-
-    if (result.matchedCount === 0)
-      return res.status(404).send("User not found\n");
 
     if (result.modifiedCount === 0)
       return res.status(400).send("User is already a volunteer\n");
