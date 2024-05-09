@@ -211,18 +211,17 @@ router.get("/:id/users", async (req, res) => {
   }
 });
 
-// change user field isVolunteer to true
-router.put("/:idUser/users", async (req, res) => {
+// change user field isVolunteer to true or false based on the content of the body
+router.put("/:id/users", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
-    if (!req.params.idUser)
-      return res.status(400).send("User ID is required\n");
+    if (!req.params.id) return res.status(400).send("User ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.idUser) === false)
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
       return res.status(400).send("Invalid User ID\n");
 
-    const queriedUser = await User.findOne({ _id: req.params.idUser });
+    const queriedUser = await User.findOne({ _id: req.params.id });
 
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
@@ -234,14 +233,23 @@ router.put("/:idUser/users", async (req, res) => {
       return res.status(400).send("Certificate code is required\n");
 
     const result = await User.updateOne(
-      { _id: req.params.idUser },
-      { isVolunteer: true, 
-        "volunteer.certificateCode": req.body.certificateCode}
-    ).exec();
-
-    if (result.modifiedCount === 0)
-      return res.status(400).send("User is already a volunteer\n");
-
+      { _id: req.params.id },
+      {
+        $set: {
+          "volunteer.isVolunteer": req.body.isVolunteer,
+          "volunteer.certificateCode": req.body.certificateCode,
+        },
+      }
+    );
+    if (result.modifiedCount === 0) {
+      if (req.body.isVolunteer === true) {
+        return res.status(400).send("User is already a volunteer");
+      } else {
+        return res
+          .status(400)
+          .send("User doesn't require changes, is not a volunteer");
+      }
+    }
     return res.status(200).send("User updated successfully");
   } catch (err) {
     console.log(err);
