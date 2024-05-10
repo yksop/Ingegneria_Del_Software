@@ -4,11 +4,21 @@
       <h2>Login</h2>
       <div class="input-group">
         <label for="username">Username</label>
-        <input type="text" id="username" v-model="credentials.username" required>
+        <input
+          type="text"
+          id="username"
+          v-model="credentials.username"
+          required
+        />
       </div>
       <div class="input-group">
         <label for="password">Password</label>
-        <input type="password" id="password" v-model="credentials.password" required>
+        <input
+          type="password"
+          id="password"
+          v-model="credentials.password"
+          required
+        />
       </div>
       <button type="submit">Login</button>
     </form>
@@ -20,22 +30,21 @@ export default {
   data() {
     return {
       credentials: {
-        username: 'Mario',
-        password: 'Mario1234#'
-      }
+        username: "Mario",
+        password: "Mario1234#",
+      },
     };
   },
   methods: {
     login() {
       console.log("Login attempted with:", this.credentials);
       // Here you would typically handle the login logic, perhaps sending the data to a server
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
-
 .login-container {
   display: flex;
   justify-content: center;
@@ -47,7 +56,7 @@ export default {
   background: white;
   margin: 100px;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 350px;
   height: 350px;
   /*box-sizing: border-box;*/
@@ -91,6 +100,6 @@ button:hover {
 }
 
 button:active {
-    background-color: #4045b2; /* Darker shade when the button is clicked */
+  background-color: #4045b2; /* Darker shade when the button is clicked */
 }
 </style>
