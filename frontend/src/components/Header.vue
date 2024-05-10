@@ -40,13 +40,13 @@ defineProps({
                     <RouterLink to="/about">About</RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/registrate">Registration</RouterLink>
+                    <RouterLink to="/registration">Registration</RouterLink>
                 </li>
                 <li>
                     <RouterLink to="/login">Login</RouterLink>
                 </li>
                 <li>
-                    <RouterLink to="/history">History</RouterLink>
+                    <RouterLink to="/his">History</RouterLink>
                 </li>
                 <li>
                     <RouterLink to="/contact">Contact</RouterLink>
