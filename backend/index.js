@@ -2,10 +2,13 @@ const PORT = 3000; // Change to any available port number
 
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const mongoose = require("mongoose");
 
 // Middleware
 app.use(express.json());
+
+app.use(cors());
 
 require("dotenv").config();
 
@@ -18,6 +21,9 @@ const authenticationRoute = require("./app/routes/Authentication");
 app.use("/api/v1/users", usersRoute);
 app.use("/api/v1/alerts", alertsRoute);
 app.use("/api/v1/tokens", authenticationRoute);
+
+/**
+ * Configure mongoose
 
 /**
  * Configure mongoose
