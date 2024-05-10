@@ -40,6 +40,15 @@
           required
         />
       </div>
+      <div class="input-group">
+        <label for="password">Confirm Password</label>
+        <input
+          type="password"
+          id="password"
+          v-model="credentials.confirmPassword"
+          required
+        />
+      </div>
       <button type="submit">Sign Up</button>
     </form>
   </div>
@@ -57,6 +66,7 @@ export default {
         username: "",
         email: "",
         password: "",
+        confirmPassword: "",
         latitude: null,
         longitude: null,
         volunteer: {
@@ -70,6 +80,8 @@ export default {
         },
       },
       emailValid: true,
+      passwordMatch: true,
+      emailErrorMessage: "",
     };
   },
   methods: {
@@ -78,15 +90,40 @@ export default {
         this.emailValid = false;
         return;
       }
-      axios.post("http://localhost:3000/api/v1/users", this.credentials).then(
-        (response) => {
-          console.log("Registration successful:", response.data);
-          this.$router.push("/login");
-        },
-        (error) => {
-          console.error("Registration failed:", error);
-        }
-      );
+
+      if (this.credentials.password !== this.credentials.confirmPassword) {
+        this.passwordMatch = false;
+        alert("Password and Confirm Password fields do not match!\n");
+        return;
+      }
+
+      const registerNewUserCredentials = {
+        name: this.credentials.name,
+        surname: this.credentials.surname,
+        username: this.credentials.username,
+        email: this.credentials.email,
+        password: this.credentials.password,
+        latitude: this.credentials.latitude,
+        longitude: this.credentials.longitude,
+        volunteer: this.credentials.volunteer,
+        certifier: this.credentials.certifier,
+        operator118: this.credentials.operator118,
+      };
+
+      axios
+        .post("http://localhost:3000/api/v1/users", registerNewUserCredentials)
+        .then(
+          (response) => {
+            console.log("Registration successful:", response.data);
+            this.$router.push("/login");
+          },
+          (error) => {
+            console.error("Registration failed:", error);
+          }
+        )
+        .catch((error) => {
+          console.error("Axios request failed:", error);
+        });
     },
     getUserLocation() {
       if (navigator.geolocation) {
@@ -104,9 +141,15 @@ export default {
       }
     },
     validateEmail(email) {
-      let re =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
+      const re =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!re.test(String(email).toLowerCase())) {
+        alert(
+          "Invalid email format. Email should be something like example@example.example\n"
+        );
+        return false;
+      }
+      return true;
     },
   },
   created() {
@@ -129,7 +172,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 350px;
-  height: 500px;
+  height: 600px;
   /*box-sizing: border-box;*/
 }
 
