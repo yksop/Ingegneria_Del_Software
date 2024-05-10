@@ -64,40 +64,6 @@ router.post("", async (req, res) => {
   }
 });
 
-// LOG-IN --> verb GET of HTTP, so I obtain an existing resource (CRUD operation: Read)
-router.get("", async (req, res) => {
-  try {
-    const username_in = req.body.username;
-    const password_in = req.body.password;
-
-    validateLogin(username_in, password_in);
-
-    const userToLogin = await User.findOne({ username: username_in });
-
-    if (!userToLogin) {
-      return res.status(401).send("Authentication Failed: User not Found");
-    }
-
-    // Worst case: PWD do not match
-    if (userToLogin.password != password_in) {
-      return res.status(401).send("Authentication Failed: Password incorrect");
-    }
-
-    // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
-    const token = jwt.sign(
-      { userId: userToLogin._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: EXPIRAL_AUTH_TIME,
-      }
-    ); // payload, secret, options
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error.message);
-  }
-});
 
 // AGREE TO ALERT
 router.put("/:id", async (req, res) => {
@@ -151,63 +117,6 @@ router.put("/:id", async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).send(err);
-  }
-});
-
-router.get("/:id/users", async (req, res) => {
-  // Chiedere al prof se è giusto
-  // Given an Alert id, I want to get all the users that are in the radius of that Alert
-  try {
-    // I check if the request is null
-    if (!req) return res.status(400).send("Request is null");
-
-    // Find the Alert with the given id
-    const alert = await Alert.findById(req.params.id);
-
-    // If the Alert does not exist, return an error
-    if (!alert) return res.status(404).send("Alert not found");
-
-    // If the Alert is not active, return an error
-    if (!alert.isActive) return res.status(400).send("Alert is not active");
-
-    // Extract the latitude and longitude of the Alert
-    const alertLatitude = alert.latitude;
-    const alertLongitude = alert.longitude;
-
-    // Extract the radius of the Alert
-    const alertRadius = alert.radius;
-
-    // Find all the users that are in the radius of the Alert
-    const eligibleUsers = await User.find({
-      latitude: {
-        $gte: alertLatitude - alertRadius,
-        $lte: alertLatitude + alertRadius,
-      },
-      longitude: {
-        $gte: alertLongitude - alertRadius,
-        $lte: alertLongitude + alertRadius,
-      },
-      isVolunteer: true,
-    });
-
-    // If eligibleUsers is null, return an error
-    if (eligibleUsers === null)
-      return res.status(404).send("List of eligibleUsers is null");
-
-    // If the list is empty, return an error
-    if (eligibleUsers.length === 0)
-      return res.status(404).send("No users are in the radius of the Alert");
-
-    // Return the users in the radius of the Alert
-    return res.send(eligibleUsers);
-
-    // N.B.: $gte and $lte are MongoDB operators that mean "greater than or equal" and "less than or equal" respectively.
-    // $gte: alertLatitude - alertRadius means "greater than or equal to the latitude of the Alert minus the radius of the Alert".
-    // $lte: alertLatitude + alertRadius means "less than or equal to the latitude of the Alert plus the radius of the Alert".
-    // If the Alert is at latitude 10 and longitude 20, and the radius is 5, the latitude range is [5, 15] and the longitude range is [15, 25].
-  } catch (err) {
-    console.log(err);
-    return res.status(501).send(err);
   }
 });
 
