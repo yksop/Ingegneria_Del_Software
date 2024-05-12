@@ -30,7 +30,7 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue')
     },
     {
-      path: '/his',
+      path: '/history',
       name: 'history',
       component: () => import('../views/HistoryView.vue')
     },
