@@ -19,6 +19,7 @@
           v-model="credentials.password"
           required
         />
+        <password-error-banner :show="passwordError" />
       </div>
       <button type="submit">Login</button>
     </form>
@@ -26,19 +27,46 @@
 </template>
 
 <script>
+import axios from "axios";
+import PasswordErrorBanner from '@/components/PasswordErrorBanner.vue';
+
 export default {
+  components: {
+    PasswordErrorBanner
+  },
   data() {
     return {
+      passwordError: false,
       credentials: {
-        username: "Mario",
-        password: "Mario1234#",
+        username: "",
+        password: "",
       },
     };
   },
+
   methods: {
-    login() {
-      console.log("Login attempted with:", this.credentials);
-      // Here you would typically handle the login logic, perhaps sending the data to a server
+    async login() {
+      const loginUserCredentials = {
+        username: this.credentials.username,
+        password: this.credentials.password,
+      };
+      
+      axios
+        .post("http://localhost:3000/api/v1/tokens", loginUserCredentials)
+        .then(
+          (response) => {
+            console.log("Login successful:", response.data);
+            this.passwordError = false;
+            this.$router.push("/home");
+          },
+          (error) => {
+            this.passwordError = true;
+            console.error("Login failed:", error.response.data);
+          }
+        )
+        .catch((error) => {
+          console.error("Axios request failed:", error);
+        });
     },
   },
 };
