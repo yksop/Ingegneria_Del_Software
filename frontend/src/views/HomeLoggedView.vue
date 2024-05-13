@@ -1,22 +1,40 @@
 <template>
   <div class="upgradeDowngrade-container">
-    <form @submit.prevent="upgradeDowngradeUser" class="upgradeDowngradeForm">
-      <h2>Upgrade or downgrade an user</h2>
+    <form @submit.prevent="checkAction" class="upgradeDowngradeForm">
+      <h2>Upgrade or downgrade a user</h2>
       <div class="input-group">
         <label for="id">id</label>
-        <input type="text" id="id" v-model="credentials.id" required />
+        <input type="text" id="id" v-model="formData.id" required />
+      </div>
+      <div class="input-group">
+        <label for="certificateCode">certificateCode</label>
+        <input
+          type="text"
+          id="certificateCode"
+          v-model="formData.certificateCode"
+          required
+        />
       </div>
       <div class="input-group">
         <label for="upgrade">Upgrade</label>
-        <input type="radio" id="upgrade" v-model="credentials.upgrade" >
-        <br>
+        <input
+          type="radio"
+          id="upgrade"
+          v-model="formData.action"
+          value="upgrade"
+        />
+        <br />
       </div>
       <div class="input-group">
         <label for="downgrade">Downgrade</label>
-        <input type="radio" id="downgrade" v-model="credentials.upgrade" >
-        <br>
+        <input
+          type="radio"
+          id="downgrade"
+          v-model="formData.action"
+          value="downgrade"
+        />
+        <br />
       </div>
-
       <button type="submit">Modify</button>
     </form>
   </div>
@@ -25,29 +43,50 @@
 <script>
 import axios from "axios";
 
+// TODO: implementare AUTORIZZAZIONE tramite token da localstorage
+
 export default {
   data() {
     return {
-      credentials: {
+      formData: {
         id: "",
-        upgrade: "",
-        downgrade: "",
+        action: "",
       },
     };
   },
 
   methods: {
-    async upgradeDowngradeUser() {
-      const upgradeDowngradeUserCredentials = {
-        id: this.credentials.id,
-        upgrade: this.credentials.upgrade,
-        downgrade: this.credentials.downgrade,
+    checkAction() {
+      if (this.formData.action) {
+        this.upgradeDowngradeUser();
+      } else {
+        alert(
+          "Please select an action (Upgrade or Downgrade) before submitting."
+        );
+      }
+    },
+
+    upgradeDowngradeUser() {
+      switch (this.formData.action) {
+        case "upgrade":
+          this.formData.action = true;
+          break;
+        case "downgrade":
+          this.formData.action = false;
+          break;
+      }
+
+      const upgradeDowngradeUserStatus = {
+        isVolunteer: this.formData.action,
+        certificateCode: this.formData.certificateCode,
       };
+
+      this.formData.action = "";
 
       axios
         .put(
-          "http://localhost:3000/api/v1/users",
-          upgradeDowngradeUserCredentials
+          `http://localhost:3000/api/v1/users/volunteers/${this.formData.id}`,
+          upgradeDowngradeUserStatus
         )
         .then(
           (response) => {

@@ -28,11 +28,11 @@
 
 <script>
 import axios from "axios";
-import PasswordErrorBanner from '@/components/PasswordErrorBanner.vue';
+import PasswordErrorBanner from "@/components/PasswordErrorBanner.vue";
 
 export default {
   components: {
-    PasswordErrorBanner
+    PasswordErrorBanner,
   },
   data() {
     return {
@@ -50,7 +50,7 @@ export default {
         username: this.credentials.username,
         password: this.credentials.password,
       };
-      
+
       axios
         .post("http://localhost:3000/api/v1/tokens", loginUserCredentials)
         .then(
