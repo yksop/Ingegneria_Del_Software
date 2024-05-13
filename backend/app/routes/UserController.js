@@ -64,40 +64,6 @@ router.post("", async (req, res) => {
   }
 });
 
-// LOG-IN --> verb GET of HTTP, so I obtain an existing resource (CRUD operation: Read)
-router.get("", async (req, res) => {
-  try {
-    const username_in = req.body.username;
-    const password_in = req.body.password;
-
-    validateLogin(username_in, password_in);
-
-    const userToLogin = await User.findOne({ username: username_in });
-
-    if (!userToLogin) {
-      return res.status(401).send("Authentication Failed: User not Found");
-    }
-
-    // Worst case: PWD do not match
-    if (userToLogin.password != password_in) {
-      return res.status(401).send("Authentication Failed: Password incorrect");
-    }
-
-    // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
-    const token = jwt.sign(
-      { userId: userToLogin._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: EXPIRAL_AUTH_TIME,
-      }
-    ); // payload, secret, options
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error.message);
-  }
-});
 
 // AGREE TO ALERT
 router.put("/:id", async (req, res) => {
@@ -153,6 +119,7 @@ router.put("/:id", async (req, res) => {
     return res.status(500).send(err);
   }
 });
+
 
 router.get("/:id/users", async (req, res) => {
   // Chiedere al prof se è giusto
