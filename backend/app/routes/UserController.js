@@ -211,8 +211,8 @@ router.get("/:id/users", async (req, res) => {
   }
 });
 
-// change user field isVolunteer to true if I logged as certificator
-router.put("/:id", async (req, res) => {
+// change user field isVolunteer to true or false based on the content of the body
+router.put("/:id/users", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
@@ -229,14 +229,27 @@ router.put("/:id", async (req, res) => {
     if (queriedUser.isVolunteer === true)
       return res.status(400).send("User is already a volunteer\n");
 
+    if (req.body.certificateCode === undefined)
+      return res.status(400).send("Certificate code is required\n");
+
     const result = await User.updateOne(
       { _id: req.params.id },
-      { isVolunteer: true }
-    ).exec();
-
-    if (result.modifiedCount === 0)
-      return res.status(400).send("User is already a volunteer\n");
-
+      {
+        $set: {
+          "volunteer.isVolunteer": req.body.isVolunteer,
+          "volunteer.certificateCode": req.body.certificateCode,
+        },
+      }
+    );
+    if (result.modifiedCount === 0) {
+      if (req.body.isVolunteer === true) {
+        return res.status(400).send("User is already a volunteer");
+      } else {
+        return res
+          .status(400)
+          .send("User doesn't require changes, is not a volunteer");
+      }
+    }
     return res.status(200).send("User updated successfully");
   } catch (err) {
     console.log(err);
