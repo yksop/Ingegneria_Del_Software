@@ -120,8 +120,66 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// change user field isVolunteer to true if I logged as certificator
-router.put("/:id", async (req, res) => {
+
+router.get("/:id/users", async (req, res) => {
+  // Chiedere al prof se è giusto
+  // Given an Alert id, I want to get all the users that are in the radius of that Alert
+  try {
+    // I check if the request is null
+    if (!req) return res.status(400).send("Request is null");
+
+    // Find the Alert with the given id
+    const alert = await Alert.findById(req.params.id);
+
+    // If the Alert does not exist, return an error
+    if (!alert) return res.status(404).send("Alert not found");
+
+    // If the Alert is not active, return an error
+    if (!alert.isActive) return res.status(400).send("Alert is not active");
+
+    // Extract the latitude and longitude of the Alert
+    const alertLatitude = alert.latitude;
+    const alertLongitude = alert.longitude;
+
+    // Extract the radius of the Alert
+    const alertRadius = alert.radius;
+
+    // Find all the users that are in the radius of the Alert
+    const eligibleUsers = await User.find({
+      latitude: {
+        $gte: alertLatitude - alertRadius,
+        $lte: alertLatitude + alertRadius,
+      },
+      longitude: {
+        $gte: alertLongitude - alertRadius,
+        $lte: alertLongitude + alertRadius,
+      },
+      isVolunteer: true,
+    });
+
+    // If eligibleUsers is null, return an error
+    if (eligibleUsers === null)
+      return res.status(404).send("List of eligibleUsers is null");
+
+    // If the list is empty, return an error
+    if (eligibleUsers.length === 0)
+      return res.status(404).send("No users are in the radius of the Alert");
+
+    // Return the users in the radius of the Alert
+    return res.send(eligibleUsers);
+
+    // N.B.: $gte and $lte are MongoDB operators that mean "greater than or equal" and "less than or equal" respectively.
+    // $gte: alertLatitude - alertRadius means "greater than or equal to the latitude of the Alert minus the radius of the Alert".
+    // $lte: alertLatitude + alertRadius means "less than or equal to the latitude of the Alert plus the radius of the Alert".
+    // If the Alert is at latitude 10 and longitude 20, and the radius is 5, the latitude range is [5, 15] and the longitude range is [15, 25].
+  } catch (err) {
+    console.log(err);
+    return res.status(501).send(err);
+  }
+});
+
+// change user field isVolunteer to true or false based on the content of the body
+router.put("/:id/users", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
@@ -138,14 +196,27 @@ router.put("/:id", async (req, res) => {
     if (queriedUser.isVolunteer === true)
       return res.status(400).send("User is already a volunteer\n");
 
+    if (req.body.certificateCode === undefined)
+      return res.status(400).send("Certificate code is required\n");
+
     const result = await User.updateOne(
       { _id: req.params.id },
-      { isVolunteer: true }
-    ).exec();
-
-    if (result.modifiedCount === 0)
-      return res.status(400).send("User is already a volunteer\n");
-
+      {
+        $set: {
+          "volunteer.isVolunteer": req.body.isVolunteer,
+          "volunteer.certificateCode": req.body.certificateCode,
+        },
+      }
+    );
+    if (result.modifiedCount === 0) {
+      if (req.body.isVolunteer === true) {
+        return res.status(400).send("User is already a volunteer");
+      } else {
+        return res
+          .status(400)
+          .send("User doesn't require changes, is not a volunteer");
+      }
+    }
     return res.status(200).send("User updated successfully");
   } catch (err) {
     console.log(err);
