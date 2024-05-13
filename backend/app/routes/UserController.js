@@ -212,7 +212,7 @@ router.get("/:id/users", async (req, res) => {
 });
 
 // change user field isVolunteer to true or false based on the content of the body
-router.put("/:id/users", async (req, res) => {
+router.put("/:id/users", async (req, res) => { //decidere se mettere /volunteers
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
