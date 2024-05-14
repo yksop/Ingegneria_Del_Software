@@ -103,6 +103,20 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// GET all active alerts
+router.get("", async (req, res) => {
+  try {
+    const activeAlerts = await Alert.find({ isActive: true });
+
+    if (!activeAlerts) return res.status(404).send("No active alerts found\n");
+
+    res.send(activeAlerts);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send(err);
+  }
+});
+
 router.get("/:id/users", async (req, res) => {
   // Chiedere al prof se è giusto
   // Given an Alert id, I want to get all the users that are in the radius of that Alert
