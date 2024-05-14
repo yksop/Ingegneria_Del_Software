@@ -199,15 +199,36 @@ router.put("/volunteers/:volunteerId", async (req, res) => {
     if (req.body.certificateCode === undefined)
       return res.status(400).send("Certificate code is required\n");
 
-    const result = await User.updateOne(
-      { _id: req.params.volunteerId },
-      {
-        $set: {
-          "volunteer.isVolunteer": req.body.isVolunteer,
-          "volunteer.certificateCode": req.body.certificateCode,
-        },
-      }
-    );
+    if (req.body.isVolunteer === false) {
+      console.log("isVolunteer is false");
+      var result = await User.updateOne(
+        { _id: req.params.volunteerId },
+        {
+          $set: {
+            "volunteer.isVolunteer": req.body.isVolunteer,
+          },
+          $unset: {
+            "volunteer.certificateCode": "",
+          },
+        }
+      );
+    }
+
+    console;
+
+    if (req.body.isVolunteer === true) {
+      console.log("isVolunteer is true");
+      var result = await User.updateOne(
+        { _id: req.params.volunteerId },
+        {
+          $set: {
+            "volunteer.isVolunteer": req.body.isVolunteer,
+            "volunteer.certificateCode": req.body.certificateCode,
+          },
+        }
+      );
+    }
+    console.log(result);
     if (result.modifiedCount === 0) {
       if (req.body.isVolunteer === true) {
         return res.status(400).send("User is already a volunteer");
