@@ -57,7 +57,7 @@ export default {
           (response) => {
             console.log("Login successful:", response.data);
             this.passwordError = false;
-            this.$router.push("/homeLogged");
+            this.$router.push("/logged");
           },
           (error) => {
             this.passwordError = true;
