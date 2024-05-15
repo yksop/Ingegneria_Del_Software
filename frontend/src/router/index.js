@@ -58,7 +58,22 @@ const router = createRouter({
       name: "retireAlert",
       component: () => import("../views/RetireAlertView.vue"),
     },
-  ],
-});
+    {
+      path: '/action118',
+      name: 'Action_118',
+      component: () => import('../views/Action118View.vue')
+    },
+    {
+      path: '/actionVol',
+      name: 'Action_Vol',
+      component: () => import('../views/ActionVolView.vue')
+    },
+    {
+      path: '/actionCert',
+      name: 'Action_Cert',
+      component: () => import('../views/ActionCertView.vue')
+    },
+  ]
+})
 
 export default router;
