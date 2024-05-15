@@ -64,15 +64,15 @@ router.post("", async (req, res) => {
   }
 });
 
-
 // AGREE TO ALERT
-router.put("/:id", async (req, res) => {
+router.put("/:userId", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
-    if (!req.params.id) return res.status(400).send("User ID is required\n");
+    if (!req.params.userId)
+      return res.status(400).send("User ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
       return res.status(400).send("Invalid User ID\n");
 
     if (!req.body.alertId)
@@ -81,7 +81,7 @@ router.put("/:id", async (req, res) => {
     if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
       return res.status(400).send("Invalid Alert ID\n");
 
-    const queriedUser = await User.findOne({ _id: req.params.id });
+    const queriedUser = await User.findOne({ _id: req.params.userId });
 
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
@@ -103,7 +103,7 @@ router.put("/:id", async (req, res) => {
       return res.status(400).send("Alert is not active anymore\n");
 
     const result = await User.updateOne(
-      { _id: req.params.id },
+      { _id: req.params.userId },
       { acceptedAlert: req.body.alertId }
     ).exec();
 
@@ -120,16 +120,15 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-
-router.get("/:id/users", async (req, res) => {
-  // Chiedere al prof se è giusto
-  // Given an Alert id, I want to get all the users that are in the radius of that Alert
+router.get("/:alertId/volunteers", async (req, res) => {
+  // TODO: CHIEDI AL PROF SE METTERE /users O /volunteers
+  // Given an Alert id, I want to get all the volunteers that are in the radius of that Alert
   try {
     // I check if the request is null
     if (!req) return res.status(400).send("Request is null");
 
     // Find the Alert with the given id
-    const alert = await Alert.findById(req.params.id);
+    const alert = await Alert.findById(req.params.alertId);
 
     // If the Alert does not exist, return an error
     if (!alert) return res.status(404).send("Alert not found");
@@ -179,16 +178,17 @@ router.get("/:id/users", async (req, res) => {
 });
 
 // change user field isVolunteer to true or false based on the content of the body
-router.put("/:id/users", async (req, res) => {
+router.put("/volunteers/:volunteerId", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
 
-    if (!req.params.id) return res.status(400).send("User ID is required\n");
+    if (!req.params.volunteerId)
+      return res.status(400).send("User ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+    if (mongoose.Types.ObjectId.isValid(req.params.volunteerId) === false)
       return res.status(400).send("Invalid User ID\n");
 
-    const queriedUser = await User.findOne({ _id: req.params.id });
+    const queriedUser = await User.findOne({ _id: req.params.volunteerId });
 
     if (queriedUser === null)
       return res.status(404).send("The given user does not exist\n");
@@ -199,15 +199,36 @@ router.put("/:id/users", async (req, res) => {
     if (req.body.certificateCode === undefined)
       return res.status(400).send("Certificate code is required\n");
 
-    const result = await User.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          "volunteer.isVolunteer": req.body.isVolunteer,
-          "volunteer.certificateCode": req.body.certificateCode,
-        },
-      }
-    );
+    if (req.body.isVolunteer === false) {
+      console.log("isVolunteer is false");
+      var result = await User.updateOne(
+        { _id: req.params.volunteerId },
+        {
+          $set: {
+            "volunteer.isVolunteer": req.body.isVolunteer,
+          },
+          $unset: {
+            "volunteer.certificateCode": "",
+          },
+        }
+      );
+    }
+
+    console;
+
+    if (req.body.isVolunteer === true) {
+      console.log("isVolunteer is true");
+      var result = await User.updateOne(
+        { _id: req.params.volunteerId },
+        {
+          $set: {
+            "volunteer.isVolunteer": req.body.isVolunteer,
+            "volunteer.certificateCode": req.body.certificateCode,
+          },
+        }
+      );
+    }
+    console.log(result);
     if (result.modifiedCount === 0) {
       if (req.body.isVolunteer === true) {
         return res.status(400).send("User is already a volunteer");

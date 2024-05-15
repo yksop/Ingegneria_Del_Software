@@ -4,7 +4,6 @@ const Alert = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
 
-
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {
   try {
@@ -43,7 +42,8 @@ router.post("", async (req, res) => {
     });
 
     // If there is an identical active Alert in the DB, return an error
-    if (identicalAlert) return res.status(400).send("Identical active Alert already exists");
+    if (identicalAlert)
+      return res.status(400).send("Identical active Alert already exists");
 
     // Save the Alert in the DB
     const savedAlert = await newAlert.save();
@@ -57,14 +57,13 @@ router.post("", async (req, res) => {
   }
 });
 
-
 router.put("/:id", async (req, res) => {
-    try {
+  try {
     if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
     if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
       return res.status(400).send("Invalid Alert ID\n");
-      
+
     const result = await Alert.updateOne(
       { _id: req.params.id },
       { isActive: false }
@@ -79,12 +78,11 @@ router.put("/:id", async (req, res) => {
         .send("Alert is already non-active, no updates were made\n");
 
     return res.status(200).send("Alert updated successfully\n");
-    } catch (err) {
+  } catch (err) {
     console.log(err);
     res.status(400).send(err);
   }
 });
-
 
 // Get alert from DB
 router.get("/:id", async (req, res) => {
@@ -93,18 +91,17 @@ router.get("/:id", async (req, res) => {
 
     if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
       return res.status(400).send("Invalid Alert ID\n");
-    
+
     const foundAlert = await Alert.findById(req.params.id);
 
     if (!foundAlert) res.status(400).send("Alert does not exist\n");
 
     res.status(200).send(foundAlert);
-    } catch (err) {
+  } catch (err) {
     console.log(err);
     res.status(400).send(err);
   }
 });
-
 
 router.get("/:id/users", async (req, res) => {
   // Chiedere al prof se è giusto
@@ -162,6 +159,5 @@ router.get("/:id/users", async (req, res) => {
     return res.status(501).send(err);
   }
 });
-
 
 module.exports = router;

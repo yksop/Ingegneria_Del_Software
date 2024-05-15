@@ -28,11 +28,11 @@
 
 <script>
 import axios from "axios";
-import PasswordErrorBanner from '@/components/PasswordErrorBanner.vue';
+import PasswordErrorBanner from "@/components/PasswordErrorBanner.vue";
 
 export default {
   components: {
-    PasswordErrorBanner
+    PasswordErrorBanner,
   },
   data() {
     return {
@@ -50,7 +50,7 @@ export default {
         username: this.credentials.username,
         password: this.credentials.password,
       };
-      
+
       axios
         .post("http://localhost:3000/api/v1/tokens", loginUserCredentials)
         .then(
@@ -58,6 +58,7 @@ export default {
             console.log("Login successful:", response.data);
             this.passwordError = false;
             this.$router.push("/home");
+
             // Save the token in the local storage
             localStorage.setItem("token", response.data.token);
             // After 1 minutes, the token will expire
