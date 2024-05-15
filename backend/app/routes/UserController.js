@@ -56,7 +56,9 @@ router.post("", async (req, res) => {
           : false,
       },
     });
+
     const savedUser = await user.save();
+
     res.send(savedUser);
   } catch (err) {
     console.log(err);
