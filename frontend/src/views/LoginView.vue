@@ -58,10 +58,18 @@ export default {
             console.log("Login successful:", response.data);
             this.passwordError = false;
             this.$router.push("/home");
+            // Save the token in the local storage
+            localStorage.setItem("token", response.data.token);
+            // After 1 minutes, the token will expire
+            setTimeout(() => {
+              localStorage.removeItem("token");
+              console.log("Token expired");
+            }, 10000);
           },
           (error) => {
             this.passwordError = true;
             console.error("Login failed:", error.response.data);
+            localStorage.removeItem("token");
           }
         )
         .catch((error) => {
