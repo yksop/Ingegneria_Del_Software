@@ -1,8 +1,18 @@
 <script>
 import { RouterLink, RouterView } from "vue-router";
-import { isLoggedIn, isVolunteer, isCertifier, isOperator118 } from "@/services/tokenManagement.js";
+import { removeToken, isLoggedIn, isVolunteer, isCertifier, isOperator118 } from "@/services/tokenManagement.js";
 
 export default{
+  data() {
+    return {
+      isRegistrationVisible: true,
+      isLoginVisible: true,
+      isAction118Visible: false, // Initially set to false to do not display the span
+      isActionCertVisible: false,
+      isActionVolVisible: false,
+      isLogoutVisible: false,
+    };
+  },
   methods: {
     VolunteerAccessHandler() {
       if (!isVolunteer()) {
@@ -22,8 +32,88 @@ export default{
         this.$router.push("/login");
       }
     },
+    LogoutHandler() {
+      removeToken();
+      alert("You have been logged out");
+      this.$router.push("/login");
+    },
+
+    // Function to change the display property of the li
+    visualizeRegistration() {
+      this.isRegistrationVisible = true; // Set isVisible to false to hide the span
+    },
+    visualizeLogin() {
+      this.isLoginVisible = true; // Set isVisible to false to hide the span
+    },
+    visualizeAction118() {
+      this.isAction118Visible = true; // Set isVisible to false to hide the span
+    },
+    visualizeActionCert() {
+      this.isActionCertVisible = true; // Set isVisible to false to hide the span
+    },
+    visualizeActionVol() {
+      this.isActionVolVisible = true; // Set isVisible to false to hide the span
+    },
+    visualizeLogout() {
+      this.isLogoutVisible = true; // Set isVisible to false to hide the span
+    },
+    hideRegistration() {
+      this.isRegistrationVisible = false; // Set isVisible to false to hide the span
+    },
+    hideLogin() {
+      this.isLoginVisible = false; // Set isVisible to false to hide the span
+    },
+    hideAction118() {
+      this.isAction118Visible = false; // Set isVisible to false to hide the span
+    },
+    hideActionCert() {
+      this.isActionCertVisible = false; // Set isVisible to false to hide the span
+    },
+    hideActionVol() {
+      this.isActionVolVisible = false; // Set isVisible to false to hide the span
+    },
+    hideLogout() {
+      this.isLogoutVisible = false; // Set isVisible to false to hide the span
+    },
+
+    // Function to check the role of the user
+    checkRole() {
+      if (isLoggedIn()) {
+        if (isVolunteer()) {
+          this.visualizeActionVol();
+        } else {
+          this.hideActionVol();
+        }
+        if (isCertifier()) {
+          this.visualizeActionCert();
+        } else {
+          this.hideActionCert();
+        }
+        if (isOperator118()) {
+          this.visualizeAction118();
+        } else {
+          this.hideAction118();
+        }
+        this.visualizeLogout();
+        this.hideRegistration();
+        this.hideLogin();
+      }else{
+        // If the user is not logged in, hide all the actions
+        this.visualizeRegistration();
+        this.visualizeLogin();
+        this.hideAction118();
+        this.hideActionCert();
+        this.hideActionVol();
+        this.hideLogout();
+      }
+    }
   },
-}
+
+  mounted() {
+    // Every 10 milliseconds, check the role of the user
+    const intervalId = setInterval(this.checkRole, 10);
+  }
+};
 </script>
 
 
@@ -65,29 +155,32 @@ export default{
         <li>
           <RouterLink to="/about">About</RouterLink>
         </li>
-        <li>
+        <li v-if="isRegistrationVisible">
           <RouterLink to="/registration">Registration</RouterLink>
         </li>
-        <li>
+        <li v-if="isLoginVisible">
           <RouterLink to="/login">Login</RouterLink>
         </li>
-        <li>
+        <li >
           <RouterLink to="/history">History</RouterLink>
         </li>
         <li>
           <RouterLink to="/contact">Contact</RouterLink>
         </li>
+        <li v-if="isAction118Visible">
+          <RouterLink @click.native="Op118AccessHandler" to="/action118">Action_118</RouterLink>
+        </li>
+        <li v-if="isActionCertVisible">
+          <RouterLink @click.native="CertifierAccessHandler" to="/actionCert">Action_Cert</RouterLink>
+        </li>
+        <li v-if="isActionVolVisible">
+          <RouterLink @click.native="VolunteerAccessHandler" to="/actionVol">Action_Vol</RouterLink>
+        </li>
         <li>
           <RouterLink to="/profile">Profile</RouterLink>
         </li>
-        <li>
-          <RouterLink @click.native="Op118AccessHandler" to="/action118">Action_118</RouterLink>
-        </li>
-        <li>
-          <RouterLink @click.native="CertifierAccessHandler" to="/actionCert">Action_Cert</RouterLink>
-        </li>
-        <li>
-          <RouterLink @click.native="VolunteerAccessHandler" to="/actionVol">Action_Vol</RouterLink>
+        <li v-if="isLogoutVisible">
+          <RouterLink @click.native="LogoutHandler" to="/logout">Logout</RouterLink>
         </li>
       </ul>
     </nav>

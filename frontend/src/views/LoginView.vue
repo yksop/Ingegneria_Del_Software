@@ -65,7 +65,9 @@ export default {
             // After 100000 ms, the token will expire
             setTimeout(() => {
               removeToken();
-            }, 70000);
+              alert("Token expired. Please login again.")
+              this.$router.push("/login");
+            }, 90000);
 
             console.log("VOL: ", isVolunteer(response.data.token));
             console.log("118_Op: ", isOperator118(response.data.token));
