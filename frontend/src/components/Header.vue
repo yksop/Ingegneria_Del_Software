@@ -11,6 +11,7 @@ export default{
       isActionCertVisible: false,
       isActionVolVisible: false,
       isLogoutVisible: false,
+      isProfileVisible: false,
     };
   },
   methods: {
@@ -49,31 +50,37 @@ export default{
       this.isAction118Visible = true; // Set isVisible to false to hide the span
     },
     visualizeActionCert() {
-      this.isActionCertVisible = true; // Set isVisible to false to hide the span
+      this.isActionCertVisible = true;
     },
     visualizeActionVol() {
-      this.isActionVolVisible = true; // Set isVisible to false to hide the span
+      this.isActionVolVisible = true;
     },
     visualizeLogout() {
-      this.isLogoutVisible = true; // Set isVisible to false to hide the span
+      this.isLogoutVisible = true;
+    },
+    visualizeProfile() {
+      this.isProfileVisible = true;
     },
     hideRegistration() {
-      this.isRegistrationVisible = false; // Set isVisible to false to hide the span
+      this.isRegistrationVisible = false;
     },
     hideLogin() {
-      this.isLoginVisible = false; // Set isVisible to false to hide the span
+      this.isLoginVisible = false;
     },
     hideAction118() {
-      this.isAction118Visible = false; // Set isVisible to false to hide the span
+      this.isAction118Visible = false;
     },
     hideActionCert() {
-      this.isActionCertVisible = false; // Set isVisible to false to hide the span
+      this.isActionCertVisible = false; 
     },
     hideActionVol() {
-      this.isActionVolVisible = false; // Set isVisible to false to hide the span
+      this.isActionVolVisible = false; 
     },
     hideLogout() {
-      this.isLogoutVisible = false; // Set isVisible to false to hide the span
+      this.isLogoutVisible = false; 
+    },
+    hideProfile() {
+      this.isProfileVisible = false;
     },
 
     // Function to check the role of the user
@@ -97,6 +104,7 @@ export default{
         this.visualizeLogout();
         this.hideRegistration();
         this.hideLogin();
+        this.visualizeProfile();
       }else{
         // If the user is not logged in, hide all the actions
         this.visualizeRegistration();
@@ -105,6 +113,7 @@ export default{
         this.hideActionCert();
         this.hideActionVol();
         this.hideLogout();
+        this.hideProfile();
       }
     }
   },
@@ -155,17 +164,17 @@ export default{
         <li>
           <RouterLink to="/about">About</RouterLink>
         </li>
-        <li v-if="isRegistrationVisible">
-          <RouterLink to="/registration">Registration</RouterLink>
-        </li>
-        <li v-if="isLoginVisible">
-          <RouterLink to="/login">Login</RouterLink>
-        </li>
         <li >
           <RouterLink to="/history">History</RouterLink>
         </li>
         <li>
           <RouterLink to="/contact">Contact</RouterLink>
+        </li>
+        <li v-if="isRegistrationVisible">
+          <RouterLink to="/registration">Registration</RouterLink>
+        </li>
+        <li v-if="isLoginVisible">
+          <RouterLink to="/login">Login</RouterLink>
         </li>
         <li v-if="isAction118Visible">
           <RouterLink @click.native="Op118AccessHandler" to="/action118">Action_118</RouterLink>
@@ -176,11 +185,11 @@ export default{
         <li v-if="isActionVolVisible">
           <RouterLink @click.native="VolunteerAccessHandler" to="/actionVol">Action_Vol</RouterLink>
         </li>
-        <li>
+        <li v-if="isProfileVisible">
           <RouterLink to="/profile">Profile</RouterLink>
         </li>
         <li v-if="isLogoutVisible">
-          <RouterLink @click.native="LogoutHandler" to="/logout">Logout</RouterLink>
+          <RouterLink @click.native="LogoutHandler" to="/logout"><span class="logout">Logout</span></RouterLink>
         </li>
       </ul>
     </nav>
@@ -257,6 +266,10 @@ nav.navbar li a:hover {
 .image-with-link:hover {
   transform: scale(1.1);
   transition: 0.5s;
+}
+
+.logout {
+  color: red;
 }
 
 @media (max-width: 768px) {

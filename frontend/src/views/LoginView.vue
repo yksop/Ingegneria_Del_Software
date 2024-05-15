@@ -67,7 +67,7 @@ export default {
               removeToken();
               alert("Token expired. Please login again.")
               this.$router.push("/login");
-            }, 90000);
+            }, 1000000);
 
             console.log("VOL: ", isVolunteer(response.data.token));
             console.log("118_Op: ", isOperator118(response.data.token));
