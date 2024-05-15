@@ -1,22 +1,23 @@
 <template>
   <div class="contact-section">
+    <h2>CONTATTACI</h2>
     <section class="contact-info">
-      <h2>INFORMAZIONI DI CONTATTO</h2>
+      <h3>INFORMAZIONI</h3>
       <p>Telefono: 0461 281567</p>
       <p>Email: <a href="mailto:info@vtc.com">info@vtc.com</a></p>
     </section>
     <section class="time-section">
-      <h2>ORARI DI APERTURA</h2>
+      <h3>ORARI DI APERTURA</h3>
       <p>Lunedì - Venerdì: 7:30 - 20:00</p>
       <p>Sabato: 8:00 - 13:00</p>
     </section>
     <section class="map-section">
-      <h2>MAPPA</h2>
+      <h3>MAPPA</h3>
       <p>Indirizzo: Via Sommarive, 9, Trento, Italy</p>
       <div id="map"></div>
     </section>
     <section class="location-section">
-      <h2>LA NOSTRA SEDE OPERATIVA</h2>
+      <h3>LA NOSTRA SEDE OPERATIVA</h3>
       <img src="@/assets/img_azienda.jpeg" alt="Sede Operativa" />
     </section>
   </div>
@@ -43,6 +44,11 @@ export default {
 
 
 <style scoped>
+.contact-section h2 {
+  color: #333;
+  text-align: center;
+}
+
 .contact-section {
   padding-top: 30px;
   padding-bottom: 60px;
@@ -58,7 +64,7 @@ export default {
   padding-bottom: 20px;
 }
 
-.contact-section h2 {
+.contact-section h3 {
   color: #333;
   text-align: left;
 }
