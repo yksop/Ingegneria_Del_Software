@@ -245,4 +245,42 @@ router.put("/volunteers/:volunteerId", async (req, res) => {
   }
 });
 
+router.get("/:id/alerts", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) return res.status(404).send("User not found");
+
+    const userLatitude = user.latitude;
+    const userLongitude = user.longitude;
+
+    const alertRadius = req.radius;
+
+    const eligibleAlert = await Alert.find({
+      latitude: {
+        $gte: userLatitude - alertRadius,
+        $lte: userLatitude + alertRadius,
+      },
+      longitude: {
+        $gte: userLongitude - alertRadius,
+        $lte: userLongitude + alertRadius,
+      },
+      isActive: true,
+    });
+
+    if (eligibleAlert === null)
+      return res.status(404).send("List of eligibleAlert is null");
+
+    if (eligibleAlert.length === 0)
+      return res.status(404).send("No alert near the user");
+
+    return res.send(eligibleAlert);
+  } catch (err) {
+    console.log(err);
+    return res.status(501).send(err);
+  }
+});
+
 module.exports = router; // Export the router
