@@ -48,11 +48,25 @@ const router = createRouter({
       name: 'logged',
       component: () => import('../views/LoggedView.vue')
     },
-    //add router to upgradeDowngarde
     {
       path: '/upgradeDowngrade',
       name: 'upgradeDowngrade',
       component: () => import('../views/UpgradeDowngradeView.vue')
+    },
+    {
+      path: '/action118',
+      name: 'Action_118',
+      component: () => import('../views/Action118View.vue')
+    },
+    {
+      path: '/actionVol',
+      name: 'Action_Vol',
+      component: () => import('../views/ActionVolView.vue')
+    },
+    {
+      path: '/actionCert',
+      name: 'Action_Cert',
+      component: () => import('../views/ActionCertView.vue')
     },
   ]
 })

@@ -1,11 +1,29 @@
-<script setup>
+<script>
 import { RouterLink, RouterView } from "vue-router";
-defineProps({
-  msg: {
-    type: String,
-    required: true,
+import { isLoggedIn, isVolunteer, isCertifier, isOperator118 } from "@/services/tokenManagement.js";
+
+export default{
+  methods: {
+    VolunteerAccessHandler() {
+      if (!isVolunteer()) {
+        alert("You must be logged as volunteer to access this page");
+        this.$router.push("/login");
+      }
+    },
+    CertifierAccessHandler() {
+      if (!isCertifier()) {
+        alert("You must be logged as certifier to access this page");
+        this.$router.push("/login");
+      }
+    },
+    Op118AccessHandler() {
+      if (!isOperator118()) {
+        alert("You must be logged as 118 operator to access this page");
+        this.$router.push("/login");
+      }
+    },
   },
-});
+}
 </script>
 
 
@@ -61,6 +79,15 @@ defineProps({
         </li>
         <li>
           <RouterLink to="/profile">Profile</RouterLink>
+        </li>
+        <li>
+          <RouterLink @click.native="Op118AccessHandler" to="/action118">Action_118</RouterLink>
+        </li>
+        <li>
+          <RouterLink @click.native="CertifierAccessHandler" to="/actionCert">Action_Cert</RouterLink>
+        </li>
+        <li>
+          <RouterLink @click.native="VolunteerAccessHandler" to="/actionVol">Action_Vol</RouterLink>
         </li>
       </ul>
     </nav>

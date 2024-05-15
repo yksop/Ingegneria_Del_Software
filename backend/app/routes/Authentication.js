@@ -26,7 +26,12 @@ router.post("", async (req, res) => {
 
     // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
     const token = jwt.sign(
-      { userId: userToLogin._id },
+      { 
+        userId: userToLogin._id, 
+        isVolunteer: userToLogin.volunteer.isVolunteer, 
+        isCertifier: userToLogin.certifier.isCertifier, 
+        isOperator118: userToLogin.operator118.isOperator118
+      },
       process.env.JWT_SECRET,
       {
         expiresIn: EXPIRAL_AUTH_TIME,

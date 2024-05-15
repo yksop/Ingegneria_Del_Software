@@ -13,7 +13,7 @@ const token = localStorage.removeItem('token')
 <body>
   <div class="container">
     <header>
-      <Header msg="VTC: Volontari Trentini Connessi" />
+      <Header />
     </header>
 
     <main>
