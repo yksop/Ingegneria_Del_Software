@@ -1,45 +1,50 @@
 <template>
-<div class="alert-creation-container">
-    <form
-      @submit.prevent="handleAlertCreation"
-      class="alert-form"
-    >
+  <div class="alert-creation-container">
+    <form @submit.prevent="handleAlertCreation" class="alert-form">
       <h2>Alert Creation</h2>
       <div class="input-group">
         <label for="latitude">Latitude</label>
         <input type="number" id="latitude" v-model="alerts.latitude" required />
       </div>
-        <div class="input-group">
+
+      <div class="input-group">
         <label for="longitude">Longitude</label>
         <input type="number" id="longitude" v-model="alerts.longitude" required />
       </div>
-      </div>
-        <div class="input-group">
+
+      <div class="input-group">
         <label for="triage">Triage</label>
         <input type="number" id="triage" v-model="alerts.triage" required />
       </div>
-    <div class="input-group">
+
+      <div class="input-group">
         <label for="radius">Radius</label>
         <input type="number" id="radius" v-model="alerts.radius" required />
       </div>
+
       <div class="input-group">
-        <label for="expire">Expires-in</label>
-        <input type="number" id="expire" v-model="alerts.expire" required />
+        <label for="expiresIn">expiresIn</label>
+        <input type="number" id="expiresIn" v-model="alerts.expiresIn" required />
       </div>
+
       <div class="input-group">
         <label for="isActive">Is Active</label>
-        <input type="bool" id="isActive" v-model="alerts.isActive" required />
+        <input type="checkbox" id="isActive" checked="checked" v-model="alerts.isActive" required />
       </div>
+
       <div class="input-group">
         <label for="Description">Description</label>
         <input type="text" id="description" v-model="alerts.description"/>
       </div>
+
       <div class="input-group">
         <label for="timeForAmbulance">Time Ambulance</label>
-        <input type="number" id="timeForAmbulance" v-model="alerts.timeForAmbulance" required />
+        <input type="number" id="timeForAmbulance" v-model="alerts.timeForAmbulance"/>
       </div>
-        </div>
-      <button type="submit">Sign Up</button>
+      <div class="container-buttons">
+        <button type="Create">Dirama Alert</button>
+        <button type="reset">Reset</button>
+      </div>
     </form>
   </div>
 </template>
@@ -55,59 +60,58 @@ export default {
         longitude: null,
         triage: null,
         radius: null,
-        expire: null,
-        isActive: null,
+        expiresIn: null,
+        isActive: false,
         description: "",
         timeForAmbulance: null,
       },
+      triageValid: true,
     };
   },
+
   methods: {
     handleAlertCreation() {
+      // Validate triage
+      if(!this.validateTriage(this.alerts.triage)) {
+        this.triageValid = false;
+        return;
+      }
       axios
-        .post("http://localhost:3000/api/v1/users", registerNewUserCredentials)
+        .post("http://localhost:3000/api/v1/alerts", this.alerts)
         .then(
           (response) => {
-            console.log("Registration successful:", response.data);
-            this.$router.push("/login");
+            console.log("ALERT CREATED SUCCESFULLY: ", response.data);
+            console.log(this.alerts);
+            alert("Alert created successfully");
+            // clean the form 
+            this.alerts = {
+              latitude: null,
+              longitude: null,
+              triage: null,
+              radius: null,
+              expiresIn: null,
+              isActive: false,
+              description: "",
+              timeForAmbulance: null,
+            };
+            this.$router.push("/action118");
           },
           (error) => {
-            console.error("Registration failed:", error);
+            console.error("Alert creation failed", error);
+            alert("Alert creation failed");
           }
         )
         .catch((error) => {
           console.error("Axios request failed:", error);
         });
     },
-    getUserLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            this.credentials.latitude = Number(position.coords.latitude);
-            this.credentials.longitude = Number(position.coords.longitude);
-          },
-          (error) => {
-            console.error("Error Code = " + error.code + " - " + error.message);
-          }
-        );
-      } else {
-        console.log("Geolocation is not supported by this browser.");
-      }
-    },
-    validateEmail(email) {
-      const re =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (!re.test(String(email).toLowerCase())) {
-        alert(
-          "Invalid email format. Email should be something like example@example.example\n"
-        );
+    validateTriage(triage) {
+      if (triage < 1 || triage > 5) {
+        alert("Triage must be between 1 and 5");
         return false;
       }
       return true;
     },
-  },
-  created() {
-    this.getUserLocation();
   },
 };
 </script>
@@ -125,8 +129,8 @@ export default {
   margin: 100px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  height: 600px;
+  width: 500px;
+  height: 750px;
   /*box-sizing: border-box;*/
 }
 
@@ -152,9 +156,16 @@ h2 {
   border-radius: 4px;
 }
 
-button {
-  width: 100%;
-  padding: 10px;
+.container-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top:30px;
+}
+
+.button {
+  width: 50%;
   background-color: #5c67f2;
   border: none;
   border-radius: 4px;
