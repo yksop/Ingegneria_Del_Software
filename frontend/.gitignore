@@ -65,3 +65,6 @@ chunk-*.js
 # Vue.js build files
 vue-router.js
 vue.js
+
+# Ignore all files with .mjs extension
+eslint.config.js

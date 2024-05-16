@@ -80,6 +80,7 @@ export default {
         },
       },
       emailValid: true,
+      passwordValid: true,
       passwordMatch: true,
       emailErrorMessage: "",
     };
@@ -88,6 +89,11 @@ export default {
     handleRegistrationSubmission() {
       if (!this.validateEmail(this.credentials.email)) {
         this.emailValid = false;
+        return;
+      }
+
+      if (!this.validatePassword(this.credentials.password)) {
+        this.passwordValid = false;
         return;
       }
 
@@ -151,6 +157,16 @@ export default {
       }
       return true;
     },
+    validatePassword(password) {
+      const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6}$/;
+      if (!re.test(password)) {
+        alert(
+          "Invalid password format. Password should be at least 6 characters long and contain at least one numeric digit, one uppercase letter, one special character and one lowercase letter.\n"
+        );
+        return false;
+      }
+      return true;
+    },
   },
   created() {
     this.getUserLocation();
@@ -173,7 +189,6 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 350px;
   height: 600px;
-  /*box-sizing: border-box;*/
 }
 
 h2 {
@@ -214,6 +229,6 @@ button:hover {
 }
 
 button:active {
-  background-color: #4045b2; /* Darker shade when the button is clicked */
+  background-color: #4045b2;
 }
 </style>
