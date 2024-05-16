@@ -1,80 +1,88 @@
 FORMAT: 1A
-HOST: https://polls.apiblueprint.org/
+HOST: https://vtc.apiblueprint.org/
 
-# Ingegneria_Del_Software
+# Sprint 1
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+## Update User [PUT /{userId}]
 
-## Questions Collection [/questions]
+This endpoint is used to assign an alert to a user. The user must be a volunteer and not already busy with another alert. The alert must be active.
 
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
++ Parameters
+    + userId: `5fcb3b4e1f379a001f4e4e46` (required, string) - The ID of the user.
 
 + Request (application/json)
-
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /questions/2
-
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+                "alertId": "5fcb3b4e1f379a001f4e4e47"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "User assigned to alert successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Invalid User ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Invalid Alert ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User is not a volunteer"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User has already accepted the alert"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User is already busy with another alert"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Alert is not active anymore"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "message": "The given user does not exist"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "message": "User not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "message": "Internal Server Error"
             }
