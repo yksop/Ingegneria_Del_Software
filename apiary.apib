@@ -1,11 +1,9 @@
 FORMAT: 1A
-HOST: https://vtc.apiblueprint.org/
+HOST: http://localhost:3000/api/v1/users
 
 # Sprint 1
 
-## Update User [PUT /{userId}]
-
-This endpoint is used to assign an alert to a user. The user must be a volunteer and not already busy with another alert. The alert must be active.
+## Agree to Alert [PUT /{userId}]
 
 + Parameters
     + userId: `5fcb3b4e1f379a001f4e4e46` (required, string) - The ID of the user.
@@ -28,7 +26,28 @@ This endpoint is used to assign an alert to a user. The user must be a volunteer
     + Body
 
             {
+                "message": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
                 "message": "Invalid User ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Alert ID is required"
             }
 
 + Response 400 (application/json)
@@ -63,6 +82,13 @@ This endpoint is used to assign an alert to a user. The user must be a volunteer
     + Body
 
             {
+                "message": "Alert does not exist"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
                 "message": "Alert is not active anymore"
             }
 
@@ -85,4 +111,133 @@ This endpoint is used to assign an alert to a user. The user must be a volunteer
 
             {
                 "message": "Internal Server Error"
+            }
+            
+
+HOST: http://localhost:3000/api/v1/users            
+## Alerts Near User [/idUser/alerts]
+
+### Get Alerts Near a User [GET]
+
++ Parameters
+    + idUser: `60d0fe4f532f9a11f65c74b4` (required) - The ID of the user.
+
++ Response 200 (application/json)
+    + Body
+
+            [
+                {
+                    "id": "60d0fe4f532f9a11f65c74b5",
+                    "latitude": 40.712776,
+                    "longitude": -74.005974,
+                    "isActive": true,
+                    "radius": 10
+                },
+                {
+                    "id": "60d0fe4f532f9a11f65c74b6",
+                    "latitude": 40.712776,
+                    "longitude": -74.005974,
+                    "isActive": true,
+                    "radius": 5
+                }
+            ]
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Request is null"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "User not found"
+            }
+
++ Response 501 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+            
+
+HOST: http://localhost:3000/api/v1/users
+## Upgrade/Downgrade User Role [/volunteers/{volunteerId}]
+
+### Upgrade/Downgrade User Role [PUT]
+
++ Parameters
+    + volunteerId: `60d0fe4f532f9a11f65c74b4` (required) - The ID of the user.
+
++ Request (application/json)
+    + Body
+
+            {
+                "isVolunteer": true,
+                "certificateCode": "CERT1234"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "User updated successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid User ID"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "The given user does not exist"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+           
+
+HOST: http://localhost:3000/api/v1/alerts
+## Get Alert [/alerts/{id}]
+
+### Get an Alert [GET]
+
++ Parameters
+    + id: `60d0fe4f532f9a11f65c74b4` (required) - The ID of the alert.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "id": "60d0fe4f532f9a11f65c74b4",
+                "latitude": 40.712776,
+                "longitude": -74.005974,
+                "isActive": true,
+                "radius": 10
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid Alert ID"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "Alert does not exist"
             }
