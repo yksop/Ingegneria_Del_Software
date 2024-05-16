@@ -20,7 +20,7 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 import axios from "axios";
 
@@ -64,10 +64,6 @@ export default {
 
 li {
   margin-bottom: 10px;
-}
-
-.small-button {
-  margin-left: 10px;
 }
 
 .alert-info {

@@ -29,7 +29,15 @@
 <script>
 import axios from "axios";
 import PasswordErrorBanner from "@/components/PasswordErrorBanner.vue";
-import {saveToken, removeToken, isLoggedIn, decodeToken, isVolunteer, isCertifier, isOperator118} from "@/services/tokenManagement.js";
+import {
+  saveToken,
+  removeToken,
+  isLoggedIn,
+  decodeToken,
+  isVolunteer,
+  isCertifier,
+  isOperator118,
+} from "@/services/tokenManagement.js";
 
 export default {
   components: {
@@ -51,7 +59,7 @@ export default {
         username: this.credentials.username,
         password: this.credentials.password,
       };
-  
+
       axios
         .post("http://localhost:3000/api/v1/tokens", loginUserCredentials)
         .then(
@@ -65,7 +73,7 @@ export default {
             // After 100000 ms, the token will expire
             setTimeout(() => {
               removeToken();
-              alert("Token expired. Please login again.")
+              alert("Token expired. Please login again.");
               this.$router.push("/login");
             }, 1000000);
 

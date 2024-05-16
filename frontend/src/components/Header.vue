@@ -1,8 +1,14 @@
 <script>
 import { RouterLink, RouterView } from "vue-router";
-import { removeToken, isLoggedIn, isVolunteer, isCertifier, isOperator118 } from "@/services/tokenManagement.js";
+import {
+  removeToken,
+  isLoggedIn,
+  isVolunteer,
+  isCertifier,
+  isOperator118,
+} from "@/services/tokenManagement.js";
 
-export default{
+export default {
   data() {
     return {
       isRegistrationVisible: true,
@@ -71,13 +77,13 @@ export default{
       this.isAction118Visible = false;
     },
     hideActionCert() {
-      this.isActionCertVisible = false; 
+      this.isActionCertVisible = false;
     },
     hideActionVol() {
-      this.isActionVolVisible = false; 
+      this.isActionVolVisible = false;
     },
     hideLogout() {
-      this.isLogoutVisible = false; 
+      this.isLogoutVisible = false;
     },
     hideProfile() {
       this.isProfileVisible = false;
@@ -105,7 +111,7 @@ export default{
         this.hideRegistration();
         this.hideLogin();
         this.visualizeProfile();
-      }else{
+      } else {
         // If the user is not logged in, hide all the actions
         this.visualizeRegistration();
         this.visualizeLogin();
@@ -115,16 +121,15 @@ export default{
         this.hideLogout();
         this.hideProfile();
       }
-    }
+    },
   },
 
   mounted() {
     // Every 10 milliseconds, check the role of the user
     const intervalId = setInterval(this.checkRole, 10);
-  }
+  },
 };
 </script>
-
 
 <template>
   <div class="head">
@@ -164,7 +169,7 @@ export default{
         <li>
           <RouterLink to="/about">About</RouterLink>
         </li>
-        <li >
+        <li>
           <RouterLink to="/history">History</RouterLink>
         </li>
         <li>
@@ -177,25 +182,32 @@ export default{
           <RouterLink to="/login">Login</RouterLink>
         </li>
         <li v-if="isAction118Visible">
-          <RouterLink @click.native="Op118AccessHandler" to="/action118">Action_118</RouterLink>
+          <RouterLink @click.native="Op118AccessHandler" to="/action118"
+            >Action_118</RouterLink
+          >
         </li>
         <li v-if="isActionCertVisible">
-          <RouterLink @click.native="CertifierAccessHandler" to="/actionCert">Action_Cert</RouterLink>
+          <RouterLink @click.native="CertifierAccessHandler" to="/actionCert"
+            >Action_Cert</RouterLink
+          >
         </li>
         <li v-if="isActionVolVisible">
-          <RouterLink @click.native="VolunteerAccessHandler" to="/actionVol">Action_Vol</RouterLink>
+          <RouterLink @click.native="VolunteerAccessHandler" to="/actionVol"
+            >Action_Vol</RouterLink
+          >
         </li>
         <li v-if="isProfileVisible">
           <RouterLink to="/profile">Profile</RouterLink>
         </li>
         <li v-if="isLogoutVisible">
-          <RouterLink @click.native="LogoutHandler" to="/logout"><span class="logout">Logout</span></RouterLink>
+          <RouterLink @click.native="LogoutHandler" to="/login"
+            ><span class="logout">Logout</span></RouterLink
+          >
         </li>
       </ul>
     </nav>
   </div>
 </template>
-
 
 <style scoped>
 .head {
