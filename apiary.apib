@@ -1,9 +1,11 @@
 FORMAT: 1A
-HOST: http://localhost:3000/api/v1/users
+HOST: http://localhost:3000/api/v1
 
 # Sprint 1
 
-## Register a new user [POST /]
+## Register a new user [/users]
+
+### Register a new user [POST]
 
 + Request (application/json)
     + Attributes
@@ -35,7 +37,9 @@ HOST: http://localhost:3000/api/v1/users
     + Attributes
         - message (string): Internal server error message.
 
-## Agree to Alert [PUT /{userId}]
+## Agree to Alert [/users/{userId}]
+
+### Agree to Alert [PUT]
 
 + Parameters
     + userId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
@@ -146,10 +150,9 @@ HOST: http://localhost:3000/api/v1/users
             }
             
 
-HOST: http://localhost:3000/api/v1/users            
-## Alerts Near User [/idUser/alerts]
+## Alerts Near User [/users/{idUser}/alerts]
 
-### Get Alerts Near a User [GET]
+### Alerts Near a User [GET]
 
 + Parameters
     + idUser: `663cb4448d36442c68bb4989` (required) - The ID of the user.
@@ -196,8 +199,8 @@ HOST: http://localhost:3000/api/v1/users
             }
             
 
-HOST: http://localhost:3000/api/v1/users
-## Upgrade/Downgrade User Role [/volunteers/{volunteerId}]
+
+## Upgrade/Downgrade User Role [/users/volunteers/{volunteerId}]
 
 ### Upgrade/Downgrade User Role [PUT]
 
@@ -241,10 +244,10 @@ HOST: http://localhost:3000/api/v1/users
             }
            
 
-HOST: http://localhost:3000/api/v1/alerts
+
 ## Get Alert [/alerts/{id}]
 
-### Get an Alert [GET]
+### Get an Alert [GET /alerts]
 
 + Parameters
     + id: `60d0fe4f532f9a11f65c74b4` (required) - The ID of the alert.
@@ -272,4 +275,101 @@ HOST: http://localhost:3000/api/v1/alerts
 
             {
                 "error": "Alert does not exist"
+            }
+            
+
+## Autenticazione Utente [/tokens]
+
+### Effettua il login [POST]
+
+Permette agli utenti di effettuare l'accesso al sistema e ricevere un token JWT valido per le successive richieste.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "username": "string",
+                "password": "string"
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "token": "string"
+            }
+
++ Response 401 (application/json)
+
+    + Body
+
+            {
+                "error": "Authentication Failed: User not Found"
+            }
+
+    Oppure
+
+    + Body
+
+            {
+                "error": "Authentication Failed: Password incorrect"
+            }
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+
+
+## Creazione di un nuovo Alert [/alerts]
+
+### Crea un nuovo Alert [POST]
+
+Permette di creare un nuovo alert nel sistema.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "latitude": 12.3456,
+                "longitude": 78.91011,
+                "triage": 2,
+                "radius": 100,
+                "expiresIn": "2024-05-16T12:00:00Z",
+                "isActive": true,
+                "description": "string",
+                "timeForAmbulance": 15
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "latitude": 12.3456,
+                "longitude": 78.91011,
+                "triage": 2,
+                "radius": 100,
+                "expiresIn": "2024-05-16T12:00:00Z",
+                "isActive": true,
+                "description": "string",
+                "timeForAmbulance": 15,
+                "_id": "string",
+                "createdAt": "string",
+                "updatedAt": "string",
+            }
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
             }
