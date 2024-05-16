@@ -47,6 +47,9 @@
       </div>
     </form>
   </div>
+  <div class="actions">
+      <router-link to="/retireAlert" class="button">Retire an Alert</router-link>
+  </div>
 </template>
 
 <script>
@@ -180,5 +183,10 @@ button:hover {
 
 button:active {
   background-color: #4045b2; /* Darker shade when the button is clicked */
+}
+.actions {
+  display: flex;
+  align-items: center;
+  padding: 20px;
 }
 </style>
