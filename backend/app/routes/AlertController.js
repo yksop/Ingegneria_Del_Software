@@ -118,7 +118,6 @@ router.get("", async (req, res) => {
 });
 
 router.get("/:id/users", async (req, res) => {
-  // Chiedere al prof se è giusto
   // Given an Alert id, I want to get all the users that are in the radius of that Alert
   try {
     // I check if the request is null
