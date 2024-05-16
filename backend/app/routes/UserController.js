@@ -104,7 +104,7 @@ router.put("/:userId", async (req, res) => {
     if (acceptedAlert.isActive === false)
       return res.status(400).send("Alert is not active anymore\n");
 
-    var result = await User.updateOne(
+    const result = await User.updateOne(
       { _id: req.params.userId },
       {
         $set: {
@@ -229,4 +229,5 @@ router.get("/:idUser/alerts", async (req, res) => {
     return res.status(501).send(err);
   }
 });
+
 module.exports = router;

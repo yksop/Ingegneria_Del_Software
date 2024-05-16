@@ -7,6 +7,7 @@
     </section>
   </div>
 </template>
+
 <style>
 .button {
   display: inline-block;
