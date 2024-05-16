@@ -106,8 +106,12 @@ router.put("/:userId", async (req, res) => {
 
     const result = await User.updateOne(
       { _id: req.params.userId },
-      { acceptedAlert: req.body.alertId }
-    ).exec();
+      {
+        $set: {
+          "volunteer.acceptedAlert": req.body.alertId,
+        },
+      }
+    );
 
     if (result.matchedCount === 0)
       return res.status(404).send("User not found\n");
@@ -122,64 +126,7 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
-router.get("/:alertId/volunteers", async (req, res) => {
-  // TODO: CHIEDI AL PROF SE METTERE /users O /volunteers
-  // Given an Alert id, I want to get all the volunteers that are in the radius of that Alert
-  try {
-    // I check if the request is null
-    if (!req) return res.status(400).send("Request is null");
-
-    // Find the Alert with the given id
-    const alert = await Alert.findById(req.params.alertId);
-
-    // If the Alert does not exist, return an error
-    if (!alert) return res.status(404).send("Alert not found");
-
-    // If the Alert is not active, return an error
-    if (!alert.isActive) return res.status(400).send("Alert is not active");
-
-    // Extract the latitude and longitude of the Alert
-    const alertLatitude = alert.latitude;
-    const alertLongitude = alert.longitude;
-
-    // Extract the radius of the Alert
-    const alertRadius = alert.radius;
-
-    // Find all the users that are in the radius of the Alert
-    const eligibleUsers = await User.find({
-      latitude: {
-        $gte: alertLatitude - alertRadius,
-        $lte: alertLatitude + alertRadius,
-      },
-      longitude: {
-        $gte: alertLongitude - alertRadius,
-        $lte: alertLongitude + alertRadius,
-      },
-      isVolunteer: true,
-    });
-
-    // If eligibleUsers is null, return an error
-    if (eligibleUsers === null)
-      return res.status(404).send("List of eligibleUsers is null");
-
-    // If the list is empty, return an error
-    if (eligibleUsers.length === 0)
-      return res.status(404).send("No users are in the radius of the Alert");
-
-    // Return the users in the radius of the Alert
-    return res.send(eligibleUsers);
-
-    // N.B.: $gte and $lte are MongoDB operators that mean "greater than or equal" and "less than or equal" respectively.
-    // $gte: alertLatitude - alertRadius means "greater than or equal to the latitude of the Alert minus the radius of the Alert".
-    // $lte: alertLatitude + alertRadius means "less than or equal to the latitude of the Alert plus the radius of the Alert".
-    // If the Alert is at latitude 10 and longitude 20, and the radius is 5, the latitude range is [5, 15] and the longitude range is [15, 25].
-  } catch (err) {
-    console.log(err);
-    return res.status(501).send(err);
-  }
-});
-
-// change user field isVolunteer to true or false based on the content of the body
+// UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
 router.put("/volunteers/:volunteerId", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
@@ -216,8 +163,6 @@ router.put("/volunteers/:volunteerId", async (req, res) => {
       );
     }
 
-    console;
-
     if (req.body.isVolunteer === true) {
       console.log("isVolunteer is true");
       var result = await User.updateOne(
@@ -247,4 +192,42 @@ router.put("/volunteers/:volunteerId", async (req, res) => {
   }
 });
 
-module.exports = router; // Export the router
+// RETURN ALL ALERTS NEAR A GIVEN USER
+router.get("/:idUser/alerts", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    const user = await User.findById(req.params.idUser);
+
+    if (!user) return res.status(404).send("User not found");
+
+    const userLatitude = user.latitude;
+    const userLongitude = user.longitude;
+
+    // Fetch all active alerts from the database
+    const allActiveAlerts = await Alert.find({ isActive: true });
+
+    // Filter the alerts based on their radius
+    const availableAlerts = allActiveAlerts.filter((alert) => {
+      const distance = Math.sqrt(
+        Math.pow(alert.latitude - userLatitude, 2) +
+          Math.pow(alert.longitude - userLongitude, 2)
+      );
+
+      return distance <= alert.radius;
+    });
+
+    if (availableAlerts === null)
+      return res.status(404).send("List of availableAlert is null");
+
+    if (availableAlerts.length === 0)
+      return res.status(404).send("No alerts are in the radius of the user");
+
+    return res.send(availableAlerts);
+  } catch (err) {
+    console.log(err);
+    return res.status(501).send(err);
+  }
+});
+
+module.exports = router;

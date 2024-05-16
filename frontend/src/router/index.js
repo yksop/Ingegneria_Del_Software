@@ -48,21 +48,26 @@ const router = createRouter({
       component: () => import("../views/RetireAlertView.vue"),
     },
     {
-      path: '/action118',
-      name: 'Action_118',
-      component: () => import('../views/Action118View.vue')
+      path: "/action118",
+      name: "Action_118",
+      component: () => import("../views/Action118View.vue"),
     },
     {
-      path: '/actionVol',
-      name: 'Action_Vol',
-      component: () => import('../views/ActionVolView.vue')
+      path: "/actionVol",
+      name: "Action_Vol",
+      component: () => import("../views/ActionVolView.vue"),
     },
     {
-      path: '/actionCert',
-      name: 'Action_Cert',
-      component: () => import('../views/ActionCertView.vue')
+      path: "/actionCert",
+      name: "Action_Cert",
+      component: () => import("../views/ActionCertView.vue"),
     },
-  ]
-})
+    {
+      path: "/agreeToAlert",
+      name: "agreeToAlert",
+      component: () => import("../views/AgreeToAlertView.vue"),
+    },
+  ],
+});
 
 export default router;
