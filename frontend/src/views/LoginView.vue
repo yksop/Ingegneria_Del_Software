@@ -58,7 +58,7 @@ export default {
           (response) => {
             console.log("Login successful:", response.data);
             this.passwordError = false;
-            this.$router.push("/home");
+            this.$router.push("/about");
 
             saveToken(response.data.token);
 
