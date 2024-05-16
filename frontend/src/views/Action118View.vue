@@ -9,7 +9,12 @@
 
       <div class="input-group">
         <label for="longitude">Longitude</label>
-        <input type="number" id="longitude" v-model="alerts.longitude" required />
+        <input
+          type="number"
+          id="longitude"
+          v-model="alerts.longitude"
+          required
+        />
       </div>
 
       <div class="input-group">
@@ -24,22 +29,37 @@
 
       <div class="input-group">
         <label for="expiresIn">expiresIn</label>
-        <input type="number" id="expiresIn" v-model="alerts.expiresIn" required />
+        <input
+          type="number"
+          id="expiresIn"
+          v-model="alerts.expiresIn"
+          required
+        />
       </div>
 
       <div class="input-group">
         <label for="isActive">Is Active</label>
-        <input type="checkbox" id="isActive" checked="checked" v-model="alerts.isActive" required />
+        <input
+          type="checkbox"
+          id="isActive"
+          checked="checked"
+          v-model="alerts.isActive"
+          required
+        />
       </div>
 
       <div class="input-group">
         <label for="Description">Description</label>
-        <input type="text" id="description" v-model="alerts.description"/>
+        <input type="text" id="description" v-model="alerts.description" />
       </div>
 
       <div class="input-group">
         <label for="timeForAmbulance">Time Ambulance</label>
-        <input type="number" id="timeForAmbulance" v-model="alerts.timeForAmbulance"/>
+        <input
+          type="number"
+          id="timeForAmbulance"
+          v-model="alerts.timeForAmbulance"
+        />
       </div>
       <div class="container-buttons">
         <button type="Create">Dirama Alert</button>
@@ -48,7 +68,7 @@
     </form>
   </div>
   <div class="actions">
-      <router-link to="/retireAlert" class="button">Retire an Alert</router-link>
+    <router-link to="/retireAlert" class="button">Retire an Alert</router-link>
   </div>
 </template>
 
@@ -75,7 +95,7 @@ export default {
   methods: {
     handleAlertCreation() {
       // Validate triage
-      if(!this.validateTriage(this.alerts.triage)) {
+      if (!this.validateTriage(this.alerts.triage)) {
         this.triageValid = false;
         return;
       }
@@ -86,7 +106,7 @@ export default {
             console.log("ALERT CREATED SUCCESFULLY: ", response.data);
             console.log(this.alerts);
             alert("Alert created successfully");
-            // clean the form 
+            // clean the form
             this.alerts = {
               latitude: null,
               longitude: null,
@@ -164,7 +184,7 @@ h2 {
   flex-direction: row;
   justify-content: space-between;
   gap: 10px;
-  padding-top:30px;
+  padding-top: 30px;
 }
 
 .button {
