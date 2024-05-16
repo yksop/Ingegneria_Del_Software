@@ -7,6 +7,8 @@ HOST: http://localhost:3000/api/v1
 
 ### Register a new user [POST]
 
+Permette all'utente di registrarsi al sistema
+
 + Request (application/json)
     + Attributes
         - latitude (number, required): 'The latitude of the user's location.'
@@ -37,9 +39,12 @@ HOST: http://localhost:3000/api/v1
     + Attributes
         - message (string): Internal server error message.
 
+
 ## Agree to Alert [/users/{userId}]
 
 ### Agree to Alert [PUT]
+
+Permette ad un utente di accettare uno specifico Alert
 
 + Parameters
     + userId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
@@ -154,6 +159,8 @@ HOST: http://localhost:3000/api/v1
 
 ### Alerts Near a User [GET]
 
+Restituisce gli Alert che sono vicini ad un dato utente
+
 + Parameters
     + idUser: `663cb4448d36442c68bb4989` (required) - The ID of the user.
 
@@ -204,6 +211,8 @@ HOST: http://localhost:3000/api/v1
 
 ### Upgrade/Downgrade User Role [PUT]
 
+Aumenta il grado di un utente normale a volontario o viceversa.
+
 + Parameters
     + volunteerId: `663cb4448d36442c68bb4989` (required) - The ID of the user.
 
@@ -248,6 +257,8 @@ HOST: http://localhost:3000/api/v1
 ## Get Alert [/alerts/{id}]
 
 ### Get an Alert [GET /alerts]
+
+Restituisce le informazioni di un alert datogli l'id
 
 + Parameters
     + id: `60d0fe4f532f9a11f65c74b4` (required) - The ID of the alert.
@@ -364,6 +375,125 @@ Permette di creare un nuovo alert nel sistema.
                 "_id": "string",
                 "createdAt": "string",
                 "updatedAt": "string",
+            }
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+            
+            
+            
+## Utenti all'interno del Raggio di un Alert [/alerts/{id}/users]
+
+### Ottieni Utenti nel Raggio [GET]
+
+Restituisce tutti gli utenti che si trovano nel raggio di un avviso specifico.
+
++ Parameters
+    + id (required, string, `123456`) ... ID univoco dell'avviso
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                {
+                    "_id": "string",
+                    "username": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "isVolunteer": true,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                {
+                    "_id": "string",
+                    "username": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "isVolunteer": true,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                ...
+            ]
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+
++ Response 404 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+
++ Response 501 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+            
+
+
+## Alert attivi [/alerts]
+
+### Ottieni Alert attivi [GET]
+
+Ritorna le informazioni su tutti gli alert attivi
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                {
+                    "_id": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "triage": "string",
+                    "radius": 100,
+                    "expiresIn": "2024-05-16T12:00:00Z",
+                    "isActive": true,
+                    "description": "string",
+                    "timeForAmbulance": 15,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                {
+                    "_id": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "triage": "string",
+                    "radius": 100,
+                    "expiresIn": "2024-05-16T12:00:00Z",
+                    "isActive": true,
+                    "description": "string",
+                    "timeForAmbulance": 15,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                ...
+            ]
+
++ Response 404 (application/json)
+
+    + Body
+
+            {
+                "error": "No active alerts found"
             }
 
 + Response 400 (application/json)
