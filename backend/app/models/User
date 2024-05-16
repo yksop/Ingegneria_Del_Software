@@ -1,0 +1,31 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+// var Position = new Schema({
+//   latitude: { type: Number, required: false },
+//   longitude: { type: Number, required: false },
+// });
+
+module.exports = mongoose.model(
+  "User",
+  new Schema({
+    name: { type: String, required: true },
+    surname: { type: String, required: true },
+    username: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+    volunteer: {
+      isVolunteer: { type: Boolean, default: false },
+      certificateCode: { type: String, default: undefined },
+      acceptedAlert: { type: String, default: undefined },
+    },
+    certifier: {
+      isCertifier: { type: Boolean, default: false },
+    },
+    operator118: {
+      isOperator118: { type: Boolean, default: false },
+    },
+  })
+);

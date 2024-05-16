@@ -1,0 +1,47 @@
+/*@import './base.css'; */
+body{
+    margin: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    font: 17px Times New Roman, sans-serif;
+
+}
+
+#app {
+    max-width: 1280px;
+    margin: 0 auto;
+    font-weight: normal;
+    
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    position: relative;
+  }
+  
+header {
+    order: 1; /* Places the header at the top */
+    color: white;
+    padding-top: 20px;
+    padding: 0px;
+    text-align: center;
+}
+  
+main {
+    order: 2; /* Places the main content in the middle */
+    flex-grow: 1; /* Allows the main content to grow and fill the available space */
+    padding: 0px;
+    overflow-y: auto; /* Adds scroll to main content if it exceeds the height */
+}
+  
+footer {
+    order: 3; /* Places the footer at the bottom */
+    color: white;
+    padding: 0px;
+    text-align: center;
+}
+  
