@@ -3,6 +3,38 @@ HOST: http://localhost:3000/api/v1/users
 
 # Sprint 1
 
+## Register a new user [POST /]
+
++ Request (application/json)
+    + Attributes
+        - latitude (number, required): 'The latitude of the user's location.'
+        - longitude (number, required): The longitude of the user's location.
+        - name (string, required): The user's name.
+        - surname (string, required): The user's surname.
+        - username (string, required): The user's username.
+        - email (string, required): The user's email address.
+        - password (string, required): The user's password.
+        - volunteer (object): An object representing volunteer information.
+            - isVolunteer (boolean, optional): Indicates if the user is a volunteer. Defaults to false.
+            - acceptedAlert (string, optional): The ID of the alert the user has accepd.
+            - certificateCode (string, optional): The certificate code for the volunteer.
+        - certifier (object): An object representing certifier information.
+            - isCertifier (boolean, optional): Indicates if the user is a certifier. Defaults to false.
+        - operator118 (object): An object representing operator118 information.
+            - isOperator118 (boolean, optional): Indicates if the user is an operator118. Defaults to false.
+
++ Response 200 (application/json)
+    + Attributes
+        - savedUser (object): The saved user object.
+
++ Response 400 (application/json)
+    + Attributes
+        - message (string): Error message.
+
++ Response 500 (application/json)
+    + Attributes
+        - message (string): Internal server error message.
+
 ## Agree to Alert [PUT /{userId}]
 
 + Parameters
