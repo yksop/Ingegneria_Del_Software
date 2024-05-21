@@ -122,9 +122,22 @@ const clinicValidation = (data) => {
   return schema.validate(data);
 }
 
+const hospitalValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    nome: joi.string().required(),
+    tipo: joi.string().required(),
+    via: joi.string().required(),
+    civico: joi.number().optional(),
+  });
+  return schema.validate(data);
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
 module.exports.alertValidation = alertValidation;
 module.exports.daeValidation = daeValidation;
 module.exports.clinicValidation = clinicValidation;
+module.exports.hospitalValidation = hospitalValidation;

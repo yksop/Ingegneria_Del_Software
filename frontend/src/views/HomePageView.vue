@@ -30,36 +30,25 @@ export default {
   mounted() {
     this.map = L.map('map').setView([46.065, 11.124], 14); // Imposta le coordinate e lo zoom iniziale
     this.changeMap();  // Carica la mappa iniziale
-/*
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
 
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    */
     // Crea un'icona personalizzata verde 
     const greenIcon = L.AwesomeMarkers.icon({
       icon: 'info-sign',
       markerColor: 'green',
       prefix: 'glyphicon'
     });
-
-    const redIcon = L.AwesomeMarkers.icon({
-      icon: 'info-sign',
-      markerColor: 'red',
-      prefix: 'glyphicon'
-    });
-
+    
     const orangeIcon = L.AwesomeMarkers.icon({
       icon: 'info-sign',
       markerColor: 'orange',
       prefix: 'glyphicon'
     });
-
+    
+    const redIcon = L.AwesomeMarkers.icon({
+      icon: 'info-sign',
+      markerColor: 'red',
+      prefix: 'glyphicon'
+    });
 
     // Recupera i dati dal backend e aggiungi i marker
     axios.get('http://localhost:3000/api/v1/dae')
@@ -91,6 +80,19 @@ export default {
         console.error('Errore nel recupero dei punti:', error);
     });
     
+    axios.get('http://localhost:3000/api/v1/hospital')
+      .then(response => {
+        const points = response.data;
+        points.forEach(point => {
+          const marker = L.marker([point.latitudine, point.longitudine], {icon: redIcon})
+            .addTo(this.map)
+            .bindPopup(point.nome);
+          this.markers.push(marker);
+        });
+      })
+      .catch(error => {
+        console.error('Errore nel recupero dei punti:', error);
+    });
 
     // Aggiungi la legenda alla mappa
     const legend = L.control({ position: 'topright'});
