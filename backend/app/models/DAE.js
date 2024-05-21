@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 module.exports = mongoose.model(
-  "Defibrillatori",
+  "DAE",
   new Schema({
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },

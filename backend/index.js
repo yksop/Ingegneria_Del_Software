@@ -16,11 +16,13 @@ require("dotenv").config();
 const usersRoute = require("./app/routes/UserController");
 const alertsRoute = require("./app/routes/AlertController");
 const authenticationRoute = require("./app/routes/Authentication");
+const daeRoute = require("./app/routes/DAEController");
 
 // Route middleware
 app.use("/api/v1/users", usersRoute);
 app.use("/api/v1/alerts", alertsRoute);
 app.use("/api/v1/tokens", authenticationRoute);
+app.use("/api/v1/dae", daeRoute);
 
 /**
  * Configure mongoose

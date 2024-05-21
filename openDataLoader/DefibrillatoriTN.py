@@ -1,14 +1,28 @@
 import pandas as pd
 from pymongo import MongoClient             # pip install pandas pymongo
+from dotenv import load_dotenv
+import os
 import re
 
 
-# Stringa di connessione MongoDB
-mongo_connection_string = ''            # TODO: Come inserire qui la stringa dell'env. ? Inserisci la stringa di connessione al tuo cluster MongoDB
+# path of .env file
+env_path = os.path.join('backend/', '.env')
+
+# Carica le variabili di ambiente dal file .env
+load_dotenv(dotenv_path=env_path)
+
+# Recupera la stringa di connessione da una variabile di ambiente
+mongo_connection_string = os.getenv('DB_CONNECT')
+
+# Se non è stata definita la variabile di ambiente, esci
+if not mongo_connection_string:
+    print("Stringa di connessione a MongoDB non definita.")
+    exit(1)
+
 
 # Nome del database e della collezione
 mongo_db_name = 'test'
-mongo_collection_name = 'defibrillatori'
+mongo_collection_name = 'daes'
 
 # Connessione a MongoDB
 try:
@@ -53,3 +67,4 @@ try:
     print(f'Inseriti {len(data)} documenti in MongoDB nella collezione "{mongo_collection_name}".')
 except Exception as e:
     print(f"Errore durante l'inserimento dei dati: {e}")
+

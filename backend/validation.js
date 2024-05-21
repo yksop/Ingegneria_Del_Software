@@ -95,7 +95,21 @@ const validateLogin = (username, password) => {
   return true;
 };
 
+// DAE Validation
+const daeValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    id: joi.number().required(),
+    codvia: joi.number().required(),
+    desvia: joi.string().required(),
+    fumetto: joi.string().required(),
+  });
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
 module.exports.alertValidation = alertValidation;
+module.exports.daeValidation = daeValidation;
