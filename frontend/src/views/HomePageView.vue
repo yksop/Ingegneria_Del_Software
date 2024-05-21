@@ -55,9 +55,12 @@ export default {
       .then(response => {
         const points = response.data;
         points.forEach(point => {
+          // create text for popup
+          var popupText = "<b>" + point.fumetto + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + point.latitudine + "," + point.longitudine + "'>Navigate with Google Maps</a>"
+
           const marker = L.marker([point.latitudine, point.longitudine], {icon: greenIcon})
             .addTo(this.map)
-            .bindPopup(point.fumetto);
+            .bindPopup(popupText);
           this.markers.push(marker);
         });
       })
@@ -70,9 +73,11 @@ export default {
       .then(response => {
         const points = response.data;
         points.forEach(point => {
+          var popupText = "<b>" + point.fumetto + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + point.latitudine + "," + point.longitudine + "'>Navigate with Google Maps</a>"
+
           const marker = L.marker([point.latitudine, point.longitudine], {icon: orangeIcon})
             .addTo(this.map)
-            .bindPopup(point.fumetto);
+            .bindPopup(popupText);
           this.markers.push(marker);
         });
       })
@@ -84,9 +89,10 @@ export default {
       .then(response => {
         const points = response.data;
         points.forEach(point => {
+          var popupText = "<b>" + point.nome + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + point.latitudine + "," + point.longitudine + "'>Navigate with Google Maps</a>"
           const marker = L.marker([point.latitudine, point.longitudine], {icon: redIcon})
             .addTo(this.map)
-            .bindPopup(point.nome);
+            .bindPopup(popupText);
           this.markers.push(marker);
         });
       })
@@ -100,7 +106,7 @@ export default {
     legend.onAdd = function () {
       const div = L.DomUtil.create('div', 'legend')
       div.innerHTML += '<h4>Legenda</h4>';
-      div.innerHTML += '<div><i style="background: green; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Punti di interesse</div>';
+      div.innerHTML += '<div><i style="background: green; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> DAE  </div>';
       div.innerHTML += '<div><i style="background: orange; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ambulatori</div>';
       div.innerHTML += '<div><i style="background: red; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ospedali</div>';
       div.style.backgroundColor = 'white';
