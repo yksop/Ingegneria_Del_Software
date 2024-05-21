@@ -4,7 +4,7 @@ import re
 
 
 # Stringa di connessione MongoDB
-mongo_connection_string = 'mongodb+srv://albertodalbosco:vale@ingegneriadelsoftware.rklgpcl.mongodb.net/?retryWrites=true&w=majority&appName=IngegneriaDelSoftware'
+mongo_connection_string = ''            # TODO: Come inserire qui la stringa dell'env. ? Inserisci la stringa di connessione al tuo cluster MongoDB
 
 # Nome del database e della collezione
 mongo_db_name = 'test'
@@ -23,7 +23,7 @@ except Exception as e:
 # Read csv file
 csv_file_path = 'openDataLoader/data/defibrillatori.csv'
 
-df = pd.read_csv(csv_file_path, sep=';')  # Assicurati di usare il separatore corretto (qui uso tab)
+df = pd.read_csv(csv_file_path, sep=';')  # Assicurati di usare il separatore corretto
 
 # Funzione per estrarre le coordinate dalla colonna WKT
 def extract_coordinates(wkt):
