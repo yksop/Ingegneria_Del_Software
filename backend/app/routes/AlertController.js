@@ -87,6 +87,25 @@ router.put("/:id", async (req, res) => {
 // Get alert from DB
 router.get("/:id", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send("Token is required, need to login first");
+    }
+    const token = authHeader.split(" ")[1];
+    const decodedToken = jwt.decode(token);
+    if (!decodedToken) {
+      return res.status(401).send("Invalid token");
+    }
+    if (
+      decodedToken.isVolunteer === false ||
+      decodedToken.isOperator118 === 0
+    ) {
+      return res
+        .status(401)
+        .send(
+          "Access Denied, you need to be a volunteer or a 118's operator to agree to see an alert"
+        );
+    }
     if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
     if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
@@ -118,7 +137,6 @@ router.get("", async (req, res) => {
 });
 
 router.get("/:id/users", async (req, res) => {
-  // Chiedere al prof se è giusto
   // Given an Alert id, I want to get all the users that are in the radius of that Alert
   try {
     // I check if the request is null

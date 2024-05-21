@@ -69,6 +69,20 @@ router.post("", async (req, res) => {
 // AGREE TO ALERT
 router.put("/:userId", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send("Token is required, need to login first");
+    }
+    const token = authHeader.split(" ")[1];
+    const decodedToken = jwt.decode(token);
+    if (!decodedToken) {
+      return res.status(401).send("Invalid token");
+    }
+    if (decodedToken.isVolunteer === false) {
+      return res
+        .status(401)
+        .send("Access Denied, you need to be a volunteer to agree to an alert");
+    }
     if (!req) return res.status(400).send("Request is null\n");
 
     if (!req.params.userId)
@@ -129,6 +143,26 @@ router.put("/:userId", async (req, res) => {
 // UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
 router.put("/volunteers/:volunteerId", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send("Token is required, need to login first");
+    }
+    const token = authHeader.split(" ")[1];
+    //console.log(token);
+    const decodedToken = jwt.decode(token);
+    //console.log(decodedToken);
+    //console.log(decodedToken.userId);
+    //console.log(decodedToken.isVolunteer);
+    if (!decodedToken) {
+      return res.status(401).send("Invalid token");
+    }
+    if (decodedToken.isCertifier === false) {
+      return res
+        .status(401)
+        .send(
+          "Access Denied, you need to be a certifier to modify users status"
+        );
+    }
     if (!req) return res.status(400).send("Request is null\n");
 
     if (!req.params.volunteerId)
@@ -195,6 +229,22 @@ router.put("/volunteers/:volunteerId", async (req, res) => {
 // RETURN ALL ALERTS NEAR A GIVEN USER
 router.get("/:idUser/alerts", async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).send("Token is required, need to login first");
+    }
+    const token = authHeader.split(" ")[1];
+    const decodedToken = jwt.decode(token);
+    if (!decodedToken) {
+      return res.status(401).send("Invalid token");
+    }
+    if (decodedToken.isVolunteer === false) {
+      return res
+        .status(401)
+        .send(
+          "Access Denied, you need to be a volunteer to see alert near you"
+        );
+    }
     if (!req) return res.status(400).send("Request is null");
 
     const user = await User.findById(req.params.idUser);
