@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Alert = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
+const verifyToken = require("../middlewares/authMiddleware");
 
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {
@@ -57,7 +58,8 @@ router.post("", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+// RETIRE ALERT
+router.put("/:id", verifyToken, async (req, res) => {
   try {
     if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
