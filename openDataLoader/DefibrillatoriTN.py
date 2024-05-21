@@ -3,6 +3,7 @@ from pymongo import MongoClient             # pip install pandas pymongo
 from dotenv import load_dotenv
 import os
 import re
+import utm                    # pip install utm 
 
 
 # path of .env file
@@ -50,6 +51,8 @@ def extract_coordinates(wkt):
 data = []
 for index, row in df.iterrows():
     lat, lon = extract_coordinates(row['WKT'])
+    # Conversione delle coordinate da UTM a latitudine e longitudine
+    lat, lon = utm.to_latlon(lat, lon, 32, 'T')
     record = {
         'latitudine': lat,
         'longitudine': lon,

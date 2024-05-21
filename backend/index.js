@@ -33,7 +33,7 @@ app.use("/api/v1/dae", daeRoute);
 // mongoose.Promise = global.Promise;
 app.locals.db = mongoose
   .connect(process.env.DB_CONNECT, {
-    useNewUrlParser: true,
+    useNewUrlParser: true,                  // TODO: questa cosa pare essere deprecata, capire se va cambiata!
     useUnifiedTopology: true,
   })
   .then(() => {
