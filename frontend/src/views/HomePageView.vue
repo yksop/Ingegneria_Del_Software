@@ -2,6 +2,10 @@
     <section class="map-section">
       <h3>MAPPA</h3>
       <div id="map"></div>
+      <select v-model="selectedMap" @change="changeMap" class="selector">
+        <option value="osm">OpenStreetMap</option>
+        <option value="otm">OpenTopoMap</option>
+      </select>
     </section>
 
 </template>
@@ -15,37 +19,118 @@ import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js';
 
 export default {
   name: 'HomePageView',
+  data() {
+    return {
+      selectedMap: 'osm', // Tipo di mappa selezionata
+      map: null,
+      markers: [],
+      tileLayer: null
+    };
+  },
   mounted() {
-    const map = L.map('map').setView([46.065, 11.124], 14); // Imposta le coordinate e lo zoom iniziale
+    this.map = L.map('map').setView([46.065, 11.124], 14); // Imposta le coordinate e lo zoom iniziale
+    this.changeMap();  // Carica la mappa iniziale
+/*
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
+    
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Crea un'icona personalizzata verde
+    */
+    // Crea un'icona personalizzata verde 
     const greenIcon = L.AwesomeMarkers.icon({
       icon: 'info-sign',
       markerColor: 'green',
       prefix: 'glyphicon'
     });
 
+    const redIcon = L.AwesomeMarkers.icon({
+      icon: 'info-sign',
+      markerColor: 'red',
+      prefix: 'glyphicon'
+    });
+
+    const orangeIcon = L.AwesomeMarkers.icon({
+      icon: 'info-sign',
+      markerColor: 'orange',
+      prefix: 'glyphicon'
+    });
+
+
     // Recupera i dati dal backend e aggiungi i marker
     axios.get('http://localhost:3000/api/v1/dae')
       .then(response => {
         const points = response.data;
         points.forEach(point => {
-            console.log(point);
-            console.log("\n")
-          L.marker([point.latitudine, point.longitudine], {icon: greenIcon})
-            .addTo(map)
+          const marker = L.marker([point.latitudine, point.longitudine], {icon: greenIcon})
+            .addTo(this.map)
             .bindPopup(point.fumetto);
+          this.markers.push(marker);
         });
       })
       .catch(error => {
         console.error('Errore nel recupero dei punti:', error);
-      });
+    });
+
+    
+    axios.get('http://localhost:3000/api/v1/clinic')
+      .then(response => {
+        const points = response.data;
+        points.forEach(point => {
+          const marker = L.marker([point.latitudine, point.longitudine], {icon: orangeIcon})
+            .addTo(this.map)
+            .bindPopup(point.fumetto);
+          this.markers.push(marker);
+        });
+      })
+      .catch(error => {
+        console.error('Errore nel recupero dei punti:', error);
+    });
+    
+
+    // Aggiungi la legenda alla mappa
+    const legend = L.control({ position: 'topright'});
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend')
+      div.innerHTML += '<h4>Legenda</h4>';
+      div.innerHTML += '<div><i style="background: green; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Punti di interesse</div>';
+      div.innerHTML += '<div><i style="background: orange; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ambulatori</div>';
+      div.innerHTML += '<div><i style="background: red; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ospedali</div>';
+      div.style.backgroundColor = 'white';
+      div.style.padding = '10px';
+      div.style.borderRadius = '10px';
+      div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+      div.style.textAlign = 'left';
+      return div;
+    };
+
+    legend.addTo(this.map);
+  },
+  methods: {
+    changeMap() {
+      if (this.tileLayer) {
+        this.map.removeLayer(this.tileLayer);
+      }
+
+      if (this.selectedMap === 'osm') {
+        this.tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+      } else if (this.selectedMap === 'otm') {
+        this.tileLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+      }
+
+      this.tileLayer.addTo(this.map);
+    }
   }
-}
+};
 
 </script>
 
@@ -58,10 +143,20 @@ export default {
   height: 800px;
   padding-bottom: 60px;
 }
+
 #map {
   display: block;
   margin: auto;
   width: 90%; 
   height: 90%; /* Larghezza desiderata della mappa */
+  border: 1px solid #333;
 }
+
+.selector {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #333;
+}
+
 </style>

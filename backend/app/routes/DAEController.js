@@ -20,7 +20,7 @@ router.post("", async (req, res) => {
       fumetto: req.body.fumetto,
     });
 
-    // Check if there is an identical active DAE in the DB
+    // Check if there is an identical DAE in the DB
     const identicalDAE = await DAE.findOne({
       latitude: req.body.latitude,
       longitude: req.body.longitude,
