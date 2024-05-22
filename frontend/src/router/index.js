@@ -81,9 +81,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const token = localStorage.getItem("token");
     if (!token) {
-      if (!token) {
         router.push({ name: "login", query: { nextUrl: to.fullPath } });
-      }
     } else {
       next();
     }
