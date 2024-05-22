@@ -74,6 +74,12 @@ const router = createRouter({
       component: () => import("../views/AgreeToAlertView.vue"),
       meta: { requiresAuth: true },
     },
+    {
+      path: "/forgotPassword",
+      name: "forgotPassword",
+      component: () => import("../views/ForgotPassword.vue"),
+      meta: { requiresAuth: false },
+    },
   ],
 });
 
@@ -81,7 +87,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const token = localStorage.getItem("token");
     if (!token) {
-        router.push({ name: "login", query: { nextUrl: to.fullPath } });
+      router.push({ name: "login", query: { nextUrl: to.fullPath } });
     } else {
       next();
     }
