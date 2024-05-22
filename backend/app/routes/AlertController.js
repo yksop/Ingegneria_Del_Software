@@ -3,6 +3,7 @@ const User = require("../models/User");
 const Alert = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
+const verifyToken = require("../middlewares/authMiddleware");
 
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {
@@ -57,32 +58,40 @@ router.post("", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
-  try {
-    if (!req.params.id) return res.status(400).send("Alert ID is required\n");
+// RETIRE ALERT
+router.put(
+  "/:id",
+  verifyToken((authData) => {
+    if (authData.isOperator118) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
-      return res.status(400).send("Invalid Alert ID\n");
+      if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+        return res.status(400).send("Invalid Alert ID\n");
 
-    const result = await Alert.updateOne(
-      { _id: req.params.id },
-      { isActive: false }
-    ).exec();
+      const result = await Alert.updateOne(
+        { _id: req.params.id },
+        { isActive: false }
+      ).exec();
 
-    if (result.matchedCount === 0)
-      return res.status(404).send("Alert not found, no updates were made\n");
+      if (result.matchedCount === 0)
+        return res.status(404).send("Alert not found, no updates were made\n");
 
-    if (result.modifiedCount === 0)
-      return res
-        .status(400)
-        .send("Alert is already non-active, no updates were made\n");
+      if (result.modifiedCount === 0)
+        return res
+          .status(400)
+          .send("Alert is already non-active, no updates were made\n");
 
-    return res.status(200).send("Alert updated successfully\n");
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
+      return res.status(200).send("Alert updated successfully\n");
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);
+    }
   }
-});
+);
 
 // Get alert from DB
 router.get(
