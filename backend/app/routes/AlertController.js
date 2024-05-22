@@ -85,23 +85,49 @@ router.put("/:id", async (req, res) => {
 });
 
 // Get alert from DB
-router.get("/:id", async (req, res) => {
-  try {
-    if (!req.params.id) return res.status(400).send("Alert ID is required\n");
+router.get(
+  "/:id",
+  verifyToken((authData) => {
+    if (authData.isVolunteer||authData.isOperator118) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      // const authHeader = req.headers.authorization;
+      // if (!authHeader) {
+      //   return res.status(401).send("Token is required, need to login first");
+      // }
+      // const token = authHeader.split(" ")[1];
+      // const decodedToken = jwt.decode(token);
+      // if (!decodedToken) {
+      //   return res.status(401).send("Invalid token");
+      // }
+      // if (
+      //   decodedToken.isVolunteer === false ||
+      //   decodedToken.isOperator118 === false
+      // ) {
+      //   return res
+      //     .status(401)
+      //     .send(
+      //       "Access Denied, you need to be a volunteer or a 118's operator to see an alert"
+      //     );
+      // }
+      if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
-    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
-      return res.status(400).send("Invalid Alert ID\n");
+      if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+        return res.status(400).send("Invalid Alert ID\n");
 
-    const foundAlert = await Alert.findById(req.params.id);
+      const foundAlert = await Alert.findById(req.params.id);
 
-    if (!foundAlert) res.status(400).send("Alert does not exist\n");
+      if (!foundAlert) res.status(400).send("Alert does not exist\n");
 
-    res.status(200).send(foundAlert);
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
+      res.status(200).send(foundAlert);
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);
+    }
   }
-});
+);
 
 // GET all active alerts
 router.get("", async (req, res) => {
@@ -118,7 +144,6 @@ router.get("", async (req, res) => {
 });
 
 router.get("/:id/users", async (req, res) => {
-  // Chiedere al prof se è giusto
   // Given an Alert id, I want to get all the users that are in the radius of that Alert
   try {
     // I check if the request is null
