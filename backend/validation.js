@@ -95,7 +95,49 @@ const validateLogin = (username, password) => {
   return true;
 };
 
+// DAE Validation
+const daeValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    id: joi.number().required(),
+    codvia: joi.number().required(),
+    desvia: joi.string().required(),
+    fumetto: joi.string().required(),
+  });
+  return schema.validate(data);
+};
+
+const clinicValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    civico_num: joi.number().optional(),
+    civico_let: joi.string().optional(),
+    civico_alf: joi.string().optional(),
+    desvia: joi.string().required(),
+    strada: joi.number().required(),
+    fumetto: joi.string().required(),
+  });
+  return schema.validate(data);
+}
+
+const hospitalValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    nome: joi.string().required(),
+    tipo: joi.string().required(),
+    via: joi.string().required(),
+    civico: joi.number().optional(),
+  });
+  return schema.validate(data);
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
 module.exports.alertValidation = alertValidation;
+module.exports.daeValidation = daeValidation;
+module.exports.clinicValidation = clinicValidation;
+module.exports.hospitalValidation = hospitalValidation;
