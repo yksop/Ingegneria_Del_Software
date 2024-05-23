@@ -53,6 +53,11 @@ const router = createRouter({
       component: () => import("../views/RetireAlertView.vue"),
     },
     {
+      path: "/createAlert",
+      name: "createAlert",
+      component: () => import("../views/CreateAlertView.vue"),
+    },
+    {
       path: "/action118",
       name: "Action_118",
       component: () => import("../views/Action118View.vue"),

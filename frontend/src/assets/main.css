@@ -1,5 +1,5 @@
 /*@import './base.css'; */
-body{
+body {
     margin: 0;
     padding-top: 15px;
     padding-bottom: 15px;
@@ -13,7 +13,7 @@ body{
     max-width: 1280px;
     margin: 0 auto;
     font-weight: normal;
-    
+
 }
 
 .container {
@@ -21,27 +21,95 @@ body{
     flex-direction: column;
     flex-wrap: nowrap;
     position: relative;
-  }
-  
+}
+
 header {
-    order: 1; /* Places the header at the top */
+    order: 1;
+    /* Places the header at the top */
     color: white;
     padding-top: 20px;
     padding: 0px;
     text-align: center;
 }
-  
+
 main {
-    order: 2; /* Places the main content in the middle */
-    flex-grow: 1; /* Allows the main content to grow and fill the available space */
+    order: 2;
+    /* Places the main content in the middle */
+    flex-grow: 1;
+    /* Allows the main content to grow and fill the available space */
     padding: 0px;
-    overflow-y: auto; /* Adds scroll to main content if it exceeds the height */
+    overflow-y: auto;
+    /* Adds scroll to main content if it exceeds the height */
 }
-  
+
 footer {
-    order: 3; /* Places the footer at the bottom */
+    order: 3;
+    /* Places the footer at the bottom */
     color: white;
     padding: 0px;
     text-align: center;
 }
-  
+
+.button_container_universal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px;
+}
+
+.button_universal {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    gap: 100px;
+    background-color: #5c67f2;
+    border: none;
+    margin: 8px 20px;
+    cursor: pointer;
+    border-radius: 12px;
+    width: 40%;
+    height: 8rem;
+}
+
+.button_universal:hover {
+    background-color: #5058e5;
+}
+
+.button_universal:active {
+    background-color: #4045b2;
+    /* Darker shade when the button is clicked */
+}
+
+.button_text_universal {
+    color: white;
+    text-decoration: none;
+}
+
+.container_buttons_inside_form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 30px;
+}
+
+.button_inside_form {
+    width: 50%;
+    background-color: #5c67f2;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.button_inside_form:hover {
+    background-color: #5058e5;
+}
+
+.button_inside_form:active {
+    background-color: #4045b2;
+    /* Darker shade when the button is clicked */
+}
