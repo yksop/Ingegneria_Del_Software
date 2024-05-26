@@ -4,7 +4,6 @@ const Alert = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
 const verifyToken = require("../middlewares/authMiddleware");
-
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {
   try {
