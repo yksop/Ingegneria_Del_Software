@@ -4,6 +4,35 @@ const Alert = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
 const verifyToken = require("../middlewares/authMiddleware");
+
+const triageTypes = {
+  1: "Emergenza",
+  2: "Urgenza",
+  3: "Urgenza differibile",
+  4: "urgenza minore",
+  5: "non urgenza",
+};
+
+const emergencyTypes = {
+  1: "Perdita di coscienza improvvisa",
+  2: "Soffocamento da corpo estraneo",
+  3: "Attacco d'asma",
+  4: "Infarto cardiaco",
+  5: "Emorragia",
+  6: "Allergia/anafilassi",
+  7: "Emergenza diabetica",
+  8: "Avvelenamento",
+  9: "Ustione",
+  10: "Colpo di calore",
+  11: "Ipotermia",
+  12: "Ictus cerebrale",
+  13: "Crisi epilettica",
+  14: "Trauma cranico e commozione cerebrale",
+  15: "Traumi alle ossa, articolazioni, muscoli",
+  16: "Punture di insetti e morsi di animali",
+  17: "Disagio psichico",
+};
+
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {
   try {
@@ -11,11 +40,20 @@ router.post("", async (req, res) => {
     const { error } = alertValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    // Convert the numeric triage type to its string representation
+    const triageType = triageTypes[req.body.triage];
+    if (!triageType) return res.status(400).send("Invalid triage type");
+
+    // Convert the numeric emergency type to its string representation
+    const emergencyType = emergencyTypes[req.body.emergency];
+    if (!emergencyType) return res.status(400).send("Invalid emergency type");
+
     // Create a new Alert
     const newAlert = new Alert({
       latitude: req.body.latitude,
       longitude: req.body.longitude,
-      triage: req.body.triage,
+      triage: triageType,
+      emergency: emergencyType,
       radius: req.body.radius,
       expiresIn: req.body.expiresIn,
       isActive: req.body.isActive,
@@ -96,7 +134,7 @@ router.put(
 router.get(
   "/:id",
   verifyToken((authData) => {
-    if (authData.isVolunteer||authData.isOperator118) return true;
+    if (authData.isVolunteer || authData.isOperator118) return true;
     return false;
   }),
   async (req, res) => {
