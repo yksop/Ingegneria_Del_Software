@@ -1,37 +1,9 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const Alert = require("../models/Alert");
+const { Alert, triageTypes, emergencyTypes } = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
 const verifyToken = require("../middlewares/authMiddleware");
-
-const triageTypes = {
-  1: "Emergenza",
-  2: "Urgenza",
-  3: "Urgenza differibile",
-  4: "urgenza minore",
-  5: "non urgenza",
-};
-
-const emergencyTypes = {
-  1: "Perdita di coscienza improvvisa",
-  2: "Soffocamento da corpo estraneo",
-  3: "Attacco d'asma",
-  4: "Infarto cardiaco",
-  5: "Emorragia",
-  6: "Allergia/anafilassi",
-  7: "Emergenza diabetica",
-  8: "Avvelenamento",
-  9: "Ustione",
-  10: "Colpo di calore",
-  11: "Ipotermia",
-  12: "Ictus cerebrale",
-  13: "Crisi epilettica",
-  14: "Trauma cranico e commozione cerebrale",
-  15: "Traumi alle ossa, articolazioni, muscoli",
-  16: "Punture di insetti e morsi di animali",
-  17: "Disagio psichico",
-};
 
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {

@@ -5,6 +5,7 @@ const verifyToken = require("../middlewares/authMiddleware");
 
 router.post("", async (req, res) => {
   try {
+    if (!req) return res.status(400).send("Request is null\n");
     const newBestPractises = new BestPractises({
       title: req.body.title.replace(/\\n/g, "<br/>"),
       advise: req.body.advise.replace(/\\n/g, "<br/>"),
@@ -15,24 +16,26 @@ router.post("", async (req, res) => {
     if (!newBestPractises.description) newBestPractises.description = null;
 
     const savedBestPractises = await newBestPractises.save();
-    console.log("New best practises saved in the DB");
-    return res.send(savedBestPractises);
+    return res.status(200).send(savedBestPractises);
   } catch (err) {
-    console.log("Error in saving new best practises in the DB");
     return res.status(400).send;
   }
 });
 
 router.get("/", async (req, res) => {
   try {
+
+    if (!req) return res.status(400).send("Request is null\n");
+
+    if (!req.query.title)
+      return res.status(400).send("Best Practise title is required\n");
     const title = req.query.title;
     const bestPractises = await BestPractises.findOne({ title: title });
 
     if (!bestPractises) return res.status(400).send("Best practises not found");
 
-    return res.send(bestPractises);
+    return res.status(200).send(bestPractises);
   } catch (err) {
-    console.log("Error in getting best practises from the DB");
     return res.status(400).send(err);
   }
 });

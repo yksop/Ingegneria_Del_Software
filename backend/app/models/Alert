@@ -30,7 +30,7 @@ const emergencyTypes = {
   17: "Disagio psichico",
 };
 
-module.exports = mongoose.model(
+const Alert = mongoose.model(
   "Alert",
   new Schema({
     latitude: { type: Number, required: true },
@@ -53,6 +53,7 @@ module.exports = mongoose.model(
   })
 );
 module.exports={
+  Alert,
   triageTypes,
   emergencyTypes
 }
