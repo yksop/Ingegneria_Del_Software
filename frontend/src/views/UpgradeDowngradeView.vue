@@ -1,4 +1,7 @@
 <template>
+  <div v-if="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
   <div class="upgradeDowngrade-container">
     <form @submit.prevent="checkAction" class="upgradeDowngradeForm">
       <h2>Upgrade or downgrade a user</h2>
@@ -39,7 +42,7 @@
     </form>
   </div>
 </template>
-  
+
 <script>
 import axios from "axios";
 
@@ -50,6 +53,7 @@ export default {
         id: "",
         action: "",
       },
+      errorMessage: null,
     };
   },
 
@@ -84,22 +88,29 @@ export default {
       axios
         .put(
           `http://localhost:3000/api/v1/users/volunteers/${this.formData.id}`,
-          upgradeDowngradeUserStatus
+          upgradeDowngradeUserStatus,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         )
-        .then(
-          (response) => {
-            console.log("User modified:", response.data);
-            this.$router.push("/home");
-          },
-          (error) => {
+        .then((response) => {
+          console.log("User modified:", response.data);
+          this.$router.push("/");
+        })
+        .catch((error) => {
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
             console.error("Error modifying user:", error);
           }
-        );
+        });
     },
   },
 };
 </script>
-  
+
 <style>
 .upgradeDowngrade-container {
   justify-content: left;
@@ -152,5 +163,11 @@ button:hover {
 button:active {
   background-color: #4045b2;
 }
+.error-message {
+  color: white;
+  display: inline-block;
+  font-size: 20px;
+  margin-top: 20px;
+  background-color: red;
+}
 </style>
-  
