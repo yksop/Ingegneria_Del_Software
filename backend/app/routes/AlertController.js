@@ -64,6 +64,7 @@ router.post(
   }
 );
 
+
 // RETIRE ALERT
 router.put(
   "/:id",
@@ -108,25 +109,6 @@ router.get(
   }),
   async (req, res) => {
     try {
-      // const authHeader = req.headers.authorization;
-      // if (!authHeader) {
-      //   return res.status(401).send("Token is required, need to login first");
-      // }
-      // const token = authHeader.split(" ")[1];
-      // const decodedToken = jwt.decode(token);
-      // if (!decodedToken) {
-      //   return res.status(401).send("Invalid token");
-      // }
-      // if (
-      //   decodedToken.isVolunteer === false ||
-      //   decodedToken.isOperator118 === false
-      // ) {
-      //   return res
-      //     .status(401)
-      //     .send(
-      //       "Access Denied, you need to be a volunteer or a 118's operator to see an alert"
-      //     );
-      // }
       if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
       if (mongoose.Types.ObjectId.isValid(req.params.id) === false)

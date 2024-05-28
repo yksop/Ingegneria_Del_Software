@@ -66,7 +66,8 @@ export default {
           (response) => {
             console.log("Login successful:", response.data);
             this.passwordError = false;
-            this.$router.push("/about");
+            const nextUrl = this.$route.query.nextUrl || "/";
+            this.$router.push({ path: nextUrl });
 
             saveToken(response.data.token);
 

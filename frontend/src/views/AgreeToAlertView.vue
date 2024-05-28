@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
     <div class="alert-container">
       <div class="alert-frame">
         <ol>
@@ -54,6 +57,7 @@ export default {
       },
       showPopup: false,
       selectedAlert: null,
+      errorMessage: null,
     };
   },
   created() {
@@ -61,7 +65,12 @@ export default {
       .get(
         `http://localhost:3000/api/v1/users/${
           decodeToken(getToken()).userId
-        }/alerts`
+        }/alerts`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       )
       .then((response) => {
         this.alerts = response.data;
@@ -69,15 +78,27 @@ export default {
         console.log(decodeToken(getToken()).userId);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        if (error.response) {
+          this.errorMessage = error.response.data;
+        } else {
+          console.error("Error fetching data:", error);
+        }
       });
   },
   methods: {
     agreeToAlert(index) {
       axios
-        .put(`http://localhost:3000/api/v1/users/${userToken.userId}`, {
-          alertId: this.alerts[index]._id,
-        })
+        .put(
+          `http://localhost:3000/api/v1/users/${userToken.userId}`,
+          {
+            alertId: this.alerts[index]._id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((response) => {
           console.log(response);
           this.selectedAlert = this.alerts[index];
@@ -86,21 +107,31 @@ export default {
           this.alerts.splice(index, 1);
         })
         .catch((error) => {
-          console.error("Error agreeing to alert:", error);
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
+            console.error("Error agreeing to alert:", error);
+          }
         });
     },
     showPreviewAlert(index) {
       axios
-        .get(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`)
-        .then(
-          (response) => {
-            console.log("Alert shown:", response.data);
-            this.showPopup = true;
+        .get(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          (error) => {
+        })
+        .then((response) => {
+          console.log("Alert shown:", response.data);
+          this.showPopup = true;
+        })
+        .catch((error) => {
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
             console.error("Error showing alert:", error);
           }
-        );
+        });
     },
   },
 };
@@ -122,7 +153,6 @@ li {
 }
 
 .alert-frame {
-  border: 1px solid black;
   padding: 10px;
   margin: 10px;
 }
@@ -142,5 +172,13 @@ li {
   height: 50%;
   padding: 20px;
   border: 1px solid black;
+}
+
+.error-message {
+  color: white;
+  display: inline-block;
+  font-size: 20px;
+  margin-top: 20px;
+  background-color: red;
 }
 </style>
