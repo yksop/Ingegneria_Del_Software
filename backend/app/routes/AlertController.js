@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const Alert = require("../models/Alert");
+const { Alert, triageTypes, emergencyTypes } = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
 const verifyToken = require("../middlewares/authMiddleware");
+
 // Create and save new Alert in the DB
 router.post("", async (req, res) => {
   try {
@@ -11,11 +12,20 @@ router.post("", async (req, res) => {
     const { error } = alertValidation(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    // Convert the numeric triage type to its string representation
+    const triageType = triageTypes[req.body.triage];
+    if (!triageType) return res.status(400).send("Invalid triage type");
+
+    // Convert the numeric emergency type to its string representation
+    const emergencyType = emergencyTypes[req.body.emergency];
+    if (!emergencyType) return res.status(400).send("Invalid emergency type");
+
     // Create a new Alert
     const newAlert = new Alert({
       latitude: req.body.latitude,
       longitude: req.body.longitude,
-      triage: req.body.triage,
+      triage: triageType,
+      emergency: emergencyType,
       radius: req.body.radius,
       expiresIn: req.body.expiresIn,
       isActive: req.body.isActive,
@@ -96,30 +106,11 @@ router.put(
 router.get(
   "/:id",
   verifyToken((authData) => {
-    if (authData.isVolunteer||authData.isOperator118) return true;
+    if (authData.isVolunteer || authData.isOperator118) return true;
     return false;
   }),
   async (req, res) => {
     try {
-      // const authHeader = req.headers.authorization;
-      // if (!authHeader) {
-      //   return res.status(401).send("Token is required, need to login first");
-      // }
-      // const token = authHeader.split(" ")[1];
-      // const decodedToken = jwt.decode(token);
-      // if (!decodedToken) {
-      //   return res.status(401).send("Invalid token");
-      // }
-      // if (
-      //   decodedToken.isVolunteer === false ||
-      //   decodedToken.isOperator118 === false
-      // ) {
-      //   return res
-      //     .status(401)
-      //     .send(
-      //       "Access Denied, you need to be a volunteer or a 118's operator to see an alert"
-      //     );
-      // }
       if (!req.params.id) return res.status(400).send("Alert ID is required\n");
 
       if (mongoose.Types.ObjectId.isValid(req.params.id) === false)

@@ -51,6 +51,7 @@ const alertValidation = (data) => {
     longitude: joi.number().required(),
     triage: joi.number().min(1).max(5).required(),
     radius: joi.number().min(1).required(),
+    emergency: joi.number().min(1).max(17).required(),
     expiresIn: joi.number().required(),
     isActive: joi.boolean().required(),
     description: joi.string(),
