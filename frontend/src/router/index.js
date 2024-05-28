@@ -77,6 +77,11 @@ const router = createRouter({
       name: "agreeToAlert",
       component: () => import("../views/AgreeToAlertView.vue"),
     },
+    {
+      path: "/changeCredentials",
+      name: "changeCredentials",
+      component: () => import("../views/ChangeCredentialsView.vue"),
+    },
   ],
 });
 
