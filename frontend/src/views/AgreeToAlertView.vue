@@ -27,15 +27,15 @@
             </button>
             <div v-if="showPopup" class="popup">
               <h2>Preview</h2>
-              <p v-if="selectedAlert">
-                <span class="alert-info">Triage:</span>
-                {{ selectedAlert.triage }} <br />
-                <span class="alert-info">Time for Ambulance:</span>
-                {{ selectedAlert.timeForAmbulance }} <br />
-                <span class="alert-info">Description:</span>
-                {{ selectedAlert.description }}<br />
-                <button @click="readBestPractices">Read Best Practices</button>
-                <div v-if="read" v-html="bestPracticeDescription"></div>              </p>
+              <p v-if="selectedAlert"></p>
+              <span class="alert-info">Triage:</span>
+              {{ selectedAlert.triage }} <br />
+              <span class="alert-info">Time for Ambulance:</span>
+              {{ selectedAlert.timeForAmbulance }} <br />
+              <span class="alert-info">Description:</span>
+              {{ selectedAlert.description }}<br />
+              <button @click="readBestPractices">Read Best Practices</button>
+              <div v-if="read" v-html="bestPracticeDescription"></div>
               <button @click="showPopup = false">Close</button>
             </div>
           </li>
@@ -65,7 +65,7 @@ export default {
       errorMessage: null,
       showPreviewButton: [],
       acceptedAlertIndex: null,
-      bestPracticeDescription: '',
+      bestPracticeDescription: "",
       read: false,
     };
   },
@@ -90,7 +90,7 @@ export default {
         if (error.response) {
           this.errorMessage = error.response.data;
         } else {
-          this.errorMessage="Error fetching data";
+          this.errorMessage = "Error fetching data";
         }
       });
   },
@@ -100,8 +100,8 @@ export default {
       this.showPreviewButton = this.showPreviewButton.map(() => false);
       this.showPreviewButton[index] = true;
       this.acceptedAlertIndex = index;
-      this.read = false; 
-      this.bestPracticeDescription = '';
+      this.read = false;
+      this.bestPracticeDescription = "";
       axios
         .put(
           `http://localhost:3000/api/v1/users/${userToken.userId}`,
@@ -117,42 +117,43 @@ export default {
         .then((response) => {
           this.selectedAlert = this.alerts[index];
           this.alerts[index].accepted = true;
-          if (this.alerts[index].emergency===undefined){
-            this.bestPracticeDescription = "No best practices found for this emergency";
-          }else{
+          if (this.alerts[index].emergency === undefined) {
+            this.bestPracticeDescription =
+              "No best practices found for this emergency";
+          } else {
             this.getBestPractices(this.alerts[index].emergency);
-        }
+          }
         })
         .catch((error) => {
           if (error.response) {
             this.errorMessage = error.response.data;
           } else {
-            this.errorMessage="Error agreeing to alert";
+            this.errorMessage = "Error agreeing to alert";
           }
         });
     },
     getBestPractices(emergency) {
       axios
-      .get(`http://localhost:3000/api/v1/bestpractises?title=${emergency}`, {
+        .get(`http://localhost:3000/api/v1/bestpractises?title=${emergency}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         })
         .then((response) => {
-         this.bestPracticeDescription = response.data.advise;
-      })
+          this.bestPracticeDescription = response.data.advise;
+        })
         .catch((error) => {
           if (error.response) {
             this.errorMessage = error.response.data;
           } else {
-            this.errorMessage="Error fetching best practices";
+            this.errorMessage = "Error fetching best practices";
           }
         });
     },
     readBestPractices() {
-    this.read = true;
-    //this.getBestPractices();
-  },
+      this.read = true;
+      //this.getBestPractices();
+    },
     showPreviewAlert(index) {
       axios
         .get(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`, {
@@ -167,7 +168,7 @@ export default {
           if (error.response) {
             this.errorMessage = error.response.data;
           } else {
-            this.errorMessage="Error showing alert preview";
+            this.errorMessage = "Error showing alert preview";
           }
         });
     },
