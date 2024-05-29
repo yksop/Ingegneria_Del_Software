@@ -85,13 +85,12 @@ export default {
       .then((response) => {
         this.alerts = response.data;
         this.users._id = response.data;
-        console.log(decodeToken(getToken()).userId);
       })
       .catch((error) => {
         if (error.response) {
           this.errorMessage = error.response.data;
         } else {
-          console.error("Error fetching data:", error);
+          this.errorMessage="Error fetching data";
         }
       });
   },
@@ -116,7 +115,6 @@ export default {
           }
         )
         .then((response) => {
-          console.log(response);
           this.selectedAlert = this.alerts[index];
           this.alerts[index].accepted = true;
           if (this.alerts[index].emergency===undefined){
@@ -129,7 +127,7 @@ export default {
           if (error.response) {
             this.errorMessage = error.response.data;
           } else {
-            console.error("Error agreeing to alert:", error);
+            this.errorMessage="Error agreeing to alert";
           }
         });
     },
@@ -147,7 +145,7 @@ export default {
           if (error.response) {
             this.errorMessage = error.response.data;
           } else {
-            console.error("Error fetching best practices:", error);
+            this.errorMessage="Error fetching best practices";
           }
         });
     },
@@ -163,14 +161,13 @@ export default {
           },
         })
         .then((response) => {
-          console.log("Alert shown:", response.data);
           this.showPopup = true;
         })
         .catch((error) => {
           if (error.response) {
             this.errorMessage = error.response.data;
           } else {
-            console.error("Error showing alert:", error);
+            this.errorMessage="Error showing alert preview";
           }
         });
     },
