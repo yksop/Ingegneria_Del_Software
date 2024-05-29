@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const Alert = require("../models/Alert");
+const {Alert} = require("../models/Alert");
 const { registerValidation } = require("../../validation");
 const { validateLogin } = require("../../validation"); // I use {} to extract only the validateLogin property.
 const mongoose = require("mongoose");
