@@ -11,13 +11,17 @@
             <span class="alert-info">Latitude:</span> {{ alert.latitude }} |
             <span class="alert-info">Longitude:</span> {{ alert.longitude }} |
             <span class="alert-info">Description:</span> {{ alert.description }}
-            <button class="small-button" @click="agreeToAlert(index)">
+            <button
+              class="button"
+              @click="agreeToAlert(index)"
+              :disabled="acceptedAlertIndex === index"
+            >
               Accept
             </button>
             <button
-              v-if="alert.accepted"
+              v-if="showPreviewButton[index]"
               class="button"
-              @click="showPopup = true"
+              @click="showPreviewAlert(index)"
             >
               Preview Alert
             </button>
@@ -30,7 +34,8 @@
                 {{ selectedAlert.timeForAmbulance }} <br />
                 <span class="alert-info">Description:</span>
                 {{ selectedAlert.description }}<br />
-              </p>
+                <button @click="readBestPractices">Read Best Practices</button>
+                <div v-if="read" v-html="bestPracticeDescription"></div>              </p>
               <button @click="showPopup = false">Close</button>
             </div>
           </li>
@@ -58,9 +63,14 @@ export default {
       showPopup: false,
       selectedAlert: null,
       errorMessage: null,
+      showPreviewButton: [],
+      acceptedAlertIndex: null,
+      bestPracticeDescription: '',
+      read: false,
     };
   },
   created() {
+    this.showPreviewButton = this.alerts.map(() => false);
     axios
       .get(
         `http://localhost:3000/api/v1/users/${
@@ -87,6 +97,12 @@ export default {
   },
   methods: {
     agreeToAlert(index) {
+      this.errorMessage = "";
+      this.showPreviewButton = this.showPreviewButton.map(() => false);
+      this.showPreviewButton[index] = true;
+      this.acceptedAlertIndex = index;
+      this.read = false; 
+      this.bestPracticeDescription = '';
       axios
         .put(
           `http://localhost:3000/api/v1/users/${userToken.userId}`,
@@ -102,9 +118,12 @@ export default {
         .then((response) => {
           console.log(response);
           this.selectedAlert = this.alerts[index];
-          this.showPreviewAlert(index);
           this.alerts[index].accepted = true;
-          this.alerts.splice(index, 1);
+          if (this.alerts[index].emergency===undefined){
+            this.bestPracticeDescription = "No best practices found for this emergency";
+          }else{
+            this.getBestPractices(this.alerts[index].emergency);
+        }
         })
         .catch((error) => {
           if (error.response) {
@@ -114,6 +133,28 @@ export default {
           }
         });
     },
+    getBestPractices(emergency) {
+      axios
+      .get(`http://localhost:3000/api/v1/bestpractises?title=${emergency}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+         this.bestPracticeDescription = response.data.advise;
+      })
+        .catch((error) => {
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
+            console.error("Error fetching best practices:", error);
+          }
+        });
+    },
+    readBestPractices() {
+    this.read = true;
+    //this.getBestPractices();
+  },
     showPreviewAlert(index) {
       axios
         .get(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`, {
@@ -138,6 +179,15 @@ export default {
 </script>
 
 <style>
+.button[disabled] {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.button[disabled]:hover {
+  background-color: grey;
+}
+
 .alert-container {
   display: flex;
   flex-direction: column;
@@ -166,12 +216,16 @@ li {
   position: fixed;
   top: 50%;
   left: 50%;
-  background: white;
+  background: rgb(193, 217, 237);
+  border: 5px solid black;
+
   transform: translate(-50%, -50%);
-  width: 50%;
-  height: 50%;
+  width: auto;
+  height: auto;
+  max-height: 500px;
   padding: 20px;
   border: 1px solid black;
+  overflow: auto;
 }
 
 .error-message {
