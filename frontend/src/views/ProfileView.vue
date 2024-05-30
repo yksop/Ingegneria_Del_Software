@@ -23,6 +23,9 @@ export default {
   <p>Is Operator118: {{ isOperator118 ? 'Yes' : 'No' }}</p>
   <p>Is Logged In: {{ isLoggedIn ? 'Yes' : 'No' }}</p>
 </div>
+<div class="button_universal">
+  <router-link to="/changeCredentials" class="button_text_universal">CHANGE CREDENTIALS</router-link>
+</div>
 </template>
 
 <style>

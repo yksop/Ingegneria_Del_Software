@@ -51,7 +51,7 @@ export default {
     });
 
     // Recupera i dati dal backend e aggiungi i marker
-    axios.get('http://localhost:3000/api/v1/dae')
+    axios.get('http://localhost:3000/api/v1/daes')
       .then(response => {
         const points = response.data;
         points.forEach(point => {
@@ -69,7 +69,7 @@ export default {
     });
 
     
-    axios.get('http://localhost:3000/api/v1/clinic')
+    axios.get('http://localhost:3000/api/v1/clinics')
       .then(response => {
         const points = response.data;
         points.forEach(point => {
@@ -85,7 +85,7 @@ export default {
         console.error('Errore nel recupero dei punti:', error);
     });
     
-    axios.get('http://localhost:3000/api/v1/hospital')
+    axios.get('http://localhost:3000/api/v1/hospitals')
       .then(response => {
         const points = response.data;
         points.forEach(point => {

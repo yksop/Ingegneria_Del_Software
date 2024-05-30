@@ -25,10 +25,11 @@ const bestPractises = require("./app/routes/BestPractisesController");
 app.use("/api/v1/users", usersRoute);
 app.use("/api/v1/alerts", alertsRoute);
 app.use("/api/v1/tokens", authenticationRoute);
-app.use("/api/v1/dae", daeRoute);
-app.use("/api/v1/clinic", clinicRoute);
-app.use("/api/v1/hospital", hospitalRoute);
+app.use("/api/v1/daes", daeRoute);
+app.use("/api/v1/clinics", clinicRoute);
+app.use("/api/v1/hospitals", hospitalRoute);
 app.use("/api/v1/bestpractises", bestPractises);
+
 
 /**
  * Configure mongoose

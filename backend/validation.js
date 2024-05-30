@@ -61,39 +61,20 @@ const alertValidation = (data) => {
 };
 
 // Login validation
-const loginValidation = (data) => {
+const validateLogin = (data) => {
   const schema = joi.object({
-    email: joi.string().min(6).required().email(),
-    password: joi.string().min(6).required(),
+    username: joi.string().min(usernameMinLength).required(),
+    password: joiPassword
+    .string()
+    .minOfLowercase(1)
+    .minOfUppercase(1)
+    .minOfNumeric(1)
+    .minOfSpecialCharacters(1)
+    .noWhiteSpaces()
+    .min(passwordMinLength)
+    .required(),
   });
   return schema.validate(data);
-};
-
-// Login validation
-const validateLogin = (username, password) => {
-  // Define rules
-  const usernameRegex = /^[a-zA-Z0-9_]{6,20}$/; // Username must be between 6 to 20 characters long and can include letters, numbers, and underscores
-
-  // Validate username
-  if (!usernameRegex.test(username)) {
-    throw new Error(
-      "Invalid username. It must be between " +
-        usernameMinLength +
-        " to 20 characters long and can only contain letters, numbers, and underscores."
-    );
-  }
-
-  // Validate password
-  if (password.length < passwordMinLength) {
-    throw new Error(
-      "Invalid password. It must be at least " +
-        passwordMinLength +
-        " characters long."
-    );
-  }
-
-  // If everything is ok, I return true --> email & password correct!
-  return true;
 };
 
 // DAE Validation
@@ -135,10 +116,14 @@ const hospitalValidation = (data) => {
   return schema.validate(data);
 }
 
+const changeCredentialValidation = (data) => {
+  return validateLogin(data);
+};
+
 module.exports.registerValidation = registerValidation;
-module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
 module.exports.alertValidation = alertValidation;
 module.exports.daeValidation = daeValidation;
 module.exports.clinicValidation = clinicValidation;
 module.exports.hospitalValidation = hospitalValidation;
+module.exports.changeCredentialValidation = changeCredentialValidation;

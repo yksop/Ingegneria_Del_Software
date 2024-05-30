@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User");
 const {Alert} = require("../models/Alert");
 const { registerValidation } = require("../../validation");
-const { validateLogin } = require("../../validation"); // I use {} to extract only the validateLogin property.
+const { changeCredentialValidation } = require("../../validation"); // I use {} to extract only the validateLogin property.
 const mongoose = require("mongoose");
 const verifyToken = require("../middlewares/authMiddleware");
 // JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
@@ -248,5 +248,49 @@ router.get("/:idUser/alerts", verifyToken((authData) => {
     return res.status(501).send(err);
   }
 });
+
+
+// CHANGE CREDENTIALS 
+router.patch(
+  "/:userId",
+  verifyToken((authData) => {
+    if (authData.userId === req.params.userId) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req) return res.status(400).send("Request is null");
+      
+      if (!req.params.userId) return res.status(400).send("User ID is required");
+      
+      if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+        return res.status(400).send("Invalid User ID");
+
+      // validate the data
+      const { error } = changeCredentialValidation(req.body);
+      if(error) return res.status(400).send(error.details[0].message);
+      
+      const newUsername = req.body.username;
+      const newPassword = req.body.password;
+
+      if (!newUsername) return res.status(400).send("Username is required");
+      if (!newPassword) return res.status(400).send("Password is required");
+
+      const user = await User.findOne({ _id: req.params.userId });
+
+      if (!user) return res.status(404).send("User not found");
+
+      if (newUsername) user.username = req.body.username;
+      if (newPassword) user.password = req.body.password;
+
+      const updatedUser = await user.save();
+
+      return res.status(200).send(updatedUser);
+    } catch (err) {
+      console.log(err);
+      return res.status(501).send(err);
+    }
+  }
+);
 
 module.exports = router;
