@@ -44,6 +44,9 @@ router.post("", async (req, res) => {
         certificateCode: req.body.volunteer.certificateCode
           ? req.body.volunteer.certificateCode
           : undefined,
+        isAvailable: req.body.volunteer.isAvailable
+          ? req.body.volunteer.isAvailable
+          : false,
       },
       certifier: {
         isCertifier: req.body.certifier.isCertifier
@@ -222,7 +225,7 @@ router.get(
       const user = await User.findById(req.params.idUser);
 
       if (!user) return res.status(404).send("User not found");
-
+      if (user.volunteer.isAvailable === false) return res.status(400).send("User is not available");
       const userLatitude = user.latitude;
       const userLongitude = user.longitude;
 
@@ -253,4 +256,38 @@ router.get(
   }
 );
 
+// MODIFY AVAILABILITY OF A VOLUNTEER
+router.patch("/:userId/availability", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null\n");
+
+    if (!req.params.userId)
+      return res.status(400).send("User ID is required\n");
+
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+      return res.status(400).send("Invalid User ID\n");
+
+    if (req.body.isAvailable === undefined)
+      return res.status(400).send("isAvailable is required\n");
+
+    const result = await User.updateOne(
+      { _id: req.params.userId },
+      {
+        $set: {
+          "volunteer.isAvailable": req.body.isAvailable,
+        },
+      }
+    );
+    if (result.matchedCount === 0)
+      return res.status(404).send("User not found\n");
+
+    if (result.modifiedCount === 0)
+      return res.status(400).send("User availability is already set\n");
+
+    return res.status(200).send("User availability updated successfully");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
+  }
+});
 module.exports = router;
