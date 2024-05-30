@@ -21,24 +21,19 @@
         />
         <password-error-banner :show="passwordError" />
       </div>
-      <button type="submit">Change credentials</button>
-      <button type="reset">Reset</button>
+      <div class="container_buttons_inside_form">
+        <button type="submit" class="button_inside_form">Change credentials</button>
+        <button type="reset" class="button_inside_form">Reset</button>
+      </div>
     </form>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import { getToken, decodeToken, removeToken } from "../services/tokenManagement.js";
 import PasswordErrorBanner from "@/components/PasswordErrorBanner.vue";
-import {
-  saveToken,
-  removeToken,
-  isLoggedIn,
-  decodeToken,
-  isVolunteer,
-  isCertifier,
-  isOperator118,
-} from "@/services/tokenManagement.js";
+const userToken = decodeToken(getToken());
 
 export default {
   components: {
@@ -53,16 +48,45 @@ export default {
       },
     };
   },
-
   methods: {
-    async changeCreds() {
+    changeCreds() {
       const newUserCredentials = {
-        newUsername: this.credentials.newUsername,
-        newPassword: this.credentials.newPassword,
+        username: this.credentials.newUsername,
+        password: this.credentials.newPassword,
       };
 
-    axios
-     
+      // Do a patch request to http://localhost:3000/api/v1/users/:userId with newUserCredentials
+      axios
+        .patch(
+          `http://localhost:3000/api/v1/users/${userToken.userId}`,
+          {
+            username: newUserCredentials.username,
+            password: newUserCredentials.password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then(
+          (response) => {
+            this.passwordError = false;
+            console.log(response);
+            // remove token from local storage
+            removeToken();
+            // advice user that credentials have been changed
+            alert("Credenziali cambiate con successo. Effettua nuovamente il login.");
+            this.$router.push("/login");
+          },
+          (error) => {
+            this.passwordError = true;
+            console.error("Error changing credentials:", error.response.data);
+          }
+        )
+        .catch((error) => {
+          console.error("Axios Request failed", error);
+        });
     },
   },
 };

@@ -158,7 +158,7 @@ export default {
       return true;
     },
     validatePassword(password) {
-      const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6}$/;
+      const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/;
       if (!re.test(password)) {
         alert(
           "Invalid password format. Password should be at least 6 characters long and contain at least one numeric digit, one uppercase letter, one special character and one lowercase letter.\n"
