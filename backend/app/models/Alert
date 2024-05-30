@@ -6,8 +6,8 @@ const triageTypes = {
   1: "Emergenza",
   2: "Urgenza",
   3: "Urgenza differibile",
-  4: "urgenza minore",
-  5: "non urgenza",
+  4: "Urgenza minore",
+  5: "Non urgenza",
 };
 
 const emergencyTypes = {

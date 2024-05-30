@@ -28,6 +28,7 @@ const registerValidation = (data) => {
         isVolunteer: joi.boolean().optional(),
         acceptedAlert: joi.string().optional(),
         certificateCode: joi.string().optional(),
+        isAvailable: joi.boolean().optional(),
       })
       .optional(),
     certifier: joi
