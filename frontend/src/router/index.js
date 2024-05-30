@@ -56,6 +56,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/createAlert",
+      name: "createAlert",
+      component: () => import("../views/CreateAlertView.vue"),
+    },
+    {
       path: "/action118",
       name: "Action_118",
       component: () => import("../views/Action118View.vue"),
@@ -78,6 +83,11 @@ const router = createRouter({
       name: "agreeToAlert",
       component: () => import("../views/AgreeToAlertView.vue"),
       meta: { requiresAuth: true },
+    },
+    {
+      path: "/changeCredentials",
+      name: "changeCredentials",
+      component: () => import("../views/ChangeCredentialsView.vue"),
     },
   ],
 });
