@@ -19,6 +19,7 @@ const authenticationRoute = require("./app/routes/Authentication");
 const daeRoute = require("./app/routes/DAEController");
 const clinicRoute = require("./app/routes/ClinicController");
 const hospitalRoute = require("./app/routes/HospitalController");
+const bestPractises = require("./app/routes/BestPractisesController");
 
 // Route middleware
 app.use("/api/v1/users", usersRoute);
@@ -27,6 +28,8 @@ app.use("/api/v1/tokens", authenticationRoute);
 app.use("/api/v1/daes", daeRoute);
 app.use("/api/v1/clinics", clinicRoute);
 app.use("/api/v1/hospitals", hospitalRoute);
+app.use("/api/v1/bestpractises", bestPractises);
+
 
 /**
  * Configure mongoose
@@ -35,12 +38,10 @@ app.use("/api/v1/hospitals", hospitalRoute);
  * Configure mongoose
  */
 // mongoose.Promise = global.Promise;
-app.locals.db = mongoose
-  .connect(process.env.DB_CONNECT, {})
-  .then(() => {
-    console.log("Connected to Database");
+app.locals.db = mongoose.connect(process.env.DB_CONNECT, {}).then(() => {
+  console.log("Connected to Database");
 
-    app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
   });
+});

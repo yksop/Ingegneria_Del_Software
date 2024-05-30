@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const Alert = require("../models/Alert");
+const { Alert, triageTypes, emergencyTypes } = require("../models/Alert");
 const mongoose = require("mongoose");
 const { alertValidation } = require("../../validation");
 const verifyToken = require("../middlewares/authMiddleware");
+
 // Create and save new Alert in the DB
 router.post(
   "",
@@ -17,11 +18,20 @@ router.post(
       const { error } = alertValidation(req.body);
       if (error) return res.status(400).send(error.details[0].message);
 
+      // Convert the numeric triage type to its string representation
+      const triageType = triageTypes[req.body.triage];
+      if (!triageType) return res.status(400).send("Invalid triage type");
+
+      // Convert the numeric emergency type to its string representation
+      const emergencyType = emergencyTypes[req.body.emergency];
+      if (!emergencyType) return res.status(400).send("Invalid emergency type");
+
       // Create a new Alert
       const newAlert = new Alert({
         latitude: req.body.latitude,
         longitude: req.body.longitude,
-        triage: req.body.triage,
+        triage: triageType,
+        emergency: emergencyType,
         radius: req.body.radius,
         expiresIn: req.body.expiresIn,
         isActive: req.body.isActive,
@@ -60,7 +70,6 @@ router.post(
       console.log("Error in saving the Alert in the DB: " + err);
       // send the error in the response
       return res.status(400).send(err);
-    }
   }
 );
 
