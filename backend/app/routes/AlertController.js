@@ -71,6 +71,7 @@ router.post(
       // send the error in the response
       return res.status(400).send(err);
   }
+}
 );
 
 
