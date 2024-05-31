@@ -74,7 +74,6 @@ router.post(
 }
 );
 
-
 // RETIRE ALERT
 router.put(
   "/:id",

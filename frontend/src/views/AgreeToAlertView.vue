@@ -104,7 +104,9 @@ export default {
       this.bestPracticeDescription = "";
       axios
         .put(
-          `http://localhost:3000/api/v1/users/${userToken.userId}`,
+          `http://localhost:3000/api/v1/users/${
+            decodeToken(getToken()).userId
+          }`,
           {
             alertId: this.alerts[index]._id,
           },

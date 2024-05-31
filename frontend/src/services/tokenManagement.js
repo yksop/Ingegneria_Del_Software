@@ -18,27 +18,27 @@ export function isLoggedIn() {
 }
 
 export function decodeToken(token) {
-    if (isLoggedIn()) {
-        const payload = token.split('.')[1];
-        const decodedPayload = atob(payload);
-        return JSON.parse(decodedPayload);
-    }else{
-        return false;
-    }
+  if (isLoggedIn()) {
+    const payload = token.split(".")[1];
+    const decodedPayload = atob(payload);
+    return JSON.parse(decodedPayload);
+  } else {
+    return false;
+  }
 }
 
-export function isAvailable(){
+export function isAvailable() {
   return decodeToken(getToken()).isAvailable;
 }
 
-export function isVolunteer(){
-    return decodeToken(getToken()).isVolunteer;
+export function isVolunteer() {
+  return decodeToken(getToken()).isVolunteer;
 }
 
-export function isCertifier(){
-    return decodeToken(getToken()).isCertifier;
+export function isCertifier() {
+  return decodeToken(getToken()).isCertifier;
 }
 
-export function isOperator118(){
-    return decodeToken(getToken()).isOperator118;
+export function isOperator118() {
+  return decodeToken(getToken()).isOperator118;
 }

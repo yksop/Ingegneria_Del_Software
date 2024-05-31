@@ -225,7 +225,8 @@ router.get(
       const user = await User.findById(req.params.idUser);
 
       if (!user) return res.status(404).send("User not found");
-      if (user.volunteer.isAvailable === false) return res.status(400).send("User is not available");
+      if (user.volunteer.isAvailable === false)
+        return res.status(400).send("User is not available");
       const userLatitude = user.latitude;
       const userLongitude = user.longitude;
 
@@ -291,7 +292,7 @@ router.patch("/:userId/availability", async (req, res) => {
   }
 });
 
-// CHANGE CREDENTIALS 
+// CHANGE CREDENTIALS
 router.patch(
   "/:userId",
   verifyToken((authData) => {
@@ -301,16 +302,17 @@ router.patch(
   async (req, res) => {
     try {
       if (!req) return res.status(400).send("Request is null");
-      
-      if (!req.params.userId) return res.status(400).send("User ID is required");
-      
+
+      if (!req.params.userId)
+        return res.status(400).send("User ID is required");
+
       if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
         return res.status(400).send("Invalid User ID");
 
       // validate the data
       const { error } = changeCredentialValidation(req.body);
-      if(error) return res.status(400).send(error.details[0].message);
-      
+      if (error) return res.status(400).send(error.details[0].message);
+
       const newUsername = req.body.username;
       const newPassword = req.body.password;
 
@@ -333,4 +335,5 @@ router.patch(
     }
   }
 );
+
 module.exports = router;
