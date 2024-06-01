@@ -15,7 +15,11 @@ import L from 'leaflet';
 import axios from "axios";
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.css';
 import 'leaflet.awesome-markers/dist/leaflet.awesome-markers.js';
-
+import {
+  getUserId, 
+  isVolunteer,
+  isLoggedIn,
+} from "@/services/tokenManagement.js";
 
 export default {
   name: 'HomePageView',
@@ -47,6 +51,12 @@ export default {
     const redIcon = L.AwesomeMarkers.icon({
       icon: 'info-sign',
       markerColor: 'red',
+      prefix: 'glyphicon'
+    });
+
+    const blueIcon = L.AwesomeMarkers.icon({
+      icon: 'info-sign',
+      markerColor: 'blue',
       prefix: 'glyphicon'
     });
 
@@ -99,6 +109,40 @@ export default {
       .catch(error => {
         console.error('Errore nel recupero dei punti:', error);
     });
+
+    if(isLoggedIn()){
+      // get user Id
+      const userId = getUserId();
+      // get user data and ping him in the map
+      axios
+        .get(`http://localhost:3000/api/v1/users/${userId}`)
+        .then((response) => {
+          const user = response.data;
+          console.log(user);
+          const popupText = "<b>" + user.name + " " + user.surname + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + user.latitude + "," + user.longitude + "'>Navigate with Google Maps</a>"
+          const marker = L.marker([user.latitude, user.longitude])
+            .addTo(this.map)
+            .bindPopup(popupText);
+          this.markers.push(marker);
+          const alertId = user.volunteer.acceptedAlert;
+          
+          if(alertId != null){
+            axios
+            .get(`http://localhost:3000/api/v1/alerts/${alertId}`)
+            .then((response) => {
+              const alert = response.data;
+              console.log(alert);
+              const popupText = "<b>" + alert.description + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + alert.latitude + "," + alert.longitude + "'>Navigate with Google Maps</a>"
+              const marker = L.marker([alert.latitude, alert.longitude], {icon: blueIcon})
+                .addTo(this.map)
+                .bindPopup(popupText);
+              this.markers.push(marker);
+            })
+          }
+        }
+      )
+    }
+    
 
     // Aggiungi la legenda alla mappa
     const legend = L.control({ position: 'topright'});
