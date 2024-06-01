@@ -14,8 +14,8 @@
           </li>
         </ol>
       </div>
-      <router-link to="/logged">
-        <button class="logged-button">Go back</button>
+      <router-link to="/action118">
+        <button class="back-button">Go back</button>
       </router-link>
     </div>
   </div>
@@ -32,7 +32,11 @@ export default {
   },
   created() {
     axios
-      .get("http://localhost:3000/api/v1/alerts")
+      .get("http://localhost:3000/api/v1/alerts", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
       .then((response) => {
         this.alerts = response.data;
       })
@@ -45,7 +49,12 @@ export default {
       axios
         .patch(
           `http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`,
-          { isActive: false }
+          { isActive: false },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         )
         .then(() => {
           this.alerts.splice(index, 1);
@@ -79,7 +88,7 @@ li {
   margin: 10px;
 }
 
-.logged-button {
+.back-button {
   margin-top: 10px;
   align-self: center;
   margin-bottom: 20px;

@@ -1,4 +1,32 @@
+<template>
+  <div class="profile-section">
+    <h2>PROFILE</h2>
+    <p>Here you can see your profile</p>
+    <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
+    <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
+    <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
+    <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
+    <div class="availability-container">
+      <p>Is Available:</p>
+      <label class="switch">
+        <input
+          type="checkbox"
+          v-model="isAvailable"
+          @click="updateAvailability()"
+        />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+  <div class="button_universal">
+    <router-link to="/changeCredentials" class="button_text_universal"
+      >CHANGE CREDENTIALS</router-link
+    >
+  </div>
+</template>
+
 <script>
+
 import {
   isLoggedIn,
   isVolunteer,
@@ -18,8 +46,25 @@ export default {
       isOperator118: isOperator118(),
       isLoggedIn: isLoggedIn(),
       isAvailable: isAvailable(),
+      isLoading: true,
     };
   },
+}
+  created() {
+    axios
+      .get(
+        `http://localhost:3000/api/v1/users/${decodeToken(getToken()).userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        this.isAvailable = response.data.isAvailable;
+        this.isLoading = false;
+      })
+    },
   methods: {
     updateAvailability() {
       const modifyAvailability = {
@@ -52,34 +97,6 @@ export default {
   },
 };
 </script>
-
-<template>
-  <div class="profile-section">
-    <h2>PROFILE</h2>
-    <p>Here you can see your profile</p>
-    <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
-    <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
-    <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
-    <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
-    <div class="availability-container">
-      <p>Is Available:</p>
-      <label class="switch">
-        <input
-          type="checkbox"
-          v-model="isAvailable"
-          @click="updateAvailability()"
-        />
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
-  <div class="button_universal">
-    <router-link to="/changeCredentials" class="button_text_universal"
-      >CHANGE CREDENTIALS</router-link
-    >
-  </div>
-</template>
-
 <style>
 .profile-section {
   padding-top: 30px;
