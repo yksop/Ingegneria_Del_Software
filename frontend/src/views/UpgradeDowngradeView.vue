@@ -112,7 +112,9 @@ export default {
 
 <style>
 .upgradeDowngrade-container {
-  justify-content: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .upgradeDowngradeForm {

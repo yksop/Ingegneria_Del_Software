@@ -119,7 +119,7 @@ router.get(
             Math.pow(alert.longitude - userLongitude, 2)
         );
 
-        return distance <= alert.radius;
+        return distance <= alert.radius * 0.01;  // 0.01 of latitude (or longitude) is approximately 1.1 km
       });
 
       if (availableAlerts === null)

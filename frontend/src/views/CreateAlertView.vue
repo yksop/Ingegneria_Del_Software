@@ -26,16 +26,23 @@
 
       <div class="input-group">
         <label for="triage">Triage</label>
-        <input type="number" id="triage" v-model="alerts.triage" required />
+        <input
+          type="number"
+          min="1"
+          max="5"
+          id="triage"
+          v-model="alerts.triage"
+          required
+        />
       </div>
 
       <div class="input-group">
-        <label for="radius">Radius</label>
+        <label for="radius">Radius (in km)</label>
         <input type="number" id="radius" v-model="alerts.radius" required />
       </div>
 
       <div class="input-group">
-        <label for="expiresIn">expiresIn</label>
+        <label for="expiresIn">Expires in (minutes)</label>
         <input
           type="number"
           id="expiresIn"
@@ -61,13 +68,25 @@
       </div>
 
       <div class="input-group">
-        <label for="timeForAmbulance">Time Ambulance</label>
+        <label for="timeForAmbulance">Time Ambulance (in minutes)</label>
         <input
           type="number"
           id="timeForAmbulance"
           v-model="alerts.timeForAmbulance"
         />
       </div>
+
+      <div class="input-group">
+        <label for="emergency">Emergency</label>
+        <input
+          type="number"
+          min="1"
+          max="17"
+          id="emergency"
+          v-model="alerts.emergency"
+        />
+      </div>
+
       <div class="container_buttons_inside_form">
         <button type="Create" class="button_inside_form">Dirama Alert</button>
         <button type="reset" class="button_inside_form">Reset</button>
@@ -91,6 +110,7 @@ export default {
         isActive: false,
         description: "",
         timeForAmbulance: null,
+        emergency: null,
       },
       triageValid: true,
     };
@@ -99,7 +119,11 @@ export default {
   methods: {
     handleAlertCreation() {
       axios
-        .post("http://localhost:3000/api/v1/alerts", this.alerts)
+        .post("http://localhost:3000/api/v1/alerts", this.alerts, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
         .then(
           (response) => {
             console.log("ALERT CREATED SUCCESFULLY: ", response.data);
@@ -115,6 +139,7 @@ export default {
               isActive: false,
               description: "",
               timeForAmbulance: null,
+              emergency: null,
             };
             this.$router.push("/action118");
           },
@@ -145,7 +170,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 500px;
-  height: 750px;
+  height: 850px;
   /*box-sizing: border-box;*/
 }
 

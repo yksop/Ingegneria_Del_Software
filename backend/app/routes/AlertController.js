@@ -179,7 +179,7 @@ router.get(
       const alertLongitude = alert.longitude;
 
       // Extract the radius of the Alert
-      const alertRadius = alert.radius;
+      const alertRadius = alert.radius * 0.01;  // 0.01 of latitude (or longitude) is approximately 1.1 km  
 
       // Find all the users that are in the radius of the Alert
       const eligibleUsers = await User.find({

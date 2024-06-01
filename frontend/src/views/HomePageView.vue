@@ -41,11 +41,17 @@ export default {
       markerColor: 'green',
       prefix: 'glyphicon'
     });
+
+    const purpleIcon = L.AwesomeMarkers.icon({
+      icon: 'info-sign',
+      markerColor: 'purple',
+      prefix: 'glyphicon'
+    });
     
     const orangeIcon = L.AwesomeMarkers.icon({
       icon: 'info-sign',
       markerColor: 'orange',
-      prefix: 'glyphicon'
+      prefix: 'glyphicon',
     });
     
     const redIcon = L.AwesomeMarkers.icon({
@@ -85,7 +91,7 @@ export default {
         points.forEach(point => {
           var popupText = "<b>" + point.fumetto + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + point.latitudine + "," + point.longitudine + "'>Navigate with Google Maps</a>"
 
-          const marker = L.marker([point.latitudine, point.longitudine], {icon: orangeIcon})
+          const marker = L.marker([point.latitudine, point.longitudine], {icon: purpleIcon})
             .addTo(this.map)
             .bindPopup(popupText);
           this.markers.push(marker);
@@ -100,7 +106,7 @@ export default {
         const points = response.data;
         points.forEach(point => {
           var popupText = "<b>" + point.nome + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + point.latitudine + "," + point.longitudine + "'>Navigate with Google Maps</a>"
-          const marker = L.marker([point.latitudine, point.longitudine], {icon: redIcon})
+          const marker = L.marker([point.latitudine, point.longitudine], {icon: orangeIcon})
             .addTo(this.map)
             .bindPopup(popupText);
           this.markers.push(marker);
@@ -115,25 +121,36 @@ export default {
       const userId = getUserId();
       // get user data and ping him in the map
       axios
-        .get(`http://localhost:3000/api/v1/users/${userId}`)
+        .get(`http://localhost:3000/api/v1/users/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
         .then((response) => {
           const user = response.data;
           console.log(user);
-          const popupText = "<b>" + user.name + " " + user.surname + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + user.latitude + "," + user.longitude + "'>Navigate with Google Maps</a>"
-          const marker = L.marker([user.latitude, user.longitude])
+          const popupText = "<a href='https://www.google.com/maps/dir//" + user.latitude + "," + user.longitude + "'>" +  user.name + " " + user.surname + "</a>"
+          const marker = L.marker([user.latitude, user.longitude], {icon: blueIcon})
             .addTo(this.map)
-            .bindPopup(popupText);
+            .bindPopup(popupText).openPopup();
           this.markers.push(marker);
           const alertId = user.volunteer.acceptedAlert;
           
           if(alertId != null){
             axios
-            .get(`http://localhost:3000/api/v1/alerts/${alertId}`)
+            .get(`http://localhost:3000/api/v1/alerts/${alertId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+            )
             .then((response) => {
               const alert = response.data;
               console.log(alert);
               const popupText = "<b>" + alert.description + "</b><br>" + "<a href='https://www.google.com/maps/dir//" + alert.latitude + "," + alert.longitude + "'>Navigate with Google Maps</a>"
-              const marker = L.marker([alert.latitude, alert.longitude], {icon: blueIcon})
+              const marker = L.marker([alert.latitude, alert.longitude], {icon: redIcon})
                 .addTo(this.map)
                 .bindPopup(popupText);
               this.markers.push(marker);
@@ -151,8 +168,10 @@ export default {
       const div = L.DomUtil.create('div', 'legend')
       div.innerHTML += '<h4>Legenda</h4>';
       div.innerHTML += '<div><i style="background: green; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> DAE  </div>';
-      div.innerHTML += '<div><i style="background: orange; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ambulatori</div>';
-      div.innerHTML += '<div><i style="background: red; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ospedali</div>';
+      div.innerHTML += '<div><i style="background: purple; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ambulatori</div>';
+      div.innerHTML += '<div><i style="background: orange; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Ospedali</div>';
+      div.innerHTML += '<div><i style="background: red; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Alert</div>';
+      div.innerHTML += '<div><i style="background: blue; width: 18px; height: 18px; display: inline-block; border-radius: 50%; margin-right: 8px;"></i> Utente</div>';
       div.style.backgroundColor = 'white';
       div.style.padding = '10px';
       div.style.borderRadius = '10px';
