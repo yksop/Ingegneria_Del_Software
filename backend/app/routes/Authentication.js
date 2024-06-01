@@ -30,6 +30,7 @@ router.post("", async (req, res) => {
         isVolunteer: userToLogin.volunteer.isVolunteer,
         isCertifier: userToLogin.certifier.isCertifier,
         isOperator118: userToLogin.operator118.isOperator118,
+        isAvailable: userToLogin.volunteer.isAvailable,
       },
       process.env.JWT_SECRET,
       {

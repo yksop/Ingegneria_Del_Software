@@ -7,7 +7,7 @@ router.post("", async (req, res) => {
   try {
     if (!req) return res.status(400).send("Request is null\n");
     const newBestPractises = new BestPractises({
-      title: req.body.title.replace(/\\n/g, "<br/>"),
+      title: req.body.title,
       advise: req.body.advise.replace(/\\n/g, "<br/>"),
     });
 
@@ -24,12 +24,12 @@ router.post("", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-
     if (!req) return res.status(400).send("Request is null\n");
 
     if (!req.query.title)
       return res.status(400).send("Best Practise title is required\n");
     const title = req.query.title;
+
     const bestPractises = await BestPractises.findOne({ title: title });
 
     if (!bestPractises) return res.status(400).send("Best practises not found");

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const {Alert} = require("../models/Alert");
+const { Alert } = require("../models/Alert");
 const { registerValidation } = require("../../validation");
 const { changeCredentialValidation } = require("../../validation"); // I use {} to extract only the validateLogin property.
 const mongoose = require("mongoose");
@@ -45,6 +45,9 @@ router.post("", async (req, res) => {
         certificateCode: req.body.volunteer.certificateCode
           ? req.body.volunteer.certificateCode
           : undefined,
+        isAvailable: req.body.volunteer.isAvailable
+          ? req.body.volunteer.isAvailable
+          : false,
       },
       certifier: {
         isCertifier: req.body.certifier.isCertifier
@@ -232,48 +235,87 @@ router.put(
 );
 
 // RETURN ALL ALERTS NEAR A GIVEN USER
-router.get("/:idUser/alerts", verifyToken((authData) => {
-  if (authData.isVolunteer) return true;
-  return false;
-}), async (req, res) => {
+router.get(
+  "/:idUser/alerts",
+  verifyToken((authData) => {
+    if (authData.isVolunteer) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req) return res.status(400).send("Request is null");
+
+      const user = await User.findById(req.params.idUser);
+
+      if (!user) return res.status(404).send("User not found");
+      if (user.volunteer.isAvailable === false)
+        return res.status(400).send("User is not available");
+      const userLatitude = user.latitude;
+      const userLongitude = user.longitude;
+
+      // Fetch all active alerts from the database
+      const allActiveAlerts = await Alert.find({ isActive: true });
+
+      // Filter the alerts based on their radius
+      const availableAlerts = allActiveAlerts.filter((alert) => {
+        const distance = Math.sqrt(
+          Math.pow(alert.latitude - userLatitude, 2) +
+            Math.pow(alert.longitude - userLongitude, 2)
+        );
+
+        return distance <= alert.radius;
+      });
+
+      if (availableAlerts === null)
+        return res.status(404).send("List of availableAlert is null");
+
+      if (availableAlerts.length === 0)
+        return res.status(404).send("No alerts are in the radius of the user");
+
+      return res.send(availableAlerts);
+    } catch (err) {
+      console.log(err);
+      return res.status(501).send(err);
+    }
+  }
+);
+
+// MODIFY AVAILABILITY OF A VOLUNTEER
+router.patch("/:userId/availability", async (req, res) => {
   try {
-    if (!req) return res.status(400).send("Request is null");
+    if (!req) return res.status(400).send("Request is null\n");
 
-    const user = await User.findById(req.params.idUser);
+    if (!req.params.userId)
+      return res.status(400).send("User ID is required\n");
 
-    if (!user) return res.status(404).send("User not found");
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+      return res.status(400).send("Invalid User ID\n");
 
-    const userLatitude = user.latitude;
-    const userLongitude = user.longitude;
+    if (req.body.isAvailable === undefined)
+      return res.status(400).send("isAvailable is required\n");
 
-    // Fetch all active alerts from the database
-    const allActiveAlerts = await Alert.find({ isActive: true });
+    const result = await User.updateOne(
+      { _id: req.params.userId },
+      {
+        $set: {
+          "volunteer.isAvailable": req.body.isAvailable,
+        },
+      }
+    );
+    if (result.matchedCount === 0)
+      return res.status(404).send("User not found\n");
 
-    // Filter the alerts based on their radius
-    const availableAlerts = allActiveAlerts.filter((alert) => {
-      const distance = Math.sqrt(
-        Math.pow(alert.latitude - userLatitude, 2) +
-          Math.pow(alert.longitude - userLongitude, 2)
-      );
+    if (result.modifiedCount === 0)
+      return res.status(400).send("User availability is already set\n");
 
-      return distance <= alert.radius;
-    });
-
-    if (availableAlerts === null)
-      return res.status(404).send("List of availableAlert is null");
-
-    if (availableAlerts.length === 0)
-      return res.status(404).send("No alerts are in the radius of the user");
-
-    return res.send(availableAlerts);
+    return res.status(200).send("User availability updated successfully");
   } catch (err) {
     console.log(err);
-    return res.status(501).send(err);
+    return res.status(500).send(err);
   }
 });
 
-
-// CHANGE CREDENTIALS 
+// CHANGE CREDENTIALS
 router.patch(
   "/:userId",
   verifyToken((authData) => {
@@ -283,16 +325,17 @@ router.patch(
   async (req, res) => {
     try {
       if (!req) return res.status(400).send("Request is null");
-      
-      if (!req.params.userId) return res.status(400).send("User ID is required");
-      
+
+      if (!req.params.userId)
+        return res.status(400).send("User ID is required");
+
       if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
         return res.status(400).send("Invalid User ID");
 
       // validate the data
       const { error } = changeCredentialValidation(req.body);
-      if(error) return res.status(400).send(error.details[0].message);
-      
+      if (error) return res.status(400).send(error.details[0].message);
+
       const newUsername = req.body.username;
       const newPassword = req.body.password;
 

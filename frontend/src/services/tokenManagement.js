@@ -27,6 +27,10 @@ export function decodeToken(token) {
   }
 }
 
+export function isAvailable() {
+  return decodeToken(getToken()).isAvailable;
+}
+
 export function isVolunteer() {
   return decodeToken(getToken()).isVolunteer;
 }
