@@ -8,7 +8,8 @@
     <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
     <div class="availability-container">
       <p>Is Available:</p>
-      <label class="switch">
+      <div v-if="isLoading">Loading...</div>
+      <label class="switch" v-else>
         <input
           type="checkbox"
           v-model="isAvailable"
@@ -26,7 +27,6 @@
 </template>
 
 <script>
-
 import {
   isLoggedIn,
   isVolunteer,
@@ -49,7 +49,6 @@ export default {
       isLoading: true,
     };
   },
-}
   created() {
     axios
       .get(
@@ -61,15 +60,26 @@ export default {
         }
       )
       .then((response) => {
-        this.isAvailable = response.data.isAvailable;
+        this.isAvailable = response.data.volunteer.isAvailable;
         this.isLoading = false;
       })
-    },
+      .catch((error) => {
+        if (error.response) {
+          this.errorMessage = error.response.data;
+        } else {
+          this.errorMessage = "Error fetching data";
+        }
+      });
+  },
   methods: {
     updateAvailability() {
+      //get current user availability
+
+      console.log("Availability before:", this.isAvailable);
       const modifyAvailability = {
         isAvailable: !this.isAvailable,
       };
+      console.log("Availability after:", modifyAvailability.isAvailable);
       axios
         .patch(
           `http://localhost:3000/api/v1/users/${
