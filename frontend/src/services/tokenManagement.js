@@ -42,3 +42,7 @@ export function isCertifier() {
 export function isOperator118() {
   return decodeToken(getToken()).isOperator118;
 }
+
+export function getUserId() {
+  return decodeToken(getToken()).userId;
+}

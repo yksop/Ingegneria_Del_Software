@@ -11,6 +11,7 @@ const verifyToken = require("../middlewares/authMiddleware");
 const jwt = require("jsonwebtoken");
 const EXPIRAL_AUTH_TIME = "2 days";
 
+
 // REGISTRATION
 router.post("", async (req, res) => {
   try {
@@ -65,6 +66,27 @@ router.post("", async (req, res) => {
     res.send(savedUser);
   } catch (err) {
     res.status(400).send(err);
+  }
+});
+
+// GET A USER GIVEN ID
+router.get("/:userId", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    if (!req.params.userId) return res.status(400).send("User ID is required");
+
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+      return res.status(400).send("Invalid User ID");
+
+    const user = await User.findById(req.params.userId);
+
+    if (!user) return res.status(404).send("User not found");
+
+    return res.send(user);
+  } catch (err) {
+    console.log(err);
+    return res.status(501).send(err);
   }
 });
 
