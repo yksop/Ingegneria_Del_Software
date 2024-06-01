@@ -23,6 +23,11 @@
       >CHANGE CREDENTIALS</router-link
     >
   </div>
+  <div class="button_universal">
+    <button class="button_text_universal" @click="deleteProfile()"
+      >DELETE PROFILE</button
+    >
+  </div>
 </template>
 
 <script>
@@ -84,6 +89,28 @@ export default {
         .then((response) => {
           console.log("Availability modified:", response.data);
           this.isAvailable = modifyAvailability.isAvailable;
+        })
+        .catch((error) => {
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
+            this.errorMessage = "Error fetching data";
+          }
+        });
+    },
+    deleteProfile() {
+      axios
+        .delete(
+          `http://localhost:3000/api/v1/users/${decodeToken(getToken()).userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          localStorage.removeItem("token");
+          this.$router.push("/");
         })
         .catch((error) => {
           if (error.response) {
