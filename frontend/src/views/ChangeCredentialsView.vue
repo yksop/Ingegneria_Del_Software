@@ -22,7 +22,9 @@
         <password-error-banner :show="passwordError" />
       </div>
       <div class="container_buttons_inside_form">
-        <button type="submit" class="button_inside_form">Change credentials</button>
+        <button type="submit" class="button_inside_form">
+          Change credentials
+        </button>
         <button type="reset" class="button_inside_form">Reset</button>
       </div>
     </form>
@@ -31,9 +33,12 @@
 
 <script>
 import axios from "axios";
-import { getToken, decodeToken, removeToken } from "../services/tokenManagement.js";
+import {
+  getToken,
+  decodeToken,
+  removeToken,
+} from "../services/tokenManagement.js";
 import PasswordErrorBanner from "@/components/PasswordErrorBanner.vue";
-const userToken = decodeToken(getToken());
 
 export default {
   components: {
@@ -58,7 +63,9 @@ export default {
       // Do a patch request to http://localhost:3000/api/v1/users/:userId with newUserCredentials
       axios
         .patch(
-          `http://localhost:3000/api/v1/users/${userToken.userId}`,
+          `http://localhost:3000/api/v1/users/${
+            decodeToken(getToken()).userId
+          }`,
           {
             username: newUserCredentials.username,
             password: newUserCredentials.password,
@@ -72,16 +79,16 @@ export default {
         .then(
           (response) => {
             this.passwordError = false;
-            console.log(response);
             // remove token from local storage
             removeToken();
             // advice user that credentials have been changed
-            alert("Credenziali cambiate con successo. Effettua nuovamente il login.");
+            alert(
+              "Credenziali cambiate con successo. Effettua nuovamente il login."
+            );
             this.$router.push("/login");
           },
           (error) => {
             this.passwordError = true;
-            console.error("Error changing credentials:", error.response.data);
           }
         )
         .catch((error) => {

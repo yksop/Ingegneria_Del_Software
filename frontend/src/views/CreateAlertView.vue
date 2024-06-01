@@ -1,5 +1,5 @@
 <template>
-<div class="alert-creation-container">
+  <div class="alert-creation-container">
     <form @submit.prevent="handleAlertCreation" class="alert-form">
       <h2>Alert Creation</h2>
       <div class="input-group">
@@ -66,8 +66,7 @@
         <button type="reset" class="button_inside_form">Reset</button>
       </div>
     </form>
-</div>
-
+  </div>
 </template>
 
 <script>
@@ -92,11 +91,6 @@ export default {
 
   methods: {
     handleAlertCreation() {
-      // Validate triage
-      if (!this.validateTriage(this.alerts.triage)) {
-        this.triageValid = false;
-        return;
-      }
       axios
         .post("http://localhost:3000/api/v1/alerts", this.alerts)
         .then(
@@ -125,13 +119,6 @@ export default {
         .catch((error) => {
           console.error("Axios request failed:", error);
         });
-    },
-    validateTriage(triage) {
-      if (triage < 1 || triage > 5) {
-        alert("Triage must be between 1 and 5");
-        return false;
-      }
-      return true;
     },
   },
 };
@@ -176,5 +163,4 @@ h2 {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-
 </style>

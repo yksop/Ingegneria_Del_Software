@@ -65,11 +65,9 @@ router.post("", async (req, res) => {
 
     res.send(savedUser);
   } catch (err) {
-    console.log(err);
     res.status(400).send(err);
   }
 });
-
 
 // GET A USER GIVEN ID
 router.get("/:userId", async (req, res) => {
@@ -91,148 +89,6 @@ router.get("/:userId", async (req, res) => {
     return res.status(501).send(err);
   }
 });
-
-// AGREE TO ALERT
-router.put(
-  "/:userId",
-  verifyToken((authData) => {
-    if (authData.isVolunteer) return true;
-    return false;
-  }),
-  async (req, res) => {
-    try {
-      if (!req) return res.status(400).send("Request is null\n");
-
-      if (!req.params.userId)
-        return res.status(400).send("User ID is required\n");
-
-      if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
-        return res.status(400).send("Invalid User ID\n");
-
-      if (!req.body.alertId)
-        return res.status(400).send("Alert ID is required\n");
-
-      if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
-        return res.status(400).send("Invalid Alert ID\n");
-
-      const queriedUser = await User.findOne({ _id: req.params.userId });
-
-      if (queriedUser === null)
-        return res.status(404).send("The given user does not exist\n");
-
-      if (queriedUser.volunteer.isVolunteer === false)
-        return res.status(400).send("User is not a volunteer\n");
-
-      if (queriedUser.volunteer.acceptedAlert === req.body.alertId)
-        return res.status(400).send("User has already accepted the alert\n");
-
-      if (queriedUser.acceptedAlert != undefined)
-        return res
-          .status(400)
-          .send("User is already busy with another alert\n");
-
-      const acceptedAlert = await Alert.findOne({ _id: req.body.alertId });
-
-      if (!acceptedAlert) return res.status(400).send("Alert does not exist\n");
-
-      if (acceptedAlert.isActive === false)
-        return res.status(400).send("Alert is not active anymore\n");
-
-      const result = await User.updateOne(
-        { _id: req.params.userId },
-        {
-          $set: {
-            "volunteer.acceptedAlert": req.body.alertId,
-          },
-        }
-      );
-
-      if (result.matchedCount === 0)
-        return res.status(404).send("User not found\n");
-
-      if (result.modifiedCount === 0)
-        return res.status(400).send("User has already accepted the alert\n");
-
-      return res.status(200).send("User assigned to alert successfully");
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-  }
-);
-
-// UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
-router.put(
-  "/volunteers/:volunteerId",
-  verifyToken((authData) => {
-    if (authData.isCertifier) return true;
-    return false;
-  }),
-  async (req, res) => {
-    try {
-      if (!req) return res.status(400).send("Request is null\n");
-
-      if (!req.params.volunteerId)
-        return res.status(400).send("User ID is required\n");
-
-      if (mongoose.Types.ObjectId.isValid(req.params.volunteerId) === false)
-        return res.status(400).send("Invalid User ID\n");
-
-      const queriedUser = await User.findOne({ _id: req.params.volunteerId });
-
-      if (queriedUser === null)
-        return res.status(404).send("The given user does not exist\n");
-
-      if (queriedUser.isVolunteer === true)
-        return res.status(400).send("User is already a volunteer\n");
-
-      if (req.body.certificateCode === undefined)
-        return res.status(400).send("Certificate code is required\n");
-
-      if (req.body.isVolunteer === false) {
-        console.log("isVolunteer is false");
-        var result = await User.updateOne(
-          { _id: req.params.volunteerId },
-          {
-            $set: {
-              "volunteer.isVolunteer": req.body.isVolunteer,
-            },
-            $unset: {
-              "volunteer.certificateCode": "",
-            },
-          }
-        );
-      }
-
-      if (req.body.isVolunteer === true) {
-        console.log("isVolunteer is true");
-        var result = await User.updateOne(
-          { _id: req.params.volunteerId },
-          {
-            $set: {
-              "volunteer.isVolunteer": req.body.isVolunteer,
-              "volunteer.certificateCode": req.body.certificateCode,
-            },
-          }
-        );
-      }
-      console.log(result);
-      if (result.modifiedCount === 0) {
-        if (req.body.isVolunteer === true) {
-          return res.status(400).send("User is already a volunteer");
-        } else {
-          return res
-            .status(400)
-            .send("User doesn't require changes, is not a volunteer");
-        }
-      }
-      return res.status(200).send("User updated successfully");
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send(err);
-    }
-  }
-);
 
 // RETURN ALL ALERTS NEAR A GIVEN USER
 router.get(
@@ -274,56 +130,17 @@ router.get(
 
       return res.send(availableAlerts);
     } catch (err) {
-      console.log(err);
       return res.status(501).send(err);
     }
   }
 );
 
-// MODIFY AVAILABILITY OF A VOLUNTEER
-router.patch("/:userId/availability", async (req, res) => {
-  try {
-    if (!req) return res.status(400).send("Request is null\n");
-
-    if (!req.params.userId)
-      return res.status(400).send("User ID is required\n");
-
-    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
-      return res.status(400).send("Invalid User ID\n");
-
-    if (req.body.isAvailable === undefined)
-      return res.status(400).send("isAvailable is required\n");
-
-    const result = await User.updateOne(
-      { _id: req.params.userId },
-      {
-        $set: {
-          "volunteer.isAvailable": req.body.isAvailable,
-        },
-      }
-    );
-    if (result.matchedCount === 0)
-      return res.status(404).send("User not found\n");
-
-    if (result.modifiedCount === 0)
-      return res.status(400).send("User availability is already set\n");
-
-    return res.status(200).send("User availability updated successfully");
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send(err);
-  }
-});
-
-// CHANGE CREDENTIALS
+// MODIFY AVAILABILITY OF A VOLUNTEER, CHANGE CREDENTIALS, AGREE TO AN ALERT, UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
 router.patch(
   "/:userId",
-  verifyToken((authData) => {
-    if (authData.userId === req.params.userId) return true;
-    return false;
-  }),
   async (req, res) => {
     try {
+      var message = "";
       if (!req) return res.status(400).send("Request is null");
 
       if (!req.params.userId)
@@ -332,31 +149,95 @@ router.patch(
       if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
         return res.status(400).send("Invalid User ID");
 
-      // validate the data
-      const { error } = changeCredentialValidation(req.body);
-      if (error) return res.status(400).send(error.details[0].message);
-
-      const newUsername = req.body.username;
-      const newPassword = req.body.password;
-
-      if (!newUsername) return res.status(400).send("Username is required");
-      if (!newPassword) return res.status(400).send("Password is required");
-
       const user = await User.findOne({ _id: req.params.userId });
 
       if (!user) return res.status(404).send("User not found");
 
-      if (newUsername) user.username = req.body.username;
-      if (newPassword) user.password = req.body.password;
+      // Change credentials if new username or password is provided (req.body.username, req.body.password)
+      if (req.body.username !== undefined || req.body.password !== undefined) {
+        const { error } = changeCredentialValidation(req.body);
 
-      const updatedUser = await user.save();
+        if (error) return res.status(400).send(error.details[0].message);
 
-      return res.status(200).send(updatedUser);
+        if (req.body.username) user.username = req.body.username;
+
+        if (req.body.password) user.password = req.body.password;
+        message = "User credentials updated successfully";
+      }
+
+      // Modify availability if isAvailable is provided (req.body.isAvailable)
+      if (req.body.isAvailable !== undefined) {
+        user.volunteer.isAvailable = req.body.isAvailable;
+        user.volunteer.acceptedAlert = undefined;
+        message = "User availability updated successfully";
+      }
+
+      //Agree to an alert if alertId is provided (req.body.alertId)
+      if (req.body.alertId !== undefined) {
+        if (user.volunteer.isVolunteer === false)
+          return res.status(400).send("User is not a volunteer\n");
+
+        if (user.volunteer.acceptedAlert === req.body.alertId)
+          return res.status(400).send("User has already accepted the alert\n");
+
+        if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
+          return res.status(400).send("Invalid Alert ID\n");
+
+        const acceptedAlert = await Alert.findOne({ _id: req.body.alertId });
+
+        if (!acceptedAlert)
+          return res.status(400).send("Alert does not exist\n");
+
+        if (acceptedAlert.isActive === false)
+          return res.status(400).send("Alert is not active anymore\n");
+
+        user.volunteer.acceptedAlert = req.body.alertId;
+        message = "User assigned to alert successfully";
+      }
+
+      //Upgrade or downgrade user status
+      if (req.body.isVolunteer !== undefined) {
+        if (req.body.isVolunteer === false) {
+          user.volunteer.isVolunteer = req.body.isVolunteer;
+          user.volunteer.certificateCode = undefined;
+          user.volunteer.acceptedAlert = undefined;
+          message = "User is no longer a volunteer";
+        }
+        if (req.body.isVolunteer === true) {
+          if (req.body.certificateCode === undefined)
+            return res.status(400).send("Certificate code is required\n");
+
+          user.volunteer.isVolunteer = req.body.isVolunteer;
+          user.volunteer.certificateCode = req.body.certificateCode;
+          message = "User is now a volunteer";
+        }
+      }
+      await user.save();
+      return res.status(200).send(message);
     } catch (err) {
-      console.log(err);
       return res.status(501).send(err);
     }
   }
 );
 
+// DELETE USER
+router.delete("/:userId", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    if (!req.params.userId) return res.status(400).send("User ID is required");
+
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+      return res.status(400).send("Invalid User ID");
+
+    const user = await User.findOne({ _id: req.params.userId });
+
+    if (!user) return res.status(404).send("User not found");
+
+    await user.deleteOne();
+    return res.status(200).send("User deleted successfully");
+  } catch (err) {
+    return res.status(501).send(err);
+  }
+});
 module.exports = router;
