@@ -4,7 +4,13 @@
       <h2>Alert Creation</h2>
       <div class="input-group">
         <label for="latitude">Latitude</label>
-        <input type="number" id="latitude" v-model="alerts.latitude" required />
+        <input
+          type="number"
+          id="latitude"
+          v-model="alerts.latitude"
+          step="0.0000001"
+          required
+        />
       </div>
 
       <div class="input-group">
@@ -13,6 +19,7 @@
           type="number"
           id="longitude"
           v-model="alerts.longitude"
+          step="0.0000001"
           required
         />
       </div>
