@@ -6,7 +6,7 @@
     <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
     <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
     <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
-    <div class="availability-container">
+    <div class="availability-container" v-if="isVolunteer">
       <p>Is Available:</p>
       <label class="switch">
         <input
