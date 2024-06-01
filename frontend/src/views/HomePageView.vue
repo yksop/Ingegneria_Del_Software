@@ -133,7 +133,7 @@ export default {
           const popupText = "<a href='https://www.google.com/maps/dir//" + user.latitude + "," + user.longitude + "'>" +  user.name + " " + user.surname + "</a>"
           const marker = L.marker([user.latitude, user.longitude], {icon: blueIcon})
             .addTo(this.map)
-            .bindPopup(popupText).openPopup();
+            .bindPopup(popupText);
           this.markers.push(marker);
           const alertId = user.volunteer.acceptedAlert;
           
@@ -154,7 +154,10 @@ export default {
                 .addTo(this.map)
                 .bindPopup(popupText);
               this.markers.push(marker);
+              // Crea un cerchio sfumato
+              this.createGradientCircle([alert.latitude, alert.longitude], alert.radius*1000, 1);   
             })
+            
           }
         }
       )
@@ -199,6 +202,14 @@ export default {
       }
 
       this.tileLayer.addTo(this.map);
+    },
+    createGradientCircle(center, radius) {
+        L.circle(center, {
+        color: 'red',         // Colore del bordo
+        fillColor: 'black',     // Colore di riempimento
+        fillOpacity: 0.1,       // Opacità del riempimento (leggermente opaco)
+        radius: radius          // Raggio del cerchio
+      }).addTo(this.map);
     }
   }
 };
