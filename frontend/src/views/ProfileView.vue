@@ -49,7 +49,6 @@ export default {
       isLoading: true,
     };
   },
-}
   created() {
     axios
       .get(
@@ -61,7 +60,7 @@ export default {
         }
       )
       .then((response) => {
-        this.isAvailable = response.data.isAvailable;
+        this.isAvailable = response.data.volunteer.isAvailable;
         this.isLoading = false;
       })
     },
