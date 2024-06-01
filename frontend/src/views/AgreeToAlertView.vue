@@ -51,7 +51,6 @@
 <script>
 import axios from "axios";
 import { getToken, decodeToken } from "../services/tokenManagement.js";
-const userToken = decodeToken(getToken());
 
 export default {
   data() {
@@ -103,13 +102,11 @@ export default {
       this.read = false;
       this.bestPracticeDescription = "";
       axios
-        .put(
+        .patch(
           `http://localhost:3000/api/v1/users/${
             decodeToken(getToken()).userId
           }`,
-          {
-            alertId: this.alerts[index]._id,
-          },
+          { alertId: this.alerts[this.acceptedAlertIndex]._id },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

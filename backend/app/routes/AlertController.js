@@ -70,13 +70,13 @@ router.post(
       console.log("Error in saving the Alert in the DB: " + err);
       // send the error in the response
       return res.status(400).send(err);
+    }
   }
-}
 );
 
 // RETIRE ALERT
-router.put(
-  "/:id",
+router.patch(
+  "/:alertId",
   verifyToken((authData) => {
     if (authData.isOperator118) return true;
     return false;
@@ -88,20 +88,16 @@ router.put(
       if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
         return res.status(400).send("Invalid Alert ID\n");
 
-      const result = await Alert.updateOne(
-        { _id: req.params.id },
-        { isActive: false }
-      ).exec();
+      const alert = await Alert.findOne({ _id: req.params.alertId });
 
-      if (result.matchedCount === 0)
-        return res.status(404).send("Alert not found, no updates were made\n");
+      if (!alert) return res.status(404).send("Alert not found");
 
-      if (result.modifiedCount === 0)
-        return res
-          .status(400)
-          .send("Alert is already non-active, no updates were made\n");
-
-      return res.status(200).send("Alert updated successfully\n");
+      if (req.body.isActive !== undefined) {
+        alert.isActive = req.body.isActive;
+      }
+      await alert.save();
+      return res.status(200).send("Alert updated successfully");
+      
     } catch (err) {
       console.log(err);
       res.status(400).send(err);

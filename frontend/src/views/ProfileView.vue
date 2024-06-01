@@ -29,7 +29,8 @@ export default {
         .patch(
           `http://localhost:3000/api/v1/users/${
             decodeToken(getToken()).userId
-          }/availability`, modifyAvailability,
+          }`,
+          modifyAvailability,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -38,7 +39,7 @@ export default {
         )
         .then((response) => {
           console.log("Availability modified:", response.data);
-          this.isAvailable = modifyAvailability.isAvailable; 
+          this.isAvailable = modifyAvailability.isAvailable;
         })
         .catch((error) => {
           if (error.response) {
@@ -53,29 +54,30 @@ export default {
 </script>
 
 <template>
-
-<div class="profile-section">
-  <h2>PROFILE</h2>
-  <p>Here you can see your profile</p>
-  <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
-  <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
-  <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
-  <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
-  <div class="availability-container">
-    <p>Is Available:</p>
-    <label class="switch">
-      <input
-        type="checkbox"
-        v-model="isAvailable"
-        @click="updateAvailability()"
-      />
-      <span class="slider"></span>
-    </label>
+  <div class="profile-section">
+    <h2>PROFILE</h2>
+    <p>Here you can see your profile</p>
+    <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
+    <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
+    <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
+    <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
+    <div class="availability-container">
+      <p>Is Available:</p>
+      <label class="switch">
+        <input
+          type="checkbox"
+          v-model="isAvailable"
+          @click="updateAvailability()"
+        />
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
-</div>
-<div class="button_universal">
-<router-link to="/changeCredentials" class="button_text_universal">CHANGE CREDENTIALS</router-link>
-</div>
+  <div class="button_universal">
+    <router-link to="/changeCredentials" class="button_text_universal"
+      >CHANGE CREDENTIALS</router-link
+    >
+  </div>
 </template>
 
 <style>

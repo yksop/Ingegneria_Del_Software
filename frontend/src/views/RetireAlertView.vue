@@ -43,7 +43,10 @@ export default {
   methods: {
     removeAlert(index) {
       axios
-        .put(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`)
+        .patch(
+          `http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`,
+          { isActive: false }
+        )
         .then(() => {
           this.alerts.splice(index, 1);
         })
