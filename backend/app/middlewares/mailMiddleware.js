@@ -1,8 +1,10 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
+const User = require("../models/User");
 const router = express.Router();
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   const mailService = process.env.MAIL_SERVICE;
   const mailUser = process.env.APP_MAIL;
   const mailPass = process.env.MAIL_PASS;
@@ -10,6 +12,22 @@ router.post("/", (req, res) => {
   if (!mailService || !mailUser || !mailPass) {
     return res.status(500).send("Mail service is not properly configured.");
   }
+
+  const token = crypto.randomBytes(20).toString("hex");
+
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return res.status(404).send("No user found with that email address");
+  }
+
+  const result = await User.updateOne(
+    { email: req.body.email },
+    {
+      resetPasswordToken: token,
+      resetPasswordExpires: Date.now() + 1800000,
+    }
+  );
 
   let transporter = nodemailer.createTransport({
     service: mailService,
@@ -23,7 +41,10 @@ router.post("/", (req, res) => {
     from: mailUser,
     to: req.body.email,
     subject: "Password Reset",
-    text: "Here is your password reset link...",
+    text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+           Please click on the following link, or paste this into your browser to complete the process within 30 minutes of receiving it:\n\n
+           http://localhost:5173/retrievePassword/${token}\n\n
+           If you did not request this, please ignore this email and your password will remain unchanged.\n`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

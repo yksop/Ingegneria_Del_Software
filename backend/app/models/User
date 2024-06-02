@@ -16,6 +16,8 @@ module.exports = mongoose.model(
     password: { type: String, required: true },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
+    resetPasswordToken: { type: String, default: undefined },
+    resetPasswordExpires: { type: Date, default: undefined },
     volunteer: {
       isVolunteer: { type: Boolean, default: false },
       certificateCode: { type: String, default: undefined },

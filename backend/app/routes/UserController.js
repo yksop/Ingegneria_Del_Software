@@ -137,7 +137,7 @@ router.put(
 
 // UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
 router.put(
-  "/volunteers/:volunteerId",
+  "/volunteers/:volunteerId", // /:volunteerId/volunteers/
   verifyToken((authData) => {
     if (authData.isCertifier) return true;
     return false;

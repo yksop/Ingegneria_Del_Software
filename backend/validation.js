@@ -95,7 +95,24 @@ const validateLogin = (username, password) => {
   return true;
 };
 
+// RESET PASSWORD VALIDATION
+const resetPasswordValidation = (data) => {
+  const schema = joi.object({
+    password: joiPassword
+      .string()
+      .minOfLowercase(1)
+      .minOfUppercase(1)
+      .minOfNumeric(1)
+      .minOfSpecialCharacters(1)
+      .noWhiteSpaces()
+      .min(passwordMinLength)
+      .required(),
+  });
+  return schema.validate(data);
+};
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
 module.exports.alertValidation = alertValidation;
+module.exports.resetPasswordValidation = resetPasswordValidation;
