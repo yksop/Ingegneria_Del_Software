@@ -85,6 +85,17 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/forgotPassword",
+      name: "forgotPassword",
+      component: () => import("../views/ForgotPasswordView.vue"),
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/retrievePassword/:token",
+      name: "retrievePassword",
+      component: () => import("../views/RetrievePasswordView.vue"),
+      meta: { requiresAuth: false },
+    }
       path: "/changeCredentials",
       name: "changeCredentials",
       component: () => import("../views/ChangeCredentialsView.vue"),
@@ -96,7 +107,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     const token = localStorage.getItem("token");
     if (!token) {
-        router.push({ name: "login", query: { nextUrl: to.fullPath } });
+      router.push({ name: "login", query: { nextUrl: to.fullPath } });
     } else {
       next();
     }

@@ -220,6 +220,69 @@ router.patch(
   }
 );
 
+// GET A CERTAIN USER BASED ON ITS E-MAIL
+router.get("/:userEmail", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    if (!req.params.userEmail) return res.status(400).send("Email is required");
+
+    const foundUser = await User.findOne({ email: req.params.userEmail });
+
+    if (!foundUser) return res.status(404).send("User not found");
+
+    return res.status(200).send(foundUser);
+  } catch (err) {
+    console.log(err);
+    return res.status(501).send(err);
+  }
+});
+
+// RETURN ALL ALERTS NEAR A GIVEN USER
+router.get(
+  "/:idUser/alerts",
+  verifyToken((authData) => {
+    if (authData.isVolunteer) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req) return res.status(400).send("Request is null");
+
+      const user = await User.findById(req.params.idUser);
+
+      if (!user) return res.status(404).send("User not found");
+
+      const userLatitude = user.latitude;
+      const userLongitude = user.longitude;
+
+      // Fetch all active alerts from the database
+      const allActiveAlerts = await Alert.find({ isActive: true });
+
+      // Filter the alerts based on their radius
+      const availableAlerts = allActiveAlerts.filter((alert) => {
+        const distance = Math.sqrt(
+          Math.pow(alert.latitude - userLatitude, 2) +
+            Math.pow(alert.longitude - userLongitude, 2)
+        );
+
+        return distance <= alert.radius;
+      });
+
+      if (availableAlerts === null)
+        return res.status(404).send("List of availableAlert is null");
+
+      if (availableAlerts.length === 0)
+        return res.status(404).send("No alerts are in the radius of the user");
+
+      return res.send(availableAlerts);
+    } catch (err) {
+      console.log(err);
+      return res.status(501).send(err);
+    }
+  }
+);
+
 // DELETE USER
 router.delete("/:userId", async (req, res) => {
   try {
@@ -240,4 +303,5 @@ router.delete("/:userId", async (req, res) => {
     return res.status(501).send(err);
   }
 });
+
 module.exports = router;

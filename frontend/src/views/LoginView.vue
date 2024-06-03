@@ -22,6 +22,9 @@
         <password-error-banner :show="passwordError" />
       </div>
       <button type="submit">Login</button>
+      <RouterLink to="/forgotPassword" class="forgot-password-link"
+        >Forgot password?</RouterLink
+      >
     </form>
   </div>
 </template>
@@ -38,6 +41,7 @@ import {
   isCertifier,
   isOperator118,
 } from "@/services/tokenManagement.js";
+import { RouterLink } from "vue-router";
 
 export default {
   components: {
@@ -153,5 +157,17 @@ button:hover {
 
 button:active {
   background-color: #4045b2; /* Darker shade when the button is clicked */
+}
+
+.forgot-password-link {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+  color: #5c67f2;
+  text-decoration: none;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
 }
 </style>
