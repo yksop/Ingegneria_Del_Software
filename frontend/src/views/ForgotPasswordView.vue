@@ -28,7 +28,7 @@ export default {
   methods: {
     checkEmail() {
       axios
-        .get(`http://localhost:3000/api/v1/users/${this.email}`)
+        .get(`http://localhost:3000/api/v1/users/email/${this.email}`)
         .then((response) => {
           if (response.status === 200) {
             axios

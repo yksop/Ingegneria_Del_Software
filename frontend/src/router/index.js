@@ -95,7 +95,8 @@ const router = createRouter({
       name: "retrievePassword",
       component: () => import("../views/RetrievePasswordView.vue"),
       meta: { requiresAuth: false },
-    }
+    },
+    {
       path: "/changeCredentials",
       name: "changeCredentials",
       component: () => import("../views/ChangeCredentialsView.vue"),
