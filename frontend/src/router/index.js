@@ -5,7 +5,12 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/about",
+      redirect: "/home",
+    },
+    {
+      path: "/home",
+      name: "home",
+      component: () => import("../views/HomePageView.vue"),
     },
     {
       path: "/about",
@@ -51,6 +56,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/createAlert",
+      name: "createAlert",
+      component: () => import("../views/CreateAlertView.vue"),
+    },
+    {
       path: "/action118",
       name: "Action_118",
       component: () => import("../views/Action118View.vue"),
@@ -85,6 +95,10 @@ const router = createRouter({
       name: "retrievePassword",
       component: () => import("../views/RetrievePasswordView.vue"),
       meta: { requiresAuth: false },
+    }
+      path: "/changeCredentials",
+      name: "changeCredentials",
+      component: () => import("../views/ChangeCredentialsView.vue"),
     },
   ],
 });

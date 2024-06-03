@@ -28,6 +28,7 @@ const registerValidation = (data) => {
         isVolunteer: joi.boolean().optional(),
         acceptedAlert: joi.string().optional(),
         certificateCode: joi.string().optional(),
+        isAvailable: joi.boolean().optional(),
       })
       .optional(),
     certifier: joi
@@ -51,6 +52,7 @@ const alertValidation = (data) => {
     longitude: joi.number().required(),
     triage: joi.number().min(1).max(5).required(),
     radius: joi.number().min(1).required(),
+    emergency: joi.number().min(1).max(17).required(),
     expiresIn: joi.number().required(),
     isActive: joi.boolean().required(),
     description: joi.string(),
@@ -60,39 +62,63 @@ const alertValidation = (data) => {
 };
 
 // Login validation
-const loginValidation = (data) => {
+const validateLogin = (data) => {
   const schema = joi.object({
-    email: joi.string().min(6).required().email(),
-    password: joi.string().min(6).required(),
+    username: joi.string().min(usernameMinLength).required(),
+    password: joiPassword
+    .string()
+    .minOfLowercase(1)
+    .minOfUppercase(1)
+    .minOfNumeric(1)
+    .minOfSpecialCharacters(1)
+    .noWhiteSpaces()
+    .min(passwordMinLength)
+    .required(),
   });
   return schema.validate(data);
 };
 
-// Login validation
-const validateLogin = (username, password) => {
-  // Define rules
-  const usernameRegex = /^[a-zA-Z0-9_]{6,20}$/; // Username must be between 6 to 20 characters long and can include letters, numbers, and underscores
+// DAE Validation
+const daeValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    id: joi.number().required(),
+    codvia: joi.number().required(),
+    desvia: joi.string().required(),
+    fumetto: joi.string().required(),
+  });
+  return schema.validate(data);
+};
 
-  // Validate username
-  if (!usernameRegex.test(username)) {
-    throw new Error(
-      "Invalid username. It must be between " +
-        usernameMinLength +
-        " to 20 characters long and can only contain letters, numbers, and underscores."
-    );
-  }
+const clinicValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    civico_num: joi.number().optional(),
+    civico_let: joi.string().optional(),
+    civico_alf: joi.string().optional(),
+    desvia: joi.string().required(),
+    strada: joi.number().required(),
+    fumetto: joi.string().required(),
+  });
+  return schema.validate(data);
+}
 
-  // Validate password
-  if (password.length < passwordMinLength) {
-    throw new Error(
-      "Invalid password. It must be at least " +
-        passwordMinLength +
-        " characters long."
-    );
-  }
+const hospitalValidation = (data) => {
+  const schema = joi.object({
+    latitude: joi.number().required(),
+    longitude: joi.number().required(),
+    nome: joi.string().required(),
+    tipo: joi.string().required(),
+    via: joi.string().required(),
+    civico: joi.number().optional(),
+  });
+  return schema.validate(data);
+}
 
-  // If everything is ok, I return true --> email & password correct!
-  return true;
+const changeCredentialValidation = (data) => {
+  return validateLogin(data);
 };
 
 // RESET PASSWORD VALIDATION
@@ -112,7 +138,10 @@ const resetPasswordValidation = (data) => {
 };
 
 module.exports.registerValidation = registerValidation;
-module.exports.loginValidation = loginValidation;
 module.exports.validateLogin = validateLogin;
 module.exports.alertValidation = alertValidation;
 module.exports.resetPasswordValidation = resetPasswordValidation;
+module.exports.daeValidation = daeValidation;
+module.exports.clinicValidation = clinicValidation;
+module.exports.hospitalValidation = hospitalValidation;
+module.exports.changeCredentialValidation = changeCredentialValidation;

@@ -15,7 +15,6 @@
           type="text"
           id="certificateCode"
           v-model="formData.certificateCode"
-          required
         />
       </div>
       <div class="input-group">
@@ -86,8 +85,8 @@ export default {
       this.formData.action = "";
 
       axios
-        .put(
-          `http://localhost:3000/api/v1/users/volunteers/${this.formData.id}`,
+        .patch(
+          `http://localhost:3000/api/v1/users/${this.formData.id}`,
           upgradeDowngradeUserStatus,
           {
             headers: {
@@ -113,7 +112,9 @@ export default {
 
 <style>
 .upgradeDowngrade-container {
-  justify-content: left;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .upgradeDowngradeForm {

@@ -1,10 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// var Position = new Schema({
-//   latitude: { type: Number, required: false },
-//   longitude: { type: Number, required: false },
-// });
 
 module.exports = mongoose.model(
   "User",
@@ -22,6 +18,7 @@ module.exports = mongoose.model(
       isVolunteer: { type: Boolean, default: false },
       certificateCode: { type: String, default: undefined },
       acceptedAlert: { type: String, default: undefined },
+      isAvailable: { type: Boolean, default: false },
     },
     certifier: {
       isCertifier: { type: Boolean, default: false },

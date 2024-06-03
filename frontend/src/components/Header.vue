@@ -167,6 +167,9 @@ export default {
     <nav class="navbar">
       <ul>
         <li>
+          <RouterLink to="/home">Home</RouterLink>
+        </li>
+        <li>
           <RouterLink to="/about">About</RouterLink>
         </li>
         <li>
