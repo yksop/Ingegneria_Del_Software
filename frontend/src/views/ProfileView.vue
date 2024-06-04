@@ -17,21 +17,29 @@
         <span class="slider"></span>
       </label>
     </div>
+    <div class="button_universal">
+      <router-link to="/changeCredentials" class="button_text_universal"
+        >CHANGE CREDENTIALS</router-link
+      >
+    </div>
+    <div class="button_universal" @click="showPopup=true">
+      <button class="button_text_universal">
+        DELETE PROFILE
+      </button>
+      </div>
   </div>
-  <div class="button_universal">
-    <router-link to="/changeCredentials" class="button_text_universal"
-      >CHANGE CREDENTIALS</router-link
+  <div v-if="showPopup" class="popup">
+    <p>Are you sure you want to delete your profile?</p>
+    <button class="button_popup" @click="deleteProfile"
+      >Agree</button
     >
-  </div>
-  <div class="button_universal">
-    <button class="button_text_universal" @click="deleteProfile()"
-      >DELETE PROFILE</button
+    <button class="button_popup" @click="showPopup = false"
+      >Cancel</button
     >
   </div>
 </template>
 
 <script>
-
 import {
   isLoggedIn,
   isVolunteer,
@@ -52,6 +60,7 @@ export default {
       isLoggedIn: isLoggedIn(),
       isAvailable: isAvailable(),
       isLoading: true,
+      showPopup: false,
     };
   },
   created() {
@@ -67,8 +76,8 @@ export default {
       .then((response) => {
         this.isAvailable = response.data.volunteer.isAvailable;
         this.isLoading = false;
-      })
-    },
+      });
+  },
   methods: {
     updateAvailability() {
       const modifyAvailability = {
@@ -101,7 +110,9 @@ export default {
     deleteProfile() {
       axios
         .delete(
-          `http://localhost:3000/api/v1/users/${decodeToken(getToken()).userId}`,
+          `http://localhost:3000/api/v1/users/${
+            decodeToken(getToken()).userId
+          }`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -197,4 +208,33 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 45%;
 }
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: rgb(241, 242, 243);
+  border: 5px solid black;
+
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  max-height: 500px;
+  padding: 20px;
+  border: 1px solid black;
+  overflow: auto;
+}
+.button_popup {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 24px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 10px;
+}
+.button_popup:hover {
+  background-color: #36f45c;
+}
+
 </style>
