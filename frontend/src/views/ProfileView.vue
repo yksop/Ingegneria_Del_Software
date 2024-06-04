@@ -32,7 +32,7 @@
     <router-link to="/changeCredentials" class="button_universal">
       <div class="button_text_universal">CHANGE CREDENTIALS</div>
     </router-link>
-    <button class="button_universal" @click="deleteProfile()">
+    <button class="button_universal" @click="showPopup=true">
       <div class="button_text_universal">DELETE PROFILE</div>
     </button>
   </div>
@@ -128,6 +128,7 @@ export default {
         });
     },
     deleteProfile() {
+      showPopup = false;
       axios
         .delete(
           `http://localhost:3000/api/v1/users/${
@@ -140,7 +141,6 @@ export default {
           }
         )
         .then((response) => {
-          // TODO: chiedi all'utente se è sicuro di eliminare l'account
           alert("Profile deleted");
           localStorage.removeItem("token");
           this.$router.push("/");
