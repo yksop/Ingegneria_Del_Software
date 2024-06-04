@@ -4,7 +4,7 @@
     <section class="contact-info">
       <h3>INFORMAZIONI</h3>
       <p>Telefono: 0461 281567</p>
-      <p>Email: <a href="mailto:info@vtc.com">info@vtc.com</a></p>
+      <p>Email: <a href="mailto:volontaritrentiniconnessi@gmail.com">volontaritrentiniconnessi@gmail.com</a></p>
     </section>
     <section class="time-section">
       <h3>ORARI DI APERTURA</h3>

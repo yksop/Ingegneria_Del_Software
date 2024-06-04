@@ -1,32 +1,40 @@
 <template>
   <div class="profile-section">
     <h2>PROFILE</h2>
-    <p>Here you can see your profile</p>
-    <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
-    <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
-    <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
-    <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
-    <div class="availability-container" v-if="isVolunteer">
-      <p>Is Available:</p>
-      <label class="switch">
-        <input
-          type="checkbox"
-          v-model="isAvailable"
-          @click="updateAvailability()"
-        />
-        <span class="slider"></span>
-      </label>
+    <div class="profile-info">
+      <div class="personal-info">
+        <p  v-if="isLoggedIn"> Name: {{name}}</p> 
+        <p  v-if="isLoggedIn"> Surname: {{surname}}</p> 
+        <p  v-if="isLoggedIn"> Username: {{username}}</p> 
+        <p  v-if="isLoggedIn"> Mail: {{email}}</p> 
+        <p  v-if="isLoggedIn"> Position:  [ {{latitude}} , {{longitude}} ]</p> 
+      </div>
+      <div class="personal-info"> 
+        <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
+        <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
+        <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
+        <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
+        <div class="availability-container" v-if="isVolunteer">
+          <p>Is Available:</p>
+          <label class="switch">
+            <input
+              type="checkbox"
+              v-model="isAvailable"
+              @click="updateAvailability()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="button_universal">
-    <router-link to="/changeCredentials" class="button_text_universal"
-      >CHANGE CREDENTIALS</router-link
-    >
-  </div>
-  <div class="button_universal">
-    <button class="button_text_universal" @click="deleteProfile()"
-      >DELETE PROFILE</button
-    >
+  <div class="button_container_universal">
+    <router-link to="/changeCredentials" class="button_universal">
+      <div class="button_text_universal">CHANGE CREDENTIALS</div>
+    </router-link>
+    <button class="button_universal" @click="deleteProfile()">
+      <div class="button_text_universal">DELETE PROFILE</div>
+    </button>
   </div>
 </template>
 
@@ -51,6 +59,12 @@ export default {
       isOperator118: isOperator118(),
       isLoggedIn: isLoggedIn(),
       isAvailable: isAvailable(),
+      name: "",
+      surname: "",
+      username: "",
+      email: "",
+      latitude: "",
+      longitude: "",
       isLoading: true,
     };
   },
@@ -66,6 +80,12 @@ export default {
       )
       .then((response) => {
         this.isAvailable = response.data.volunteer.isAvailable;
+        this.name = response.data.name;
+        this.surname = response.data.surname;
+        this.email = response.data.email;
+        this.username = response.data.username;
+        this.latitude = response.data.latitude;
+        this.longitude = response.data.longitude;
         this.isLoading = false;
       })
     },
@@ -109,6 +129,8 @@ export default {
           }
         )
         .then((response) => {
+          // TODO: chiedi all'utente se è sicuro di eliminare l'account
+          alert("Profile deleted");
           localStorage.removeItem("token");
           this.$router.push("/");
         })
@@ -126,15 +148,16 @@ export default {
 <style>
 .profile-section {
   padding-top: 30px;
-  padding-bottom: 60px;
   padding-left: 20px;
   padding-right: 20px;
 }
 
-.profile-section h2 {
-  color: #333;
-  text-align: center;
+.profile-info {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 50px;
 }
+
 .switch {
   position: relative;
   display: inline-block;

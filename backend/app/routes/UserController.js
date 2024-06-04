@@ -168,6 +168,16 @@ router.patch("/:userId", async (req, res) => {
       message = "User availability updated successfully";
     }
 
+    if (req.body.latitude !== undefined) {
+      user.latitude = req.body.latitude;
+      message = "User latitude updated successfully";
+    }
+
+    if (req.body.longitude !== undefined) {
+      user.longitude = req.body.longitude;
+      message = "User longitude updated successfully";
+    }
+
     //Agree to an alert if alertId is provided (req.body.alertId)
     if (req.body.alertId !== undefined) {
       if (user.volunteer.isVolunteer === false)
