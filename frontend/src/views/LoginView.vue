@@ -25,7 +25,7 @@
       <label>
         <input type="checkbox" v-model="consenso"/>
         Acconsento al trattamento dei miei dati personali secondo la normativa
-        vigenti.
+        vigente.
       </label>
       <br><br>
       <button type="submit">Login</button>
