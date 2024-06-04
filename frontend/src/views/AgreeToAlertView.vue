@@ -34,6 +34,8 @@
               {{ selectedAlert.timeForAmbulance }} <br />
               <span class="alert-info">Description:</span>
               {{ selectedAlert.description }}<br />
+              <span class="alert-info">Emergency:</span>
+              {{ selectedAlert.emergency }}<br />
               <button @click="readBestPractices">Read Best Practices</button>
               <div v-if="read" v-html="bestPracticeDescription"></div>
               <button @click="showPopup = false">Close</button>
