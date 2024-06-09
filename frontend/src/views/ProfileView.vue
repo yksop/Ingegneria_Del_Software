@@ -1,37 +1,53 @@
 <template>
   <div class="profile-section">
     <h2>PROFILE</h2>
-    <p>Here you can see your profile</p>
-    <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
-    <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
-    <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
-    <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
-    <div class="availability-container" v-if="isVolunteer">
-      <p>Is Available:</p>
-      <label class="switch">
-        <input
-          type="checkbox"
-          v-model="isAvailable"
-          @click="updateAvailability()"
-        />
-        <span class="slider"></span>
-      </label>
+    <div class="profile-info">
+      <div class="personal-info">
+        <p  v-if="isLoggedIn"> Name: {{name}}</p> 
+        <p  v-if="isLoggedIn"> Surname: {{surname}}</p> 
+        <p  v-if="isLoggedIn"> Username: {{username}}</p> 
+        <p  v-if="isLoggedIn"> Mail: {{email}}</p> 
+        <p  v-if="isLoggedIn"> Position:  [ {{latitude}} , {{longitude}} ]</p> 
+      </div>
+      <div class="personal-info"> 
+        <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
+        <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
+        <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
+        <p>Is Logged In: {{ isLoggedIn ? "Yes" : "No" }}</p>
+        <div class="availability-container" v-if="isVolunteer">
+          <p>Is Available:</p>
+          <label class="switch">
+            <input
+              type="checkbox"
+              v-model="isAvailable"
+              @click="updateAvailability()"
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="button_universal">
-    <router-link to="/changeCredentials" class="button_text_universal"
-      >CHANGE CREDENTIALS</router-link
-    >
+  <div class="button_container_universal">
+    <router-link to="/changeCredentials" class="button_universal">
+      <div class="button_text_universal">CHANGE CREDENTIALS</div>
+    </router-link>
+    <button class="button_universal" @click="showPopup=true">
+      <div class="button_text_universal">DELETE PROFILE</div>
+    </button>
   </div>
-  <div class="button_universal">
-    <button class="button_text_universal" @click="deleteProfile()"
-      >DELETE PROFILE</button
+  <div v-if="showPopup" class="popup">
+    <p>Are you sure you want to delete your profile?</p>
+    <button class="button_popup" @click="deleteProfile"
+      >Agree</button
+    >
+    <button class="button_popup" @click="showPopup = false"
+      >Cancel</button
     >
   </div>
 </template>
 
 <script>
-
 import {
   isLoggedIn,
   isVolunteer,
@@ -51,7 +67,14 @@ export default {
       isOperator118: isOperator118(),
       isLoggedIn: isLoggedIn(),
       isAvailable: isAvailable(),
+      name: "",
+      surname: "",
+      username: "",
+      email: "",
+      latitude: "",
+      longitude: "",
       isLoading: true,
+      showPopup: false,
     };
   },
   created() {
@@ -66,9 +89,15 @@ export default {
       )
       .then((response) => {
         this.isAvailable = response.data.volunteer.isAvailable;
+        this.name = response.data.name;
+        this.surname = response.data.surname;
+        this.email = response.data.email;
+        this.username = response.data.username;
+        this.latitude = response.data.latitude;
+        this.longitude = response.data.longitude;
         this.isLoading = false;
-      })
-    },
+      });
+  },
   methods: {
     updateAvailability() {
       const modifyAvailability = {
@@ -99,9 +128,12 @@ export default {
         });
     },
     deleteProfile() {
+      showPopup = false;
       axios
         .delete(
-          `http://localhost:3000/api/v1/users/${decodeToken(getToken()).userId}`,
+          `http://localhost:3000/api/v1/users/${
+            decodeToken(getToken()).userId
+          }`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -109,6 +141,7 @@ export default {
           }
         )
         .then((response) => {
+          alert("Profile deleted");
           localStorage.removeItem("token");
           this.$router.push("/");
         })
@@ -126,15 +159,16 @@ export default {
 <style>
 .profile-section {
   padding-top: 30px;
-  padding-bottom: 60px;
   padding-left: 20px;
   padding-right: 20px;
 }
 
-.profile-section h2 {
-  color: #333;
-  text-align: center;
+.profile-info {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 50px;
 }
+
 .switch {
   position: relative;
   display: inline-block;
@@ -197,4 +231,33 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 45%;
 }
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  background: rgb(241, 242, 243);
+  border: 5px solid black;
+
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: auto;
+  max-height: 500px;
+  padding: 20px;
+  border: 1px solid black;
+  overflow: auto;
+}
+.button_popup {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 24px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 10px;
+}
+.button_popup:hover {
+  background-color: #36f45c;
+}
+
 </style>

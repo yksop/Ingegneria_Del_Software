@@ -90,6 +90,9 @@
       <div class="container_buttons_inside_form">
         <button type="Create" class="button_inside_form">Dirama Alert</button>
         <button type="reset" class="button_inside_form">Reset</button>
+        <router-link to="/action118" class="button_inside_form">
+          <button>Go back</button>
+        </router-link>
       </div>
     </form>
   </div>

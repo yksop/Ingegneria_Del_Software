@@ -1,6 +1,6 @@
 <template>
     <section class="map-section">
-      <h3>MAPPA</h3>
+      <h2>MAPPA</h2>
       <div id="map"></div>
       <select v-model="selectedMap" @change="changeMap" class="selector">
         <option value="osm">OpenStreetMap</option>

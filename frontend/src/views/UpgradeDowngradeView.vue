@@ -37,7 +37,12 @@
         />
         <br />
       </div>
-      <button type="submit">Modify</button>
+      <div class="container_buttons_inside_form">
+        <button type="submit" class="button_inside_form">Modify</button>
+        <router-link to="/actionCert" class="button_inside_form">
+          <button>Go back</button>
+        </router-link>
+      </div>
     </form>
   </div>
 </template>
