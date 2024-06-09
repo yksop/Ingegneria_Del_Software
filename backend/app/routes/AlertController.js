@@ -161,19 +161,14 @@ router.get(
   }),
   async (req, res) => {
     try {
-      // I check if the request is null
       if (!req) return res.status(400).send("Request is null");
 
-      // Find the Alert with the given id
       const alert = await Alert.findById(req.params.id);
 
-      // If the Alert does not exist, return an error
       if (!alert) return res.status(404).send("Alert not found");
 
-      // If the Alert is not active, return an error
       if (!alert.isActive) return res.status(400).send("Alert is not active");
 
-      // Extract the latitude and longitude of the Alert
       const alertLatitude = alert.latitude;
       const alertLongitude = alert.longitude;
 
@@ -199,11 +194,9 @@ router.get(
       if (eligibleUsers === null)
         return res.status(404).send("List of eligibleUsers is null");
 
-      // If the list is empty, return an error
       if (eligibleUsers.length === 0)
         return res.status(404).send("No users are in the radius of the Alert");
 
-      // Return the users in the radius of the Alert
       return res.send(eligibleUsers);
     } catch (err) {
       console.log(err);

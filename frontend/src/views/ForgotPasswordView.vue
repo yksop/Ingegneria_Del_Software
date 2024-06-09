@@ -32,8 +32,9 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             axios
-              .post("http://localhost:3000/api/v1/emails/", {
+              .post("http://localhost:3000/api/v1/emails/reset-password", {
                 email: this.email,
+                frontendBaseUrl: window.location.origin,
               })
               .then((response) => {
                 if (response.status === 200) {

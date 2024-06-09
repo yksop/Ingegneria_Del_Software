@@ -132,6 +132,25 @@ export default {
             console.log("ALERT CREATED SUCCESFULLY: ", response.data);
             console.log(this.alerts);
             alert("Alert created successfully");
+
+            axios
+              .get(
+                `http://localhost:3000/api/v1/alerts/${response.data._id}/users`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+              .then((usersResponse) => {
+                usersResponse.data.forEach((user) => {
+                  axios.post(
+                    "http://localhost:3000/api/v1/emails/alert-notification",
+                    { email: user.email }
+                  );
+                });
+              });
+
             // clean the form
             this.alerts = {
               latitude: null,

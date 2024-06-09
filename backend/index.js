@@ -36,11 +36,7 @@ app.use("/api/v1/bestpractises", bestPractises);
 
 /**
  * Configure mongoose
-
-/**
- * Configure mongoose
  */
-// mongoose.Promise = global.Promise;
 app.locals.db = mongoose.connect(process.env.DB_CONNECT, {}).then(() => {
   console.log("Connected to Database");
 
