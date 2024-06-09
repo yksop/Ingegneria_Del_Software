@@ -97,7 +97,6 @@ router.patch(
       }
       await alert.save();
       return res.status(200).send("Alert updated successfully");
-      
     } catch (err) {
       console.log(err);
       res.status(400).send(err);
@@ -178,22 +177,24 @@ router.get(
       const alertLatitude = alert.latitude;
       const alertLongitude = alert.longitude;
 
-      // Extract the radius of the Alert
-      const alertRadius = alert.radius * 0.01;  // 0.01 of latitude (or longitude) is approximately 1.1 km  
+      const alertRadiusInKm = alert.radius;
+
+      const alertRadiusLat = (alertRadiusInKm / 6371) * (180 / Math.PI);
+      const alertRadiusLong =
+        alertRadiusLat / Math.cos(alertLatitude * (Math.PI / 180));
 
       // Find all the users that are in the radius of the Alert
       const eligibleUsers = await User.find({
         latitude: {
-          $gte: alertLatitude - alertRadius,
-          $lte: alertLatitude + alertRadius,
+          $gte: alertLatitude - alertRadiusLat,
+          $lte: alertLatitude + alertRadiusLat,
         },
         longitude: {
-          $gte: alertLongitude - alertRadius,
-          $lte: alertLongitude + alertRadius,
+          $gte: alertLongitude - alertRadiusLong,
+          $lte: alertLongitude + alertRadiusLong,
         },
-        isVolunteer: true,
+        "volunteer.isVolunteer": true,
       });
-
       // If eligibleUsers is null, return an error
       if (eligibleUsers === null)
         return res.status(404).send("List of eligibleUsers is null");
@@ -204,11 +205,6 @@ router.get(
 
       // Return the users in the radius of the Alert
       return res.send(eligibleUsers);
-
-      // N.B.: $gte and $lte are MongoDB operators that mean "greater than or equal" and "less than or equal" respectively.
-      // $gte: alertLatitude - alertRadius means "greater than or equal to the latitude of the Alert minus the radius of the Alert".
-      // $lte: alertLatitude + alertRadius means "less than or equal to the latitude of the Alert plus the radius of the Alert".
-      // If the Alert is at latitude 10 and longitude 20, and the radius is 5, the latitude range is [5, 15] and the longitude range is [15, 25].
     } catch (err) {
       console.log(err);
       return res.status(501).send(err);
