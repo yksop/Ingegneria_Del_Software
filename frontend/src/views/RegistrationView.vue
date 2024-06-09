@@ -49,6 +49,13 @@
           required
         />
       </div>
+      <label for="file">Carica una foto del profilo (facoltativo):</label>
+      <input type="file" id="file" @change="onFileChange" />
+      <div class="preview">
+        <p>Anteprima della foto:</p>
+        <img :src="imageData" v-if="imageData" alt="Anteprima"/>
+        <img src="@/assets/user_profile.jpeg" v-else alt="Anteprima"/>
+      </div>
       <button type="submit">Sign Up</button>
     </form>
   </div>
@@ -78,11 +85,13 @@ export default {
         operator118: {
           isOperator118: false,
         },
+        file: null,
       },
       emailValid: true,
       passwordValid: true,
       passwordMatch: true,
       emailErrorMessage: "",
+      imageData: null,
     };
   },
   methods: {
@@ -167,6 +176,17 @@ export default {
       }
       return true;
     },
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.file = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageData = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
   },
   created() {
     this.getUserLocation();
@@ -188,12 +208,24 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 350px;
-  height: 600px;
+  height: 920px;
 }
 
 h2 {
   text-align: center;
   color: #333;
+}
+
+.preview {
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+  
+.preview img {
+  max-width: 100%;
+  max-height: 200px;
+  display: block;
+  margin: 0 auto;
 }
 
 .input-group {
