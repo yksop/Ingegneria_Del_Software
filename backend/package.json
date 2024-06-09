@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "dev": "node -r dotenv/config index.js"
+    "dev": "node -r dotenv/config index.js",
+    "test": "jest"
   },
   "author": "posky",
   "license": "ISC",
@@ -31,6 +32,13 @@
     "eslint": "^9.2.0",
     "globals": "^15.2.0",
     "kill-port": "^2.0.1",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov"
+    ]
   }
 }
