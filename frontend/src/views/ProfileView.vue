@@ -3,13 +3,13 @@
     <h2>PROFILE</h2>
     <div class="profile-info">
       <div class="personal-info">
-        <p  v-if="isLoggedIn"> Name: {{name}}</p> 
-        <p  v-if="isLoggedIn"> Surname: {{surname}}</p> 
-        <p  v-if="isLoggedIn"> Username: {{username}}</p> 
-        <p  v-if="isLoggedIn"> Mail: {{email}}</p> 
-        <p  v-if="isLoggedIn"> Position:  [ {{latitude}} , {{longitude}} ]</p> 
+        <p v-if="isLoggedIn">Name: {{ name }}</p>
+        <p v-if="isLoggedIn">Surname: {{ surname }}</p>
+        <p v-if="isLoggedIn">Username: {{ username }}</p>
+        <p v-if="isLoggedIn">Mail: {{ email }}</p>
+        <p v-if="isLoggedIn">Position: [ {{ latitude }} , {{ longitude }} ]</p>
       </div>
-      <div class="personal-info"> 
+      <div class="personal-info">
         <p>Is Volunteer: {{ isVolunteer ? "Yes" : "No" }}</p>
         <p>Is Certifier: {{ isCertifier ? "Yes" : "No" }}</p>
         <p>Is Operator118: {{ isOperator118 ? "Yes" : "No" }}</p>
@@ -32,18 +32,14 @@
     <router-link to="/changeCredentials" class="button_universal">
       <div class="button_text_universal">CHANGE CREDENTIALS</div>
     </router-link>
-    <button class="button_universal" @click="showPopup=true">
+    <button class="button_universal" @click="showPopup = true">
       <div class="button_text_universal">DELETE PROFILE</div>
     </button>
   </div>
   <div v-if="showPopup" class="popup">
     <p>Are you sure you want to delete your profile?</p>
-    <button class="button_popup" @click="deleteProfile"
-      >Agree</button
-    >
-    <button class="button_popup" @click="showPopup = false"
-      >Cancel</button
-    >
+    <button class="button_popup" @click="deleteProfile">Agree</button>
+    <button class="button_popup" @click="showPopup = false">Cancel</button>
   </div>
 </template>
 
@@ -56,7 +52,7 @@ import {
   isAvailable,
 } from "@/services/tokenManagement.js";
 
-import axios from "axios";
+import axios from "../axiosConfig";
 import { getToken, decodeToken } from "../services/tokenManagement.js";
 
 export default {
@@ -80,7 +76,8 @@ export default {
   created() {
     axios
       .get(
-        `http://localhost:3000/api/v1/users/${decodeToken(getToken()).userId}`,
+        axios.defaults.baseURL +
+          `/api/v1/users/${decodeToken(getToken()).userId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -105,9 +102,8 @@ export default {
       };
       axios
         .patch(
-          `http://localhost:3000/api/v1/users/${
-            decodeToken(getToken()).userId
-          }`,
+          axios.defaults.baseURL +
+            `/api/v1/users/${decodeToken(getToken()).userId}`,
           modifyAvailability,
           {
             headers: {
@@ -131,9 +127,8 @@ export default {
       showPopup = false;
       axios
         .delete(
-          `http://localhost:3000/api/v1/users/${
-            decodeToken(getToken()).userId
-          }`,
+          axios.defaults.baseURL +
+            `/api/v1/users/${decodeToken(getToken()).userId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -259,5 +254,4 @@ input:checked + .slider:before {
 .button_popup:hover {
   background-color: #36f45c;
 }
-
 </style>

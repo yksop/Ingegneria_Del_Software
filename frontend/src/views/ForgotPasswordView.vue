@@ -16,7 +16,7 @@
 </template>
   
 <script>
-import axios from "axios";
+import axios from "../axiosConfig";
 
 export default {
   data() {
@@ -28,11 +28,13 @@ export default {
   methods: {
     checkEmail() {
       axios
-        .get(`http://localhost:3000/api/v1/users/email/${this.email}`)
+        .get(axios.defaults.baseURL +
+                  `/api/v1/users/email/${this.email}`)
         .then((response) => {
           if (response.status === 200) {
             axios
-              .post("http://localhost:3000/api/v1/emails/reset-password", {
+              .post(axios.defaults.baseURL +
+          "/api/v1/emails/reset-password", {
                 email: this.email,
                 frontendBaseUrl: window.location.origin,
               })

@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import axios from "../axiosConfig";
 
 export default {
   data() {
@@ -91,7 +91,7 @@ export default {
 
       axios
         .patch(
-          `http://localhost:3000/api/v1/users/${this.formData.id}`,
+          axios.defaults.baseURL + `/api/v1/users/${this.formData.id}`,
           upgradeDowngradeUserStatus,
           {
             headers: {

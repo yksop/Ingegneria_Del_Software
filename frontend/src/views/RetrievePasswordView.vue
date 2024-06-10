@@ -31,7 +31,7 @@
 </template>
       
   <script>
-import axios from "axios";
+import axios from "../axiosConfig";
 
 export default {
   data() {
@@ -46,7 +46,7 @@ export default {
   async created() {
     this.token = this.$route.params.token;
 
-    const url = `http://localhost:3000/api/v1/passwords/${this.token}`;
+    const url = axios.defaults.baseURL + `/api/v1/passwords/${this.token}`;
 
     axios
       .get(url, {
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     resetPassword() {
-      const url = `http://localhost:3000/api/v1/passwords/${this.token}`;
+      const url = axios.defaults.baseURL + `/api/v1/passwords/${this.token}`;
 
       axios
         .post(url, { password: this.password })
