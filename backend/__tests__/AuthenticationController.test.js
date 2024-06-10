@@ -5,9 +5,10 @@ const url = "localhost:3000/api/v1/tokens";
 require("dotenv").config();
 
 jest.setTimeout(30000);
-
+let myToken;
 describe("POST /api/v1/tokens", () => {
-  test("POST /api/v1/tokens with a valid user should return a valid token", async () => {
+  
+  beforeAll(async () => {
     const response = await request(url)
       .post("")
       .send({
@@ -18,10 +19,14 @@ describe("POST /api/v1/tokens", () => {
       .expect(200);
 
     const { token } = response.body;
+    myToken = token;
+  });
 
-    expect(token).toBeDefined();
-    expect(typeof token).toBe("string");
-
-    return response;
+  test("Token should be defined and a string", () => {
+    expect(myToken).toBeDefined();
+    expect(typeof myToken).toBe("string");
   });
 });
+const getToken = () => myToken;
+
+module.exports = { getToken };

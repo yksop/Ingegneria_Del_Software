@@ -5,10 +5,9 @@ const url = "localhost:3000/api/v1/users";
 require("dotenv").config();
 
 jest.setTimeout(30000);
+let userId;
 
 describe("POST /api/v1/users", () => {
-  let userId;
-
   test("POST /api/v1/users with a valid user should return 200", async () => {
     const response = await request(url)
       .post("")
@@ -137,7 +136,9 @@ describe("POST /api/v1/users", () => {
       .set("Content-Type", "application/json")
       .expect(400);
   });
+});
 
+describe("PATCH /api/v1/users", () => {
   test("PATCH /api/v1/users/:userId with a valid user should return 200", async () => {
     return request(url)
       .patch(`/${userId}`)
