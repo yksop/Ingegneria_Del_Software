@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import axios from "../axiosConfig";
+import axios from "axios";
 import {
   getToken,
   decodeToken,

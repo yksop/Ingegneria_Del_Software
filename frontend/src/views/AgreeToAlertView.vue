@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import axios from "../axiosConfig";
+import axios from "axios";
 import { getToken, decodeToken } from "../services/tokenManagement.js";
 
 export default {

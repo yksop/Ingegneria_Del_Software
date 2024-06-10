@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import axios from "../axiosConfig";
+import axios from "axios";
 
 export default {
   data() {

@@ -11,7 +11,7 @@
 
 <script>
 import L from "leaflet";
-import axios from "../axiosConfig";
+import axios from "axios";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.css";
 import "leaflet.awesome-markers/dist/leaflet.awesome-markers.js";
 import {

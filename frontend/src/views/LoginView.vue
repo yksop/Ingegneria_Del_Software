@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import axios from "../axiosConfig";
+import axios from "axios";
 import PasswordErrorBanner from "@/components/PasswordErrorBanner.vue";
 import {
   saveToken,

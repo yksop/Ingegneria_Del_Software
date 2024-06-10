@@ -52,7 +52,7 @@ import {
   isAvailable,
 } from "@/services/tokenManagement.js";
 
-import axios from "../axiosConfig";
+import axios from "axios";
 import { getToken, decodeToken } from "../services/tokenManagement.js";
 
 export default {
