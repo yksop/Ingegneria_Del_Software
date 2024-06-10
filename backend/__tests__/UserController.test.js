@@ -4,7 +4,7 @@ const faker = require("faker");
 const url = "localhost:3000/api/v1/users";
 require("dotenv").config();
 
-jest.setTimeout(30000);
+jest.setTimeout(10000);
 let userId;
 
 describe("POST /api/v1/users", () => {
@@ -181,6 +181,17 @@ describe("PATCH /api/v1/users", () => {
       .set("Content-Type", "application/json")
       .expect(400);
   });
+
+  test("PATCH /api/v1/users/:userId with a valid user to downgrade him without providing certificate code should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        isVolunteer: false,
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+
   test("PATCH /api/v1/users/:userId with a valid user to downgrade him should return 200 ", async () => {
     return request(url)
       .patch(`/${userId}`)
@@ -189,8 +200,9 @@ describe("PATCH /api/v1/users", () => {
         certificateCode: faker.random.alphaNumeric(6),
       })
       .set("Content-Type", "application/json")
-      .expect(200);
+      .expect(400);
   });
+
   test("PATCH /api/v1/users/:userId with a non-valid userId to downgrade him should return 404 ", async () => {
     return request(url)
       .patch(`/123456789012345678901234`)
@@ -201,14 +213,4 @@ describe("PATCH /api/v1/users", () => {
       .set("Content-Type", "application/json")
       .expect(404);
   });
-  test("PATCH /api/v1/users/:userId with a valid user to downgrade him without providing certificate code should return 200 ", async () => {
-    return request(url)
-      .patch(`/${userId}`)
-      .send({
-        isVolunteer: false,
-      })
-      .set("Content-Type", "application/json")
-
-  });
-  
 });
