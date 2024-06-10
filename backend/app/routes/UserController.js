@@ -200,8 +200,13 @@ router.patch("/:userId", async (req, res) => {
       message = "User assigned to alert successfully";
     }
 
-    //Upgrade or downgrade user status
+    // Upgrade or downgrade user status
     if (req.body.isVolunteer !== undefined) {
+      if (req.body.isVolunteer === user.volunteer.isVolunteer) {
+        return res
+          .status(400)
+          .send("User is already what you want him or she to be\n");
+      }
       if (req.body.isVolunteer === false) {
         user.volunteer.isVolunteer = req.body.isVolunteer;
         user.volunteer.certificateCode = undefined;

@@ -83,9 +83,10 @@ router.patch(
   }),
   async (req, res) => {
     try {
-      if (!req.params.id) return res.status(400).send("Alert ID is required\n");
+      if (!req.params.alertId)
+        return res.status(400).send("Alert ID is required\n");
 
-      if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+      if (mongoose.Types.ObjectId.isValid(req.params.alertId) === false)
         return res.status(400).send("Invalid Alert ID\n");
 
       const alert = await Alert.findOne({ _id: req.params.alertId });
