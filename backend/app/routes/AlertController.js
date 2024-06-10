@@ -64,7 +64,7 @@ router.post(
       // Save the Alert in the DB
       const savedAlert = await newAlert.save();
       console.log("Alert saved in the DB");
-      return res.send(savedAlert);
+      return res.status(200).send(savedAlert);
     } catch (err) {
       // print the error in the console
       console.log("Error in saving the Alert in the DB: " + err);
@@ -93,9 +93,14 @@ router.patch(
 
       if (!alert) return res.status(404).send("Alert not found");
 
-      if (req.body.isActive !== undefined) {
-        alert.isActive = req.body.isActive;
+      if(alert.isActive === false){
+        return res.status(400).send("Cannot retire an alert");
       }
+      
+      if (req.body.isActive === false) {
+        alert.isActive = false;
+      }
+      
       await alert.save();
       return res.status(200).send("Alert updated successfully");
     } catch (err) {
@@ -202,6 +207,32 @@ router.get(
     } catch (err) {
       console.log(err);
       return res.status(501).send(err);
+    }
+  }
+);
+
+// delete a specified alert
+router.delete(
+  "/:id",
+  verifyToken((authData) => {
+    if (authData.isOperator118) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req.params.id) return res.status(400).send("Alert ID is required\n");
+
+      if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+        return res.status(400).send("Invalid Alert ID\n");
+
+      const alert = await Alert.findByIdAndDelete(req.params.id);
+
+      if (!alert) return res.status(404).send("Alert not found");
+
+      return res.status(200).send("Alert deleted successfully");
+    } catch (err) {
+      console.log(err);
+      return res.status(400).send(err);
     }
   }
 );
