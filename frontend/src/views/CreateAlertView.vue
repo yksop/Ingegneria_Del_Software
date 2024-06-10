@@ -122,7 +122,7 @@ export default {
   methods: {
     handleAlertCreation() {
       axios
-        .post("http://localhost:3000/api/v1/alerts", this.alerts, {
+        .post(axios.defaults.baseURL + "/api/v1/alerts", this.alerts, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -135,7 +135,8 @@ export default {
 
             axios
               .get(
-                `http://localhost:3000/api/v1/alerts/${response.data._id}/users`,
+                axios.defaults.baseURL +
+                  `/api/v1/alerts/${response.data._id}/users`,
                 {
                   headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -145,7 +146,8 @@ export default {
               .then((usersResponse) => {
                 usersResponse.data.forEach((user) => {
                   axios.post(
-                    "http://localhost:3000/api/v1/emails/alert-notification",
+                    axios.defaults.baseURL +
+                      "/api/v1/emails/alert-notification",
                     { email: user.email }
                   );
                 });

@@ -53,8 +53,8 @@
       <input type="file" id="file" @change="onFileChange" />
       <div class="preview">
         <p>Anteprima della foto:</p>
-        <img :src="imageData" v-if="imageData" alt="Anteprima"/>
-        <img src="@/assets/user_profile.jpeg" v-else alt="Anteprima"/>
+        <img :src="imageData" v-if="imageData" alt="Anteprima" />
+        <img src="@/assets/user_profile.jpeg" v-else alt="Anteprima" />
       </div>
       <button type="submit">Sign Up</button>
     </form>
@@ -126,7 +126,10 @@ export default {
       };
 
       axios
-        .post("http://localhost:3000/api/v1/users", registerNewUserCredentials)
+        .post(
+          axios.defaults.VUE_APP_API_URL + "api/v1/users",
+          registerNewUserCredentials
+        )
         .then(
           (response) => {
             console.log("Registration successful:", response.data);
@@ -220,7 +223,7 @@ h2 {
   margin-top: 10px;
   margin-bottom: 40px;
 }
-  
+
 .preview img {
   max-width: 100%;
   max-height: 200px;

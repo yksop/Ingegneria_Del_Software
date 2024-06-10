@@ -74,9 +74,8 @@ export default {
     this.showPreviewButton = this.alerts.map(() => false);
     axios
       .get(
-        `http://localhost:3000/api/v1/users/${
-          decodeToken(getToken()).userId
-        }/alerts`,
+        axios.defaults.baseURL +
+          `/api/v1/users/${decodeToken(getToken()).userId}/alerts`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -105,7 +104,8 @@ export default {
       this.bestPracticeDescription = "";
       axios
         .patch(
-          `http://localhost:3000/api/v1/users/${
+          axios.defaults.baseURL +
+          `/api/v1/users/${
             decodeToken(getToken()).userId
           }`,
           { alertId: this.alerts[this.acceptedAlertIndex]._id },
@@ -135,7 +135,8 @@ export default {
     },
     getBestPractices(emergency) {
       axios
-        .get(`http://localhost:3000/api/v1/bestpractises?title=${emergency}`, {
+        .get(axios.defaults.baseURL +
+          `/api/v1/bestpractises?title=${emergency}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -157,7 +158,8 @@ export default {
     },
     showPreviewAlert(index) {
       axios
-        .get(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`, {
+        .get(axios.defaults.baseURL +
+          `/api/v1/alerts/${this.alerts[index]._id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

@@ -32,7 +32,7 @@ export default {
   },
   created() {
     axios
-      .get("http://localhost:3000/api/v1/alerts", {
+      .get(axios.defaults.baseURL + "/api/v1/alerts", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -48,7 +48,7 @@ export default {
     removeAlert(index) {
       axios
         .patch(
-          `http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`,
+          axios.defaults.baseURL + `/api/v1/alerts/${this.alerts[index]._id}`,
           { isActive: false },
           {
             headers: {

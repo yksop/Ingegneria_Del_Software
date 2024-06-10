@@ -63,7 +63,8 @@ export default {
       // Do a patch request to http://localhost:3000/api/v1/users/:userId with newUserCredentials
       axios
         .patch(
-          `http://localhost:3000/api/v1/users/${
+          axios.defaults.baseURL +
+          `/api/v1/users/${
             decodeToken(getToken()).userId
           }`,
           {

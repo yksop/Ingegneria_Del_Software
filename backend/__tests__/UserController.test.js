@@ -4,7 +4,7 @@ const faker = require("faker");
 const url = "localhost:3000/api/v1/users";
 require("dotenv").config();
 
-jest.setTimeout(30000);
+jest.setTimeout(10000);
 let userId;
 
 describe("POST /api/v1/users", () => {
@@ -139,7 +139,7 @@ describe("POST /api/v1/users", () => {
 });
 
 describe("PATCH /api/v1/users", () => {
-  test("PATCH /api/v1/users/:userId with a valid user should return 200", async () => {
+  test("PATCH /api/v1/users/:userId with a valid user to upgrade him should return 200", async () => {
     return request(url)
       .patch(`/${userId}`)
       .send({
@@ -180,5 +180,72 @@ describe("PATCH /api/v1/users", () => {
       })
       .set("Content-Type", "application/json")
       .expect(400);
+  });
+
+  test("PATCH /api/v1/users/:userId with a valid user to downgrade him without providing certificate code should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        isVolunteer: false,
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+
+  test("PATCH /api/v1/users/:userId with a valid user to downgrade him should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        isVolunteer: false,
+        certificateCode: faker.random.alphaNumeric(6),
+      })
+      .set("Content-Type", "application/json")
+      .expect(400);
+  });
+
+  test("PATCH /api/v1/users/:userId with a non-valid userId to downgrade him should return 404 ", async () => {
+    return request(url)
+      .patch(`/123456789012345678901234`)
+      .send({
+        isVolunteer: false,
+        certificateCode: faker.random.alphaNumeric(6),
+      })
+      .set("Content-Type", "application/json")
+      .expect(404);
+  });
+  test("PATCH /api/v1/users/:userId with a valid user to downgrade him without providing certificate code should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        isVolunteer: false,
+      })
+      .set("Content-Type", "application/json");
+  });
+  test("PATCH /api/v1/users/:userId with an available volunteer trying to remove availabilty should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        isAvailable: false,
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+  test("PATCH /api/v1/users/:userId with a valid user to modify credentials should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        username: "JohnDoe1",
+        password: "Password1!",
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+});
+describe("DELETE /api/v1/users", () => {
+  test("DELETE /api/v1/users/:userId with a valid userId should return 200", async () => {
+    return request(url)
+      .delete(`/${userId}`)
+      .set("Content-Type", "application/json")
+      .expect(200);
   });
 });

@@ -21,13 +21,13 @@
         />
         <password-error-banner :show="passwordError" />
       </div>
-      <br><br>
+      <br /><br />
       <label>
-        <input type="checkbox" v-model="consenso"/>
+        <input type="checkbox" v-model="consenso" />
         Acconsento al trattamento dei miei dati personali secondo la normativa
         vigente.
       </label>
-      <br><br>
+      <br /><br />
       <button type="submit">Login</button>
       <RouterLink to="/forgotPassword" class="forgot-password-link"
         >Forgot password?</RouterLink
@@ -84,7 +84,7 @@ export default {
 
       // verify if user exists
       axios
-        .post("http://localhost:3000/api/v1/tokens", loginUserCredentials)
+        .post(axios.defaults.baseURL + "/api/v1/tokens", loginUserCredentials)
         .then(
           (response) => {
             console.log("Login successful:", response.data);
@@ -108,9 +108,8 @@ export default {
             // once the user logs in, the location is updated
             axios
               .patch(
-                `http://localhost:3000/api/v1/users/${
-                  decodeToken(getToken()).userId
-                }`,
+                axios.defaults.baseURL +
+                  `/api/v1/users/${decodeToken(getToken()).userId}`,
                 {
                   latitude: this.credentials.latitude,
                   longitude: this.credentials.longitude,

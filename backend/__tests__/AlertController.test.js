@@ -22,12 +22,14 @@ describe("User with 118 and Voluntary permissions ", () => {
 
   beforeAll(async () => {
     const registrationResponse = await createUser118Volunteer();
+
     userId = registrationResponse.body._id;
 
     const loginResponse = await loginUser118Volunteer();
     authToken = loginResponse.body.token;
 
     const newAlert = await createAlert();
+
     alertId = newAlert.body._id;
   });
 
@@ -47,8 +49,8 @@ describe("User with 118 and Voluntary permissions ", () => {
 
     expect(alert).toBeDefined();
     expect(alert._id).toBe(alertId);
-    expect(alert.latitude).toBe(1.00);
-    expect(alert.longitude).toBe(1.00);
+    expect(alert.latitude).toBe(1.0);
+    expect(alert.longitude).toBe(1.0);
     expect(alert.triage).toBe("Emergenza");
     expect(alert.emergency).toBe("Perdita di coscienza improvvisa");
     expect(alert.radius).toBe(1);
@@ -64,12 +66,6 @@ describe("User with 118 and Voluntary permissions ", () => {
   });
 });
 
-
-
-
-
-// _____________________________________________________________
-
 describe("User with ONLY 118 permission", () => {
   let authToken = "";
   let userId = "";
@@ -78,6 +74,7 @@ describe("User with ONLY 118 permission", () => {
 
   beforeAll(async () => {
     const registrationResponse = await createUser118Only();
+
     userId = registrationResponse.body._id;
 
     const loginResponse = await loginUser118Only();
@@ -129,5 +126,3 @@ describe("User with ONLY 118 permission", () => {
     await deleteUser118Only();
     await deleteAlert();
   });
-});
-
