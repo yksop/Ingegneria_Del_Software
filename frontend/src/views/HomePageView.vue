@@ -82,6 +82,7 @@ export default {
       })
       .catch(error => {
         console.error('Errore nel recupero dei punti:', error);
+        alert('Errore nel recupero dei defibrillatori');
     });
 
     
@@ -99,6 +100,7 @@ export default {
       })
       .catch(error => {
         console.error('Errore nel recupero dei punti:', error);
+        alert('Errore nel recupero degli ambulatori');
     });
     
     axios.get('http://localhost:3000/api/v1/hospitals')
@@ -114,6 +116,7 @@ export default {
       })
       .catch(error => {
         console.error('Errore nel recupero dei punti:', error);
+        alert('Errore nel recupero degli ospedali');
     });
 
     if(isLoggedIn()){
@@ -144,8 +147,7 @@ export default {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
-            }
-            )
+            })
             .then((response) => {
               const alert = response.data;
               console.log(alert);
@@ -157,10 +159,16 @@ export default {
               // Crea un cerchio sfumato
               this.createGradientCircle([alert.latitude, alert.longitude], alert.radius*1000, 1);   
             })
-            
+            .catch((error) => {
+              console.error('Errore nel recupero dei punti:', error);
+              alert('Errore nel recupero dell\'alert');
+            });
           }
-        }
-      )
+        })
+        .catch((error) => {
+          console.error('Errore nel recupero dei punti:', error);
+          alert('Errore nel recupero dell\'utente');
+        });
     }
     
 
