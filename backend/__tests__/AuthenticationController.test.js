@@ -27,6 +27,3 @@ describe("POST /api/v1/tokens", () => {
     expect(typeof myToken).toBe("string");
   });
 });
-const getToken = () => myToken;
-
-module.exports = { getToken };
