@@ -126,3 +126,4 @@ describe("User with ONLY 118 permission", () => {
     await deleteUser118Only();
     await deleteAlert();
   });
+});
