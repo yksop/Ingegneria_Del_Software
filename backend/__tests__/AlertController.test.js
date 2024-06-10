@@ -10,13 +10,13 @@ describe("User with 118 and Voluntary permissions ", () => {
   let alertId = "";
 
   beforeAll(async () => {
-    // TODO: connect to database
-    await mongoose.connect(process.env.DB_CONNECT, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log("Connected to MongoDB"))
-    .catch((err) => console.log(err));
+    await mongoose
+      .connect(process.env.DB_CONNECT, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      .then(() => console.log("Connected to MongoDB"))
+      .catch((err) => console.log(err));
 
     // Create User with all permissions
     const registrationResponse = await request(url)
@@ -40,7 +40,7 @@ describe("User with 118 and Voluntary permissions ", () => {
         },
       })
       .expect(200);
-    
+
     userId = registrationResponse.body._id;
 
     // Log In the User with all permissions
@@ -59,8 +59,8 @@ describe("User with 118 and Voluntary permissions ", () => {
       .post("/api/v1/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
-        latitude: 1.00,
-        longitude: 1.00,
+        latitude: 1.0,
+        longitude: 1.0,
         triage: 1,
         emergency: 1,
         radius: 1,
@@ -99,8 +99,8 @@ describe("User with 118 and Voluntary permissions ", () => {
 
     expect(alert).toBeDefined();
     expect(alert._id).toBe(alertId);
-    expect(alert.latitude).toBe(1.00);
-    expect(alert.longitude).toBe(1.00);
+    expect(alert.latitude).toBe(1.0);
+    expect(alert.longitude).toBe(1.0);
     expect(alert.triage).toBe("Emergenza");
     expect(alert.emergency).toBe("Perdita di coscienza improvvisa");
     expect(alert.radius).toBe(1);
@@ -109,10 +109,6 @@ describe("User with 118 and Voluntary permissions ", () => {
     expect(alert.description).toBe("Test alert");
     expect(alert.timeForAmbulance).toBe(1);
   });
-
-
-
-
 
   afterAll(async () => {
     //Delete the User with permissions
@@ -127,18 +123,7 @@ describe("User with 118 and Voluntary permissions ", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
   });
-
 });
-
-
-
-
-
-
-
-
-
-
 
 describe("User with ONLY 118 permission", () => {
   let authToken = "";
@@ -148,12 +133,13 @@ describe("User with ONLY 118 permission", () => {
 
   beforeAll(async () => {
     // TODO: connect to database
-    await mongoose.connect(process.env.DB_CONNECT, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log("Connected to MongoDB"))
-    .catch((err) => console.log(err));
+    await mongoose
+      .connect(process.env.DB_CONNECT, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
+      .then(() => console.log("Connected to MongoDB"))
+      .catch((err) => console.log(err));
 
     // Create User with all permissions
     const registrationResponse = await request(url)
@@ -177,7 +163,7 @@ describe("User with ONLY 118 permission", () => {
         },
       })
       .expect(200);
-    
+
     userId = registrationResponse.body._id;
 
     // Log In the User with all permissions
@@ -196,8 +182,8 @@ describe("User with ONLY 118 permission", () => {
       .post("/api/v1/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
-        latitude: 1.00,
-        longitude: 1.00,
+        latitude: 1.0,
+        longitude: 1.0,
         triage: 1,
         emergency: 1,
         radius: 1,
@@ -216,8 +202,8 @@ describe("User with ONLY 118 permission", () => {
       .post("/api/v1/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
-        latitude: 1.00,
-        longitude: 1.00,
+        latitude: 1.0,
+        longitude: 1.0,
         triage: 1,
         emergency: 1,
         radius: 1,
@@ -233,14 +219,13 @@ describe("User with ONLY 118 permission", () => {
   });
 
   // ________________ userId, authToken, alertId ________________
-
   //ONLY OPERATOR118
   test("POST /api/v1/alerts with correct alert fields should create the alert ", async () => {
     const response = await request(url)
       .post("/api/v1/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
-        latitude: 12.30,
+        latitude: 12.3,
         longitude: 56.78,
         triage: 1,
         emergency: 2,
@@ -252,11 +237,11 @@ describe("User with ONLY 118 permission", () => {
       })
       .set("Content-Type", "application/json")
       .expect(200);
-    
+
     const newAlert = response.body;
 
     expect(newAlert).toBeDefined();
-    expect(newAlert.latitude).toBe(12.30);
+    expect(newAlert.latitude).toBe(12.3);
     expect(newAlert.longitude).toBe(56.78);
     expect(newAlert.triage).toBe("Emergenza");
     expect(newAlert.emergency).toBe("Soffocamento da corpo estraneo");
@@ -286,8 +271,6 @@ describe("User with ONLY 118 permission", () => {
       .expect(400);
   });
 
-
-
   afterAll(async () => {
     //Delete the User with permissions
     await request(url)
@@ -306,12 +289,4 @@ describe("User with ONLY 118 permission", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
   });
-
 });
-
-
-
-
-
-
-
