@@ -100,7 +100,7 @@ router.patch(
       return res.status(200).send("Alert updated successfully");
     } catch (err) {
       console.log(err);
-      res.status(400).send(err);
+      return res.status(400).send(err);
     }
   }
 );
@@ -121,12 +121,12 @@ router.get(
 
       const foundAlert = await Alert.findById(req.params.id);
 
-      if (!foundAlert) res.status(400).send("Alert does not exist\n");
+      if (!foundAlert) return res.status(400).send("Alert does not exist\n");
 
-      res.status(200).send(foundAlert);
+      return res.status(200).send(foundAlert);
     } catch (err) {
       console.log(err);
-      res.status(400).send(err);
+      return res.status(400).send(err);
     }
   }
 );
@@ -145,10 +145,10 @@ router.get(
       if (!activeAlerts)
         return res.status(404).send("No active alerts found\n");
 
-      res.send(activeAlerts);
+      return res.send(activeAlerts);
     } catch (err) {
       console.log(err);
-      res.status(400).send(err);
+      return res.status(400).send(err);
     }
   }
 );
