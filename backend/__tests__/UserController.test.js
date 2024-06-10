@@ -207,8 +207,33 @@ describe("PATCH /api/v1/users", () => {
       .send({
         isVolunteer: false,
       })
-      .set("Content-Type", "application/json")
-
+      .set("Content-Type", "application/json");
   });
-  
+  test("PATCH /api/v1/users/:userId with an available volunteer trying to remove availabilty should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        isAvailable: false,
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+  test("PATCH /api/v1/users/:userId with a valid user to modify credentials should return 200 ", async () => {
+    return request(url)
+      .patch(`/${userId}`)
+      .send({
+        username: "JohnDoe1",
+        password: "Password1!",
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+});
+describe("DELETE /api/v1/users", () => {
+  test("DELETE /api/v1/users/:userId with a valid userId should return 200", async () => {
+    return request(url)
+      .delete(`/${userId}`)
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
 });
