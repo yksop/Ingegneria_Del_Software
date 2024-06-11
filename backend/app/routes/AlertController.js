@@ -195,6 +195,7 @@ router.get(
           $lte: alertLongitude + alertRadiusLong,
         },
         "volunteer.isVolunteer": true,
+        "volunteer.isAvailable": true,
       });
       // If eligibleUsers is null, return an error
       if (eligibleUsers === null)
