@@ -26,8 +26,8 @@ It allows volunteers to register and take part to emergencies near them.
 
 To get started with Volontari Trentini Connessi, follow these steps:
 
-1. **Clone the repository**:
-2. **Navigate to the project directory**:
+1. **Clone the repository**
+2. **Navigate to the project directory**
 3. **Install the necessary dependencies**:
     ```bash
     npm install
