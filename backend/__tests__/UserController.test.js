@@ -12,6 +12,11 @@ let userId;
 describe("POST /api/v2/users", () => {
 
   beforeAll(async () => {
+    // Connect to the MongoDB database
+    await mongoose.connect(process.env.DB_CONNECT, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
     const registrationResponse = await request(url)
       .post("")
@@ -38,13 +43,6 @@ describe("POST /api/v2/users", () => {
 
     userId = registrationResponse.body._id;
 
-  });
-
-  afterAll(async () => {
-    return request(url)
-      .delete(`/${userId}`)
-      .set("Content-Type", "application/json")
-      .expect(200);
   });
 
   test("POST /api/v2/users with a valid user should return 200", async () => {
@@ -175,9 +173,22 @@ describe("POST /api/v2/users", () => {
       .set("Content-Type", "application/json")
       .expect(400);
   });
+
+  afterAll(async () => {
+    await mongoose.connection.close();
+
+    return request(url)
+      .delete(`/${userId}`)
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+
 });
 
+
+
 describe("PATCH /api/v2/users", () => {
+
   test("PATCH /api/v2/users/:userId with a valid user to upgrade him should return 200", async () => {
     return request(url)
       .patch(`/${testUserId}`)
@@ -280,6 +291,9 @@ describe("PATCH /api/v2/users", () => {
       .expect(200);
   });
 });
+
+
+
 describe("DELETE /api/v2/users", () => {
   test("DELETE /api/v2/users/:userId with a valid userId should return 200", async () => {
     return request(url)
