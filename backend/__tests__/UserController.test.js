@@ -40,6 +40,13 @@ describe("POST /api/v1/users", () => {
 
   });
 
+  afterAll(async () => {
+    return request(url)
+      .delete(`/${userId}`)
+      .set("Content-Type", "application/json")
+      .expect(200);
+  });
+
   test("POST /api/v1/users with a valid user should return 200", async () => {
     const response = await request(url)
       .post("")
@@ -63,6 +70,8 @@ describe("POST /api/v1/users", () => {
       })
       .set("Content-Type", "application/json")
       .expect(200);
+
+    testUserId = response.body._id;
 
     return response;
   });
@@ -171,7 +180,7 @@ describe("POST /api/v1/users", () => {
 describe("PATCH /api/v1/users", () => {
   test("PATCH /api/v1/users/:userId with a valid user to upgrade him should return 200", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isVolunteer: true,
         certificateCode: faker.random.alphaNumeric(6),
@@ -193,7 +202,7 @@ describe("PATCH /api/v1/users", () => {
 
   test("PATCH /api/v1/users/:userId without specifying certificateCode should return 400", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isVolunteer: true,
       })
@@ -203,7 +212,7 @@ describe("PATCH /api/v1/users", () => {
 
   test("PATCH /api/v1/users/:userId with a user who's already a volunteer should return 400", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isVolunteer: true,
         certificateCode: faker.random.alphaNumeric(6),
@@ -214,7 +223,7 @@ describe("PATCH /api/v1/users", () => {
 
   test("PATCH /api/v1/users/:userId with a valid user to downgrade him without providing certificate code should return 200 ", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isVolunteer: false,
       })
@@ -224,7 +233,7 @@ describe("PATCH /api/v1/users", () => {
 
   test("PATCH /api/v1/users/:userId with a valid user to downgrade him should return 200 ", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isVolunteer: false,
         certificateCode: faker.random.alphaNumeric(6),
@@ -245,7 +254,7 @@ describe("PATCH /api/v1/users", () => {
   });
   test("PATCH /api/v1/users/:userId with a valid user to downgrade him without providing certificate code should return 200 ", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isVolunteer: false,
       })
@@ -253,7 +262,7 @@ describe("PATCH /api/v1/users", () => {
   });
   test("PATCH /api/v1/users/:userId with an available volunteer trying to remove availabilty should return 200 ", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         isAvailable: false,
       })
@@ -262,7 +271,7 @@ describe("PATCH /api/v1/users", () => {
   });
   test("PATCH /api/v1/users/:userId with a valid user to modify credentials should return 200 ", async () => {
     return request(url)
-      .patch(`/${userId}`)
+      .patch(`/${testUserId}`)
       .send({
         username: "JohnDoe1",
         password: "Password1!",
@@ -274,7 +283,7 @@ describe("PATCH /api/v1/users", () => {
 describe("DELETE /api/v1/users", () => {
   test("DELETE /api/v1/users/:userId with a valid userId should return 200", async () => {
     return request(url)
-      .delete(`/${userId}`)
+      .delete(`/${testUserId}`)
       .set("Content-Type", "application/json")
       .expect(200);
   });
