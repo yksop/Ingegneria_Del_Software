@@ -93,14 +93,14 @@ router.patch(
 
       if (!alert) return res.status(404).send("Alert not found");
 
-      if(alert.isActive === false){
+      if (alert.isActive === false) {
         return res.status(400).send("Cannot retire an alert");
       }
-      
+
       if (req.body.isActive === false) {
         alert.isActive = false;
       }
-      
+
       await alert.save();
       return res.status(200).send("Alert updated successfully");
     } catch (err) {
