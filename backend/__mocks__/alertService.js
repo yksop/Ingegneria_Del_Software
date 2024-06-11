@@ -27,6 +27,7 @@ const mockDisactiveAlert = {
 const createAlert = jest.fn(() =>
   Promise.resolve({ body: mockAlert, status: 200 })
 );
+
 const createDisactiveAlert = jest.fn(() =>
   Promise.resolve({ body: mockDisactiveAlert, status: 200 })
 );
