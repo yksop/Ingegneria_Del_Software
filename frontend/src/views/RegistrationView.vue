@@ -49,6 +49,13 @@
           required
         />
       </div>
+      <label for="file">Carica una foto del profilo (facoltativo):</label>
+      <input type="file" id="file" @change="onFileChange" />
+      <div class="preview">
+        <p>Anteprima della foto:</p>
+        <img :src="imageData" v-if="imageData" alt="Anteprima" />
+        <img src="@/assets/user_profile.jpeg" v-else alt="Anteprima" />
+      </div>
       <button type="submit">Sign Up</button>
     </form>
   </div>
@@ -78,16 +85,24 @@ export default {
         operator118: {
           isOperator118: false,
         },
+        file: null,
       },
       emailValid: true,
+      passwordValid: true,
       passwordMatch: true,
       emailErrorMessage: "",
+      imageData: null,
     };
   },
   methods: {
     handleRegistrationSubmission() {
       if (!this.validateEmail(this.credentials.email)) {
         this.emailValid = false;
+        return;
+      }
+
+      if (!this.validatePassword(this.credentials.password)) {
+        this.passwordValid = false;
         return;
       }
 
@@ -111,7 +126,10 @@ export default {
       };
 
       axios
-        .post("http://localhost:3000/api/v1/users", registerNewUserCredentials)
+        .post(
+          axios.defaults.VUE_APP_API_URL + "api/v2/users",
+          registerNewUserCredentials
+        )
         .then(
           (response) => {
             console.log("Registration successful:", response.data);
@@ -151,6 +169,27 @@ export default {
       }
       return true;
     },
+    validatePassword(password) {
+      const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/;
+      if (!re.test(password)) {
+        alert(
+          "Invalid password format. Password should be at least 6 characters long and contain at least one numeric digit, one uppercase letter, one special character and one lowercase letter.\n"
+        );
+        return false;
+      }
+      return true;
+    },
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.file = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageData = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
   },
   created() {
     this.getUserLocation();
@@ -172,13 +211,24 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 350px;
-  height: 600px;
-  /*box-sizing: border-box;*/
+  height: 920px;
 }
 
 h2 {
   text-align: center;
   color: #333;
+}
+
+.preview {
+  margin-top: 10px;
+  margin-bottom: 40px;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 200px;
+  display: block;
+  margin: 0 auto;
 }
 
 .input-group {
@@ -214,6 +264,6 @@ button:hover {
 }
 
 button:active {
-  background-color: #4045b2; /* Darker shade when the button is clicked */
+  background-color: #4045b2;
 }
 </style>

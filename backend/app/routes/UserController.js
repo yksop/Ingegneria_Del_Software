@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const User = require("../models/User");
-const Alert = require("../models/Alert");
+const { Alert } = require("../models/Alert");
 const { registerValidation } = require("../../validation");
-const { validateLogin } = require("../../validation"); // I use {} to extract only the validateLogin property.
+const { changeCredentialValidation } = require("../../validation"); // I use {} to extract only the validateLogin property.
 const mongoose = require("mongoose");
-
+const verifyToken = require("../middlewares/authMiddleware");
 // JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.
 // JWT is widely useful in scenarios like Authorization and Information Exchange, to encypt and securely transmit information between parties.
 // Reference: https://jwt.io/introduction
@@ -44,6 +44,9 @@ router.post("", async (req, res) => {
         certificateCode: req.body.volunteer.certificateCode
           ? req.body.volunteer.certificateCode
           : undefined,
+        isAvailable: req.body.volunteer.isAvailable
+          ? req.body.volunteer.isAvailable
+          : false,
       },
       certifier: {
         isCertifier: req.body.certifier.isCertifier
@@ -61,171 +64,251 @@ router.post("", async (req, res) => {
 
     res.send(savedUser);
   } catch (err) {
-    console.log(err);
     res.status(400).send(err);
   }
 });
 
-// AGREE TO ALERT
-router.put("/:userId", async (req, res) => {
+// GET A USER GIVEN ID
+router.get("/:userId", async (req, res) => {
   try {
-    if (!req) return res.status(400).send("Request is null\n");
+    if (!req) return res.status(400).send("Request is null");
 
-    if (!req.params.userId)
-      return res.status(400).send("User ID is required\n");
+    if (!req.params.userId) return res.status(400).send("User ID is required");
 
     if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
-      return res.status(400).send("Invalid User ID\n");
+      return res.status(400).send("Invalid User ID");
 
-    if (!req.body.alertId)
-      return res.status(400).send("Alert ID is required\n");
+    const user = await User.findById(req.params.userId);
 
-    if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
-      return res.status(400).send("Invalid Alert ID\n");
+    if (!user) return res.status(404).send("User not found");
 
-    const queriedUser = await User.findOne({ _id: req.params.userId });
-
-    if (queriedUser === null)
-      return res.status(404).send("The given user does not exist\n");
-
-    if (queriedUser.volunteer.isVolunteer === false)
-      return res.status(400).send("User is not a volunteer\n");
-
-    if (queriedUser.volunteer.acceptedAlert === req.body.alertId)
-      return res.status(400).send("User has already accepted the alert\n");
-
-    if (queriedUser.acceptedAlert != undefined)
-      return res.status(400).send("User is already busy with another alert\n");
-
-    const acceptedAlert = await Alert.findOne({ _id: req.body.alertId });
-
-    if (!acceptedAlert) return res.status(400).send("Alert does not exist\n");
-
-    if (acceptedAlert.isActive === false)
-      return res.status(400).send("Alert is not active anymore\n");
-
-    const result = await User.updateOne(
-      { _id: req.params.userId },
-      {
-        $set: {
-          "volunteer.acceptedAlert": req.body.alertId,
-        },
-      }
-    );
-
-    if (result.matchedCount === 0)
-      return res.status(404).send("User not found\n");
-
-    if (result.modifiedCount === 0)
-      return res.status(400).send("User has already accepted the alert\n");
-
-    return res.status(200).send("User assigned to alert successfully");
+    return res.send(user);
   } catch (err) {
     console.log(err);
-    return res.status(500).send(err);
-  }
-});
-
-// UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
-router.put("/volunteers/:volunteerId", async (req, res) => {
-  try {
-    if (!req) return res.status(400).send("Request is null\n");
-
-    if (!req.params.volunteerId)
-      return res.status(400).send("User ID is required\n");
-
-    if (mongoose.Types.ObjectId.isValid(req.params.volunteerId) === false)
-      return res.status(400).send("Invalid User ID\n");
-
-    const queriedUser = await User.findOne({ _id: req.params.volunteerId });
-
-    if (queriedUser === null)
-      return res.status(404).send("The given user does not exist\n");
-
-    if (queriedUser.isVolunteer === true)
-      return res.status(400).send("User is already a volunteer\n");
-
-    if (req.body.certificateCode === undefined)
-      return res.status(400).send("Certificate code is required\n");
-
-    if (req.body.isVolunteer === false) {
-      console.log("isVolunteer is false");
-      var result = await User.updateOne(
-        { _id: req.params.volunteerId },
-        {
-          $set: {
-            "volunteer.isVolunteer": req.body.isVolunteer,
-          },
-          $unset: {
-            "volunteer.certificateCode": "",
-          },
-        }
-      );
-    }
-
-    if (req.body.isVolunteer === true) {
-      console.log("isVolunteer is true");
-      var result = await User.updateOne(
-        { _id: req.params.volunteerId },
-        {
-          $set: {
-            "volunteer.isVolunteer": req.body.isVolunteer,
-            "volunteer.certificateCode": req.body.certificateCode,
-          },
-        }
-      );
-    }
-    console.log(result);
-    if (result.modifiedCount === 0) {
-      if (req.body.isVolunteer === true) {
-        return res.status(400).send("User is already a volunteer");
-      } else {
-        return res
-          .status(400)
-          .send("User doesn't require changes, is not a volunteer");
-      }
-    }
-    return res.status(200).send("User updated successfully");
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send(err);
+    return res.status(501).send(err);
   }
 });
 
 // RETURN ALL ALERTS NEAR A GIVEN USER
-router.get("/:idUser/alerts", async (req, res) => {
+router.get(
+  "/:idUser/alerts",
+  verifyToken((authData) => {
+    if (authData.isVolunteer) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req) return res.status(400).send("Request is null");
+
+      const user = await User.findById(req.params.idUser);
+
+      if (!user) return res.status(404).send("User not found");
+      if (user.volunteer.isAvailable === false)
+        return res.status(400).send("User is not available");
+      const userLatitude = user.latitude;
+      const userLongitude = user.longitude;
+
+      // Fetch all active alerts from the database
+      const allActiveAlerts = await Alert.find({ isActive: true });
+
+      // Filter the alerts based on their radius
+      const availableAlerts = allActiveAlerts.filter((alert) => {
+        const distance = Math.sqrt(
+          Math.pow(alert.latitude - userLatitude, 2) +
+            Math.pow(alert.longitude - userLongitude, 2)
+        );
+
+        return distance <= alert.radius * 0.01; // 0.01 of latitude (or longitude) is approximately 1.1 km
+      });
+
+      if (availableAlerts === null)
+        return res.status(404).send("List of availableAlert is null");
+
+      if (availableAlerts.length === 0)
+        return res.status(404).send("No alerts are in the radius of the user");
+
+      return res.send(availableAlerts);
+    } catch (err) {
+      return res.status(501).send(err);
+    }
+  }
+);
+
+// MODIFY AVAILABILITY OF A VOLUNTEER, CHANGE CREDENTIALS, AGREE TO AN ALERT, UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
+router.patch("/:userId", async (req, res) => {
   try {
+    var message = "";
     if (!req) return res.status(400).send("Request is null");
 
-    const user = await User.findById(req.params.idUser);
+    if (!req.params.userId) return res.status(400).send("User ID is required");
+
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+      return res.status(400).send("Invalid User ID");
+
+    const user = await User.findOne({ _id: req.params.userId });
 
     if (!user) return res.status(404).send("User not found");
 
-    const userLatitude = user.latitude;
-    const userLongitude = user.longitude;
+    // Change credentials if new username or password is provided (req.body.username, req.body.password)
+    if (req.body.username !== undefined || req.body.password !== undefined) {
+      const { error } = changeCredentialValidation(req.body);
 
-    // Fetch all active alerts from the database
-    const allActiveAlerts = await Alert.find({ isActive: true });
+      if (error) return res.status(400).send(error.details[0].message);
 
-    // Filter the alerts based on their radius
-    const availableAlerts = allActiveAlerts.filter((alert) => {
-      const distance = Math.sqrt(
-        Math.pow(alert.latitude - userLatitude, 2) +
-          Math.pow(alert.longitude - userLongitude, 2)
-      );
+      if (req.body.username) user.username = req.body.username;
 
-      return distance <= alert.radius;
-    });
+      if (req.body.password) user.password = req.body.password;
+      message = "User credentials updated successfully";
+    }
 
-    if (availableAlerts === null)
-      return res.status(404).send("List of availableAlert is null");
+    // Modify availability if isAvailable is provided (req.body.isAvailable)
+    if (req.body.isAvailable !== undefined) {
+      user.volunteer.isAvailable = req.body.isAvailable;
+      user.volunteer.acceptedAlert = undefined;
+      message = "User availability updated successfully";
+    }
 
-    if (availableAlerts.length === 0)
-      return res.status(404).send("No alerts are in the radius of the user");
+    if (req.body.latitude !== undefined) {
+      user.latitude = req.body.latitude;
+      message = "User latitude updated successfully";
+    }
 
-    return res.send(availableAlerts);
+    if (req.body.longitude !== undefined) {
+      user.longitude = req.body.longitude;
+      message = "User longitude updated successfully";
+    }
+
+    //Agree to an alert if alertId is provided (req.body.alertId)
+    if (req.body.alertId !== undefined) {
+      if (user.volunteer.isVolunteer === false)
+        return res.status(400).send("User is not a volunteer\n");
+
+      if (user.volunteer.acceptedAlert === req.body.alertId)
+        return res.status(400).send("User has already accepted the alert\n");
+
+      if (mongoose.Types.ObjectId.isValid(req.body.alertId) === false)
+        return res.status(400).send("Invalid Alert ID\n");
+
+      const acceptedAlert = await Alert.findOne({ _id: req.body.alertId });
+
+      if (!acceptedAlert) return res.status(400).send("Alert does not exist\n");
+
+      if (acceptedAlert.isActive === false)
+        return res.status(400).send("Alert is not active anymore\n");
+
+      user.volunteer.acceptedAlert = req.body.alertId;
+      message = "User assigned to alert successfully";
+    }
+
+    // Upgrade or downgrade user status
+    if (req.body.isVolunteer !== undefined) {
+      if (req.body.isVolunteer === user.volunteer.isVolunteer) {
+        return res
+          .status(400)
+          .send("User is already what you want him or she to be\n");
+      }
+      if (req.body.isVolunteer === false) {
+        user.volunteer.isVolunteer = req.body.isVolunteer;
+        user.volunteer.certificateCode = undefined;
+        user.volunteer.acceptedAlert = undefined;
+        message = "User is no longer a volunteer";
+      }
+      if (req.body.isVolunteer === true) {
+        if (req.body.certificateCode === undefined)
+          return res.status(400).send("Certificate code is required\n");
+
+        user.volunteer.isVolunteer = req.body.isVolunteer;
+        user.volunteer.certificateCode = req.body.certificateCode;
+        message = "User is now a volunteer";
+      }
+    }
+    await user.save();
+    return res.status(200).send(message);
+  } catch (err) {
+    return res.status(501).send(err);
+  }
+});
+
+// GET A CERTAIN USER BASED ON ITS E-MAIL
+router.get("/email/:userEmail", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    if (!req.params.userEmail) return res.status(400).send("Email is required");
+
+    const foundUser = await User.findOne({ email: req.params.userEmail });
+
+    if (!foundUser) return res.status(404).send("User not found");
+
+    return res.status(200).send(foundUser);
   } catch (err) {
     console.log(err);
+    return res.status(501).send(err);
+  }
+});
+
+// RETURN ALL ALERTS NEAR A GIVEN USER
+router.get(
+  "/:idUser/alerts",
+  verifyToken((authData) => {
+    if (authData.isVolunteer) return true;
+    return false;
+  }),
+  async (req, res) => {
+    try {
+      if (!req) return res.status(400).send("Request is null");
+
+      const user = await User.findById(req.params.idUser);
+
+      if (!user) return res.status(404).send("User not found");
+
+      const userLatitude = user.latitude;
+      const userLongitude = user.longitude;
+
+      // Fetch all active alerts from the database
+      const allActiveAlerts = await Alert.find({ isActive: true });
+
+      // Filter the alerts based on their radius
+      const availableAlerts = allActiveAlerts.filter((alert) => {
+        const distance = Math.sqrt(
+          Math.pow(alert.latitude - userLatitude, 2) +
+            Math.pow(alert.longitude - userLongitude, 2)
+        );
+
+        return distance <= alert.radius;
+      });
+
+      if (availableAlerts === null)
+        return res.status(404).send("List of availableAlert is null");
+
+      if (availableAlerts.length === 0)
+        return res.status(404).send("No alerts are in the radius of the user");
+
+      return res.send(availableAlerts);
+    } catch (err) {
+      console.log(err);
+      return res.status(501).send(err);
+    }
+  }
+);
+
+// DELETE USER
+router.delete("/:userId", async (req, res) => {
+  try {
+    if (!req) return res.status(400).send("Request is null");
+
+    if (!req.params.userId) return res.status(400).send("User ID is required");
+
+    if (mongoose.Types.ObjectId.isValid(req.params.userId) === false)
+      return res.status(400).send("Invalid User ID");
+
+    const user = await User.findOne({ _id: req.params.userId });
+
+    if (!user) return res.status(404).send("User not found");
+
+    await user.deleteOne();
+    return res.status(200).send("User deleted successfully");
+  } catch (err) {
     return res.status(501).send(err);
   }
 });

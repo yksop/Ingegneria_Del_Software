@@ -1,22 +1,50 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Enum = require("enum"); // npm install enum
 
 // define an enum with own values
-const triageType = new Enum({
-  Emergenza: 1,
-  Urgenza: 2,
-  "Urgenza differibile": 3,
-  "urgenza minore": 4,
-  "non urgenza": 5,
-});
+const triageTypes = {
+  1: "Emergenza",
+  2: "Urgenza",
+  3: "Urgenza differibile",
+  4: "Urgenza minore",
+  5: "Non urgenza",
+};
 
-module.exports = mongoose.model(
+const emergencyTypes = {
+  1: "Perdita di coscienza improvvisa",
+  2: "Soffocamento da corpo estraneo",
+  3: "Attacco d'asma",
+  4: "Infarto cardiaco",
+  5: "Emorragia",
+  6: "Allergia/anafilassi",
+  7: "Emergenza diabetica",
+  8: "Avvelenamento",
+  9: "Ustione",
+  10: "Colpo di calore",
+  11: "Ipotermia",
+  12: "Ictus cerebrale",
+  13: "Crisi epilettica",
+  14: "Trauma cranico e commozione cerebrale",
+  15: "Traumi alle ossa, articolazioni, muscoli",
+  16: "Punture di insetti e morsi di animali",
+  17: "Disagio psichico",
+};
+
+const Alert = mongoose.model(
   "Alert",
   new Schema({
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
-    triage: { type: Number, required: true },
+    triage: {
+      type: String,
+      enum: Object.values(triageTypes),
+      required: true
+    },
+    emergency: {
+      type: String,
+      enum: Object.values(emergencyTypes),
+      required: true
+    },
     radius: { type: Number, required: true },
     expiresIn: { type: Number, required: true },
     isActive: { type: Boolean, required: true },
@@ -24,3 +52,8 @@ module.exports = mongoose.model(
     timeForAmbulance: { type: Number, required: false },
   })
 );
+module.exports={
+  Alert,
+  triageTypes,
+  emergencyTypes
+}

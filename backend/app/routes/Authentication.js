@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const { validateLogin } = require("../../validation"); // I use {} to extract only the validateLogin property.
-const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const EXPIRAL_AUTH_TIME = "2 days";
 
@@ -26,11 +25,12 @@ router.post("", async (req, res) => {
 
     // I generate a JWT token to securely transfer encrypted data between client and server. Client could also reuse this token to authenticate subsequent requests to the server.
     const token = jwt.sign(
-      { 
-        userId: userToLogin._id, 
-        isVolunteer: userToLogin.volunteer.isVolunteer, 
-        isCertifier: userToLogin.certifier.isCertifier, 
-        isOperator118: userToLogin.operator118.isOperator118
+      {
+        userId: userToLogin._id,
+        isVolunteer: userToLogin.volunteer.isVolunteer,
+        isCertifier: userToLogin.certifier.isCertifier,
+        isOperator118: userToLogin.operator118.isOperator118,
+        isAvailable: userToLogin.volunteer.isAvailable,
       },
       process.env.JWT_SECRET,
       {

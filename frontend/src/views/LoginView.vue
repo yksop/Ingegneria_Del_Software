@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <form @submit.prevent="login" class="login-form">
+    <form @submit.prevent="submitForm" class="login-form">
       <h2>Login</h2>
       <div class="input-group">
         <label for="username">Username</label>
@@ -21,7 +21,17 @@
         />
         <password-error-banner :show="passwordError" />
       </div>
+      <br /><br />
+      <label>
+        <input type="checkbox" v-model="consenso" />
+        Acconsento al trattamento dei miei dati personali secondo la normativa
+        vigente.
+      </label>
+      <br /><br />
       <button type="submit">Login</button>
+      <RouterLink to="/forgotPassword" class="forgot-password-link"
+        >Forgot password?</RouterLink
+      >
     </form>
   </div>
 </template>
@@ -37,7 +47,9 @@ import {
   isVolunteer,
   isCertifier,
   isOperator118,
+  getToken,
 } from "@/services/tokenManagement.js";
+import { RouterLink } from "vue-router";
 
 export default {
   components: {
@@ -45,28 +57,40 @@ export default {
   },
   data() {
     return {
+      consenso: false,
       passwordError: false,
       credentials: {
         username: "",
         password: "",
+        latitude: null,
+        longitude: null,
       },
     };
   },
 
   methods: {
+    submitForm() {
+      if (this.consenso) {
+        this.login();
+      } else {
+        alert("Devi acconsentire al trattamento dei dati per procedere.");
+      }
+    },
     async login() {
       const loginUserCredentials = {
         username: this.credentials.username,
         password: this.credentials.password,
       };
 
+      // verify if user exists
       axios
-        .post("http://localhost:3000/api/v1/tokens", loginUserCredentials)
+        .post(axios.defaults.baseURL + "/api/v2/tokens", loginUserCredentials)
         .then(
           (response) => {
             console.log("Login successful:", response.data);
             this.passwordError = false;
-            this.$router.push("/about");
+            const nextUrl = this.$route.query.nextUrl || "/";
+            this.$router.push({ path: nextUrl });
 
             saveToken(response.data.token);
 
@@ -80,6 +104,33 @@ export default {
             console.log("VOL: ", isVolunteer(response.data.token));
             console.log("118_Op: ", isOperator118(response.data.token));
             console.log("CERT: ", isCertifier(response.data.token));
+
+            // once the user logs in, the location is updated
+            axios
+              .patch(
+                axios.defaults.baseURL +
+                  `/api/v2/users/${decodeToken(getToken()).userId}`,
+                {
+                  latitude: this.credentials.latitude,
+                  longitude: this.credentials.longitude,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              )
+              .then(
+                (response) => {
+                  console.log("Location updated:", response.data);
+                },
+                (error) => {
+                  console.error("Location update failed:", error.response.data);
+                }
+              )
+              .catch((error) => {
+                console.error("Axios request failed:", error);
+              });
           },
           (error) => {
             this.passwordError = true;
@@ -91,6 +142,24 @@ export default {
           console.error("Axios request failed:", error);
         });
     },
+    getUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            this.credentials.latitude = Number(position.coords.latitude);
+            this.credentials.longitude = Number(position.coords.longitude);
+          },
+          (error) => {
+            console.error("Error Code = " + error.code + " - " + error.message);
+          }
+        );
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+      }
+    },
+  },
+  created() {
+    this.getUserLocation();
   },
 };
 </script>
@@ -109,7 +178,7 @@ export default {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 350px;
-  height: 350px;
+  height: 400px;
   /*box-sizing: border-box;*/
 }
 
@@ -152,5 +221,17 @@ button:hover {
 
 button:active {
   background-color: #4045b2; /* Darker shade when the button is clicked */
+}
+
+.forgot-password-link {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+  color: #5c67f2;
+  text-decoration: none;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
 }
 </style>

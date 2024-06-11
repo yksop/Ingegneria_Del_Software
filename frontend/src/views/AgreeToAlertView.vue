@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div v-if="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
     <div class="alert-container">
       <div class="alert-frame">
         <ol>
@@ -8,26 +11,33 @@
             <span class="alert-info">Latitude:</span> {{ alert.latitude }} |
             <span class="alert-info">Longitude:</span> {{ alert.longitude }} |
             <span class="alert-info">Description:</span> {{ alert.description }}
-            <button class="small-button" @click="agreeToAlert(index)">
+            <button
+              class="button"
+              @click="agreeToAlert(index)"
+              :disabled="acceptedAlertIndex === index"
+            >
               Accept
             </button>
             <button
-              v-if="alert.accepted"
+              v-if="showPreviewButton[index]"
               class="button"
-              @click="showPopup = true"
+              @click="showPreviewAlert(index)"
             >
               Preview Alert
             </button>
             <div v-if="showPopup" class="popup">
               <h2>Preview</h2>
-              <p v-if="selectedAlert">
-                <span class="alert-info">Triage:</span>
-                {{ selectedAlert.triage }} <br />
-                <span class="alert-info">Time for Ambulance:</span>
-                {{ selectedAlert.timeForAmbulance }} <br />
-                <span class="alert-info">Description:</span>
-                {{ selectedAlert.description }}<br />
-              </p>
+              <p v-if="selectedAlert"></p>
+              <span class="alert-info">Triage:</span>
+              {{ selectedAlert.triage }} <br />
+              <span class="alert-info">Time for Ambulance:</span>
+              {{ selectedAlert.timeForAmbulance }} <br />
+              <span class="alert-info">Description:</span>
+              {{ selectedAlert.description }}<br />
+              <span class="alert-info">Emergency:</span>
+              {{ selectedAlert.emergency }}<br />
+              <button @click="readBestPractices">Read Best Practices</button>
+              <div v-if="read" v-html="bestPracticeDescription"></div>
               <button @click="showPopup = false">Close</button>
             </div>
           </li>
@@ -43,7 +53,6 @@
 <script>
 import axios from "axios";
 import { getToken, decodeToken } from "../services/tokenManagement.js";
-const userToken = decodeToken(getToken());
 
 export default {
   data() {
@@ -54,59 +63,132 @@ export default {
       },
       showPopup: false,
       selectedAlert: null,
+      errorMessage: null,
+      showPreviewButton: [],
+      acceptedAlertIndex: null,
+      bestPracticeDescription: "",
+      read: false,
     };
   },
   created() {
+    this.showPreviewButton = this.alerts.map(() => false);
     axios
       .get(
-        `http://localhost:3000/api/v1/users/${
-          decodeToken(getToken()).userId
-        }/alerts`
+        axios.defaults.baseURL +
+          `/api/v2/users/${decodeToken(getToken()).userId}/alerts`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       )
       .then((response) => {
         this.alerts = response.data;
         this.users._id = response.data;
-        console.log(decodeToken(getToken()).userId);
       })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        if (error.response) {
+          this.errorMessage = error.response.data;
+        } else {
+          this.errorMessage = "Error fetching data";
+        }
       });
   },
   methods: {
     agreeToAlert(index) {
+      this.errorMessage = "";
+      this.showPreviewButton = this.showPreviewButton.map(() => false);
+      this.showPreviewButton[index] = true;
+      this.acceptedAlertIndex = index;
+      this.read = false;
+      this.bestPracticeDescription = "";
       axios
-        .put(`http://localhost:3000/api/v1/users/${userToken.userId}`, {
-          alertId: this.alerts[index]._id,
-        })
+        .patch(
+          axios.defaults.baseURL +
+          `/api/v2/users/${
+            decodeToken(getToken()).userId
+          }`,
+          { alertId: this.alerts[this.acceptedAlertIndex]._id },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((response) => {
-          console.log(response);
           this.selectedAlert = this.alerts[index];
-          this.showPreviewAlert(index);
           this.alerts[index].accepted = true;
-          this.alerts.splice(index, 1);
+          if (this.alerts[index].emergency === undefined) {
+            this.bestPracticeDescription =
+              "No best practices found for this emergency";
+          } else {
+            this.getBestPractices(this.alerts[index].emergency);
+          }
         })
         .catch((error) => {
-          console.error("Error agreeing to alert:", error);
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
+            this.errorMessage = "Error agreeing to alert";
+          }
         });
+    },
+    getBestPractices(emergency) {
+      axios
+        .get(axios.defaults.baseURL +
+          `/api/v2/bestpractises?title=${emergency}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          this.bestPracticeDescription = response.data.advise;
+        })
+        .catch((error) => {
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
+            this.errorMessage = "Error fetching best practices";
+          }
+        });
+    },
+    readBestPractices() {
+      this.read = true;
+      //this.getBestPractices();
     },
     showPreviewAlert(index) {
       axios
-        .get(`http://localhost:3000/api/v1/alerts/${this.alerts[index]._id}`)
-        .then(
-          (response) => {
-            console.log("Alert shown:", response.data);
-            this.showPopup = true;
+        .get(axios.defaults.baseURL +
+          `/api/v2/alerts/${this.alerts[index]._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          (error) => {
-            console.error("Error showing alert:", error);
+        })
+        .then((response) => {
+          this.showPopup = true;
+        })
+        .catch((error) => {
+          if (error.response) {
+            this.errorMessage = error.response.data;
+          } else {
+            this.errorMessage = "Error showing alert preview";
           }
-        );
+        });
     },
   },
 };
 </script>
 
 <style>
+.button[disabled] {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.button[disabled]:hover {
+  background-color: grey;
+}
+
 .alert-container {
   display: flex;
   flex-direction: column;
@@ -122,7 +204,6 @@ li {
 }
 
 .alert-frame {
-  border: 1px solid black;
   padding: 10px;
   margin: 10px;
 }
@@ -136,11 +217,23 @@ li {
   position: fixed;
   top: 50%;
   left: 50%;
-  background: white;
+  background: rgb(193, 217, 237);
+  border: 5px solid black;
+
   transform: translate(-50%, -50%);
-  width: 50%;
-  height: 50%;
+  width: auto;
+  height: auto;
+  max-height: 500px;
   padding: 20px;
   border: 1px solid black;
+  overflow: auto;
+}
+
+.error-message {
+  color: white;
+  display: inline-block;
+  font-size: 20px;
+  margin-top: 20px;
+  background-color: red;
 }
 </style>

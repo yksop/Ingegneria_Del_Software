@@ -134,3 +134,6 @@ dist
 
 # DS store
 .DS_Store
+
+# Ignore all files with .mjs extension
+*.mjs
