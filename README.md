@@ -1,4 +1,4 @@
-# Gruppo 10 - Delivrable #4 - Sprint N.2
+# Gruppo 10 - Deliverable #4 - Sprint N.2
 
 # Volontari Trentini Connessi
 
