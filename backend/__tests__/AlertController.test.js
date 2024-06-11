@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const faker = require("faker");
 require("dotenv").config();
 const request = require("supertest");
-const url = "http://localhost:3000";
+const url = "localhost:3000/api/v2";
 
 describe("User with 118 and Voluntary permissions ", () => {
   let authToken = "";
@@ -19,7 +19,7 @@ describe("User with 118 and Voluntary permissions ", () => {
 
     // Create User with all permissions
     const registrationResponse = await request(url)
-      .post("/api/v1/users")
+      .post("/users")
       .send({
         name: "alberto",
         surname: "Dal Bosco",
@@ -44,7 +44,7 @@ describe("User with 118 and Voluntary permissions ", () => {
 
     // Log In the User with all permissions
     const loginResponse = await request(url)
-      .post("/api/v1/tokens")
+      .post("/tokens")
       .send({
         username: "albertodalbosco1",
         password: "Password123!",
@@ -55,7 +55,7 @@ describe("User with 118 and Voluntary permissions ", () => {
 
     // Create an alert
     const newAlert = await request(url)
-      .post("/api/v1/alerts")
+      .post("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         latitude: 1.00,
@@ -76,9 +76,9 @@ describe("User with 118 and Voluntary permissions ", () => {
 
   // ________________ userId, authToken, alertId ________________
 
-  test("GET /api/v1/alerts should return all active alerts", async () => {
+  test("GET /api/v2/alerts should return all active alerts", async () => {
     const response = await request(url)
-      .get("/api/v1/alerts")
+      .get("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
 
@@ -88,9 +88,9 @@ describe("User with 118 and Voluntary permissions ", () => {
     expect(alerts.length).toBeGreaterThan(0);
   });
 
-  test("GET /api/v1/alerts/:id should return alert with specified id", async () => {
+  test("GET /api/v2/alerts/:id should return alert with specified id", async () => {
     const response = await request(url)
-      .get(`/api/v1/alerts/${alertId}`)
+      .get(`/alerts/${alertId}`)
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
 
@@ -116,13 +116,13 @@ describe("User with 118 and Voluntary permissions ", () => {
   afterAll(async () => {
     //Delete the User with permissions
     await request(url)
-      .delete(`/api/v1/users/${userId}`)
+      .delete(`/users/${userId}`)
       .set("Content-Type", "application/json")
       .expect(200);
 
     //Delete the alert
     await request(url)
-      .delete(`/api/v1/alerts/${alertId}`)
+      .delete(`/alerts/${alertId}`)
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
   });
@@ -152,7 +152,7 @@ describe("User with ONLY 118 permission", () => {
 
     // Create User with all permissions
     const registrationResponse = await request(url)
-      .post("/api/v1/users")
+      .post("/users")
       .send({
         name: "alberto",
         surname: "Dal Bosco",
@@ -177,7 +177,7 @@ describe("User with ONLY 118 permission", () => {
 
     // Log In the User with all permissions
     const loginResponse = await request(url)
-      .post("/api/v1/tokens")
+      .post("/tokens")
       .send({
         username: "albertodalbosco2",
         password: "Password123!",
@@ -188,7 +188,7 @@ describe("User with ONLY 118 permission", () => {
 
     // Create an active alert
     const newActiveAlert = await request(url)
-      .post("/api/v1/alerts")
+      .post("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         latitude: 1.00,
@@ -208,7 +208,7 @@ describe("User with ONLY 118 permission", () => {
 
     // Create a disactive alert
     const disactiveAlert = await request(url)
-      .post("/api/v1/alerts")
+      .post("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         latitude: 1.00,
@@ -230,9 +230,9 @@ describe("User with ONLY 118 permission", () => {
   // ________________ userId, authToken, alertId ________________
 
   //ONLY OPERATOR118
-  test("POST /api/v1/alerts with correct alert fields should create the alert ", async () => {
+  test("POST /alerts with correct alert fields should create the alert ", async () => {
     const response = await request(url)
-      .post("/api/v1/alerts")
+      .post("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         latitude: 12.30,
@@ -263,9 +263,9 @@ describe("User with ONLY 118 permission", () => {
   });
 
 
-  test("POST /api/v1/alerts with missing required fields should return 400", async () => {
+  test("POST /api/v2/alerts with missing required fields should return 400", async () => {
     const response = await request(url)
-      .post("/api/v1/alerts")
+      .post("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         // Missing required fields
@@ -275,9 +275,9 @@ describe("User with ONLY 118 permission", () => {
   });
 
 
-  test("POST /api/v1/alerts with all the required fields but a wrong triage should return 400 ", async () => {
+  test("POST /api/v2/alerts with all the required fields but a wrong triage should return 400 ", async () => {
     const response = await request(url)
-      .post("/api/v1/alerts")
+      .post("/alerts")
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         latitude: 12.30,
@@ -295,9 +295,9 @@ describe("User with ONLY 118 permission", () => {
   });
 
 
-  test("PATCH /api/v1/alerts/:alertId should retire the alert with specified alertId", async () => {
+  test("PATCH /api/v2/alerts/:alertId should retire the alert with specified alertId", async () => {
     const response = await request(url)
-      .patch(`/api/v1/alerts/${alertId}`)
+      .patch(`/alerts/${alertId}`)
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
 
@@ -307,9 +307,9 @@ describe("User with ONLY 118 permission", () => {
     expect(retiredAlert.isActive).toBe();
   });
 
-  test("PATCH /api/v1/alerts/:alertId should return an error if the alert is not active", async () => {
+  test("PATCH /api/v2/alerts/:alertId should return an error if the alert is not active", async () => {
     const response = await request(url)
-      .patch(`/api/v1/alerts/${disactiveAlertId}`)
+      .patch(`/alerts/${disactiveAlertId}`)
       .set("Authorization", `Bearer ${authToken}`)
       .expect(400);
   });
@@ -319,18 +319,18 @@ describe("User with ONLY 118 permission", () => {
   afterAll(async () => {
     //Delete the User with permissions
     await request(url)
-      .delete(`/api/v1/users/${userId}`)
+      .delete(`/users/${userId}`)
       .set("Content-Type", "application/json")
       .expect(200);
 
     //Delete the alert
     await request(url)
-      .delete(`/api/v1/alerts/${alertId}`)
+      .delete(`/alerts/${alertId}`)
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
 
     await request(url)
-      .delete(`/api/v1/alerts/${disactiveAlertId}`)
+      .delete(`/alerts/${disactiveAlertId}`)
       .set("Authorization", `Bearer ${authToken}`)
       .expect(200);
   });
