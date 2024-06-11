@@ -67,7 +67,7 @@ export default {
 
     // Recupera i dati dal backend e aggiungi i marker
     axios
-      .get(axios.defaults.baseURL + "/api/v1/daes")
+      .get(axios.defaults.baseURL + "/api/v2/daes")
       .then((response) => {
         const points = response.data;
         points.forEach((point) => {
@@ -96,7 +96,7 @@ export default {
       });
 
     axios
-      .get(axios.defaults.baseURL + "/api/v1/clinics")
+      .get(axios.defaults.baseURL + "/api/v2/clinics")
       .then((response) => {
         const points = response.data;
         points.forEach((point) => {
@@ -124,7 +124,7 @@ export default {
       });
 
     axios
-      .get(axios.defaults.baseURL + "/api/v1/hospitals")
+      .get(axios.defaults.baseURL + "/api/v2/hospitals")
       .then((response) => {
         const points = response.data;
         points.forEach((point) => {
@@ -155,7 +155,7 @@ export default {
       const userId = getUserId();
       // get user data and ping him in the map
       axios
-        .get(axios.defaults.baseURL + `/api/v1/users/${userId}`, {
+        .get(axios.defaults.baseURL + `/api/v2/users/${userId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -183,7 +183,7 @@ export default {
 
           if (alertId != null) {
             axios
-              .get(axios.defaults.baseURL + `/api/v1/alerts/${alertId}`, {
+              .get(axios.defaults.baseURL + `/api/v2/alerts/${alertId}`, {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },

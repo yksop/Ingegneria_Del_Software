@@ -33,7 +33,7 @@ describe("User with 118 and Voluntary permissions ", () => {
     alertId = newAlert.body._id;
   });
 
-  test("GET /api/v1/alerts should return all active alerts", async () => {
+  test("GET /api/v2/alerts should return all active alerts", async () => {
     const response = await getAlerts();
 
     const alerts = response.body;
@@ -42,7 +42,7 @@ describe("User with 118 and Voluntary permissions ", () => {
     expect(alerts.length).toBeGreaterThan(0);
   });
 
-  test("GET /api/v1/alerts/:id should return alert with specified id", async () => {
+  test("GET /api/v2/alerts/:id should return alert with specified id", async () => {
     const response = await getAlertById(alertId);
 
     const alert = response.body;
@@ -87,7 +87,7 @@ describe("User with ONLY 118 permission", () => {
     disactiveAlertId = newDisactiveAlert.body._id;
   });
 
-  test("POST /api/v1/alerts with correct alert fields should create the alert", async () => {
+  test("POST /api/v2/alerts with correct alert fields should create the alert", async () => {
     const response = await createAlert();
 
     const newAlert = response.body;
@@ -104,7 +104,7 @@ describe("User with ONLY 118 permission", () => {
     expect(newAlert.timeForAmbulance).toBe(1);
   });
 
-  test("PATCH /api/v1/alerts/:alertId should retire the alert with specified alertId", async () => {
+  test("PATCH /api/v2/alerts/:alertId should retire the alert with specified alertId", async () => {
     const response = await retireAlert(alertId);
 
     const retiredAlert = response.body;
@@ -113,7 +113,7 @@ describe("User with ONLY 118 permission", () => {
     expect(retiredAlert.isActive).toBe(false);
   });
 
-  test("PATCH /api/v1/alerts/:alertId should return an error if the alert is not active", async () => {
+  test("PATCH /api/v2/alerts/:alertId should return an error if the alert is not active", async () => {
     try {
       await retireAlert(disactiveAlertId);
     } catch (error) {

@@ -24,15 +24,15 @@ const hospitalRoute = require("./app/routes/HospitalController");
 const bestPractises = require("./app/routes/BestPractisesController");
 
 // Route middleware
-app.use("/api/v1/users", usersRoute);
-app.use("/api/v1/alerts", alertsRoute);
-app.use("/api/v1/tokens", authenticationRoute);
-app.use("/api/v1/emails", mailRoute);
-app.use("/api/v1/passwords", passwordRoute);
-app.use("/api/v1/daes", daeRoute);
-app.use("/api/v1/clinics", clinicRoute);
-app.use("/api/v1/hospitals", hospitalRoute);
-app.use("/api/v1/bestpractises", bestPractises);
+app.use("/api/v2/users", usersRoute);
+app.use("/api/v2/alerts", alertsRoute);
+app.use("/api/v2/tokens", authenticationRoute);
+app.use("/api/v2/emails", mailRoute);
+app.use("/api/v2/passwords", passwordRoute);
+app.use("/api/v2/daes", daeRoute);
+app.use("/api/v2/clinics", clinicRoute);
+app.use("/api/v2/hospitals", hospitalRoute);
+app.use("/api/v2/bestpractises", bestPractises);
 
 /**
  * Configure mongoose

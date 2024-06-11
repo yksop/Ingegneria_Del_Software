@@ -1,13 +1,13 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
 const faker = require("faker");
-const url = "localhost:3000/api/v1";
+const url = "localhost:3000/api/v2";
 require("dotenv").config();
 
 jest.setTimeout(30000);
 let myToken = "";
 let userId = "";
-describe("POST /api/v1/tokens", () => {
+describe("POST /api/v2/tokens", () => {
   beforeAll(async () => {
     const registrationResponse = await request(url)
       .post("/users")

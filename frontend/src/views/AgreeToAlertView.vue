@@ -75,7 +75,7 @@ export default {
     axios
       .get(
         axios.defaults.baseURL +
-          `/api/v1/users/${decodeToken(getToken()).userId}/alerts`,
+          `/api/v2/users/${decodeToken(getToken()).userId}/alerts`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -105,7 +105,7 @@ export default {
       axios
         .patch(
           axios.defaults.baseURL +
-          `/api/v1/users/${
+          `/api/v2/users/${
             decodeToken(getToken()).userId
           }`,
           { alertId: this.alerts[this.acceptedAlertIndex]._id },
@@ -136,7 +136,7 @@ export default {
     getBestPractices(emergency) {
       axios
         .get(axios.defaults.baseURL +
-          `/api/v1/bestpractises?title=${emergency}`, {
+          `/api/v2/bestpractises?title=${emergency}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -159,7 +159,7 @@ export default {
     showPreviewAlert(index) {
       axios
         .get(axios.defaults.baseURL +
-          `/api/v1/alerts/${this.alerts[index]._id}`, {
+          `/api/v2/alerts/${this.alerts[index]._id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

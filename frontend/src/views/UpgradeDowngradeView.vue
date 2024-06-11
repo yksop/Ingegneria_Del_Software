@@ -91,7 +91,7 @@ export default {
 
       axios
         .patch(
-          axios.defaults.baseURL + `/api/v1/users/${this.formData.id}`,
+          axios.defaults.baseURL + `/api/v2/users/${this.formData.id}`,
           upgradeDowngradeUserStatus,
           {
             headers: {
