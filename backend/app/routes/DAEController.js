@@ -67,8 +67,8 @@ router.get("/:id", async (req, res) => {
     // Check if the request is null
     if (!req.params.id) return res.status(400).send("DAE ID is required\n");
 
-    if(mongoose.Types.ObjectId.isValid(req.params.id) === false)
-        return res.status(400).send("Invalid DAE ID\n");
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+      return res.status(400).send("Invalid DAE ID\n");
 
     // Return the DAE with the specified id
     const foundDAE = await DAE.findById(req.params.id);
@@ -89,13 +89,13 @@ router.put("/:id", async (req, res) => {
     // Check if the request is null
     if (!req.params.id) return res.status(400).send("DAE ID is required\n");
 
-    if(mongoose.Types.ObjectId.isValid(req.params.id) === false)
-        return res.status(400).send("Invalid DAE ID\n");
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+      return res.status(400).send("Invalid DAE ID\n");
 
     // Update the DAE with the specified id
     const result = await DAE.updateOne(
       { _id: req.params.id },
-      { 
+      {
         latitude: req.body.latitude,
         longitude: req.body.longitude,
         id: req.body.id,
@@ -125,8 +125,8 @@ router.delete("/:id", async (req, res) => {
     // Check if the request is null
     if (!req.params.id) return res.status(400).send("DAE ID is required\n");
 
-    if(mongoose.Types.ObjectId.isValid(req.params.id) === false)
-        return res.status(400).send("Invalid DAE ID\n");
+    if (mongoose.Types.ObjectId.isValid(req.params.id) === false)
+      return res.status(400).send("Invalid DAE ID\n");
 
     // Delete the DAE with the specified id
     const result = await DAE.deleteOne({ _id: req.params.id }).exec();
@@ -143,6 +143,5 @@ router.delete("/:id", async (req, res) => {
     return res.status(400).send(err);
   }
 });
-
 
 module.exports = router;

@@ -1,7 +1,7 @@
 FORMAT: 1A
-HOST: http://localhost:3000/api/v1
+HOST: http://localhost:3000/api/v2
 
-# Sprint 1
+# Sprint 2
 
 ## Register a new user [/users]
 
@@ -39,12 +39,11 @@ Permette all'utente di registrarsi al sistema
     + Attributes
         - message (string): Internal server error message.
 
+## Update User [/users/{userId}]
 
-## Agree to Alert [/users/{userId}]
+### Update User [PATCH]
 
-### Agree to Alert [PUT]
-
-Permette ad un utente di accettare uno specifico Alert
+Allows a user to update their information, agree to an alert, or change their volunteer status.
 
 + Parameters
     + userId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
@@ -53,14 +52,21 @@ Permette ad un utente di accettare uno specifico Alert
     + Body
 
             {
-                "alertId": "6645d66553d1d51820f80be4"
+                "username": "newUsername",
+                "password": "newPassword",
+                "isAvailable": true,
+                "latitude": 12.34,
+                "longitude": 56.78,
+                "alertId": "6645d66553d1d51820f80be4",
+                "isVolunteer": true,
+                "certificateCode": "CERT123"
             }
 
 + Response 200 (application/json)
     + Body
 
             {
-                "message": "User assigned to alert successfully"
+                "message": "User updated successfully"
             }
 
 + Response 400 (application/json)
@@ -88,13 +94,6 @@ Permette ad un utente di accettare uno specifico Alert
     + Body
 
             {
-                "message": "Alert ID is required"
-            }
-
-+ Response 400 (application/json)
-    + Body
-
-            {
                 "message": "Invalid Alert ID"
             }
 
@@ -116,13 +115,6 @@ Permette ad un utente di accettare uno specifico Alert
     + Body
 
             {
-                "message": "User is already busy with another alert"
-            }
-
-+ Response 400 (application/json)
-    + Body
-
-            {
                 "message": "Alert does not exist"
             }
 
@@ -131,13 +123,6 @@ Permette ad un utente di accettare uno specifico Alert
 
             {
                 "message": "Alert is not active anymore"
-            }
-
-+ Response 404 (application/json)
-    + Body
-
-            {
-                "message": "The given user does not exist"
             }
 
 + Response 404 (application/json)
@@ -153,35 +138,138 @@ Permette ad un utente di accettare uno specifico Alert
             {
                 "message": "Internal Server Error"
             }
-            
 
-## Alerts Near User [/users/{idUser}/alerts]
+## Get User [/users/{userId}]
 
-### Alerts Near a User [GET]
+### Get User [GET]
 
-Restituisce gli Alert che sono vicini ad un dato utente
+Allows retrieval of a user's information by their ID.
 
 + Parameters
-    + idUser: `663cb4448d36442c68bb4989` (required) - The ID of the user.
+    + userId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "username": "username",
+                "password": "password",
+                "isAvailable": true,
+                "latitude": 12.34,
+                "longitude": 56.78,
+                "alertId": "6645d66553d1d51820f80be4",
+                "isVolunteer": true,
+                "certificateCode": "CERT123"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Invalid User ID"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "message": "User not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "message": "Internal Server Error"
+            }
+
+## Get User by Email [/users/email/{userEmail}]
+
+### Get User by Email [GET]
+
+Allows retrieval of a user's information by their email.
+
++ Parameters
+    + userEmail: `example@example.com` (required, string) - The email of the user.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "username": "username",
+                "password": "password",
+                "isAvailable": true,
+                "latitude": 12.34,
+                "longitude": 56.78,
+                "alertId": "6645d66553d1d51820f80be4",
+                "isVolunteer": true,
+                "certificateCode": "CERT123"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Email is required"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "message": "User not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "message": "Internal Server Error"
+            }
+
+## Get Alerts Near User [/users/{idUser}/alerts]
+
+### Get Alerts Near User [GET]
+
+Allows retrieval of all active alerts near a given user.
+
++ Parameters
+    + idUser: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
 
 + Response 200 (application/json)
     + Body
 
             [
                 {
-                    "id": "60d0fe4f532f9a11f65c74b5",
-                    "latitude": 40.712776,
-                    "longitude": -74.005974,
+                    "id": "66449dddecdc9582d4f9025c",
+                    "latitude": 12.34,
+                    "longitude": 56.78,
+                    "radius": 10,
                     "isActive": true,
-                    "radius": 10
+                    // other alert details...
                 },
-                {
-                    "id": "60d0fe4f532f9a11f65c74b6",
-                    "latitude": 40.712776,
-                    "longitude": -74.005974,
-                    "isActive": true,
-                    "radius": 5
-                }
+                // more alerts...
             ]
 
 + Response 400 (application/json)
@@ -191,6 +279,13 @@ Restituisce gli Alert che sono vicini ad un dato utente
                 "error": "Request is null"
             }
 
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "User ID is required"
+            }
+
 + Response 404 (application/json)
     + Body
 
@@ -198,37 +293,55 @@ Restituisce gli Alert che sono vicini ad un dato utente
                 "error": "User not found"
             }
 
-+ Response 501 (application/json)
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "List of availableAlert is null"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "No alerts are in the radius of the user"
+            }
+
++ Response 500 (application/json)
     + Body
 
             {
                 "error": "Internal Server Error"
             }
-            
 
+## Delete User [/users/{userId}]
 
-## Upgrade/Downgrade User Role [/users/volunteers/{volunteerId}]
+### Delete User [DELETE]
 
-### Upgrade/Downgrade User Role [PUT]
-
-Aumenta il grado di un utente normale a volontario o viceversa.
+Allows deletion of a user by their ID.
 
 + Parameters
-    + volunteerId: `663cb4448d36442c68bb4989` (required) - The ID of the user.
-
-+ Request (application/json)
-    + Body
-
-            {
-                "isVolunteer": true,
-                "certificateCode": "CERT1234"
-            }
+    + userId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
 
 + Response 200 (application/json)
     + Body
 
             {
-                "message": "User updated successfully"
+                "message": "User deleted successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "User ID is required"
             }
 
 + Response 400 (application/json)
@@ -242,7 +355,7 @@ Aumenta il grado di un utente normale a volontario o viceversa.
     + Body
 
             {
-                "error": "The given user does not exist"
+                "error": "User not found"
             }
 
 + Response 500 (application/json)
@@ -251,8 +364,6 @@ Aumenta il grado di un utente normale a volontario o viceversa.
             {
                 "error": "Internal Server Error"
             }
-           
-
 
 ## Get Alert [/alerts/{id}]
 
@@ -385,7 +496,64 @@ Permette di creare un nuovo alert nel sistema.
                 "error": "string"
             }
             
-            
+## Update Alert [/alerts/{alertId}]
+
+### Update Alert [PATCH]
+
+Allows updating the status of an alert.
+
++ Parameters
+    + alertId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the alert.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "isActive": false
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "Alert updated successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Alert ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid Alert ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Cannot retire an alert"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "Alert not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
             
 ## Utenti all'interno del Raggio di un Alert [/alerts/{id}/users]
 
@@ -445,8 +613,6 @@ Restituisce tutti gli utenti che si trovano nel raggio di un avviso specifico.
             {
                 "error": "string"
             }
-            
-
 
 ## Alert attivi [/alerts]
 
@@ -502,4 +668,604 @@ Ritorna le informazioni su tutti gli alert attivi
 
             {
                 "error": "string"
+            }
+
+## Delete Alert [/alerts/{id}]
+
+### Delete Alert [DELETE]
+
+Allows deletion of an alert by its ID.
+
++ Parameters
+    + id: `66449dddecdc9582d4f9025c` (required, string) - The ID of the alert.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "Alert deleted successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Alert ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid Alert ID"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "Alert not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## Best Practices [/best-practices]
+
+### Create a Best Practice [POST]
+
+Allows creation of a new best practice.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "title": "Best Practice Title",
+                "advise": "Best Practice Advise"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "title": "Best Practice Title",
+                "advise": "Best Practice Advise",
+                // other best practice details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Title is required"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Get a Best Practice [GET]
+
+Allows retrieval of a best practice by its title.
+
++ Parameters
+    + title: `Best Practice Title` (required, string) - The title of the best practice.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "title": "Best Practice Title",
+                "advise": "Best Practice Advise",
+                // other best practice details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Best Practice title is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Best practices not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## Clinics [/clinics]
+
+### Create a Clinic [POST]
+
+Allows creation of a new clinic.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "latitude": 1,
+                "longitude": 1,
+                "civico_num": 1,
+                "civico_let": "Civico Letter",
+                "civico_alf": "Civico Alphanumeric",
+                "desvia": "Desvia",
+                "strada": 1,
+                "fumetto": "Fumetto"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // clinic details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Error message"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Identical active clinic already exists"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Get All Clinics [GET]
+
+Allows retrieval of all clinics.
+
++ Response 200 (application/json)
+    + Body
+
+            [
+                // array of clinic details...
+            ]
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## Clinic [/clinics/{id}]
+
+### Get a Clinic [GET]
+
+Allows retrieval of a clinic by its ID.
+
++ Parameters
+    + id: `5f6a4f2d3e8b891234567890` (required, string) - The ID of the clinic.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // clinic details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "No clinic ID provided"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid clinic ID"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## DAEs [/daes]
+
+### Create a DAE [POST]
+
+Allows creation of a new DAE.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "latitude": 1,
+                "longitude": 1,
+                "id": 1,
+                "codvia": 1,
+                "desvia": "Desvia",
+                "fumetto": "Fumetto"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // DAE details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Error message"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Identical active DAE already exists"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Get All DAEs [GET]
+
+Allows retrieval of all DAEs.
+
++ Response 200 (application/json)
+    + Body
+
+            [
+                // array of DAE details...
+            ]
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## DAE [/daes/{id}]
+
+### Get a DAE [GET]
+
+Allows retrieval of a DAE by its ID.
+
++ Parameters
+    + id: `5f6a4f2d3e8b891234567890` (required, string) - The ID of the DAE.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // DAE details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "No DAE ID provided"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid DAE ID"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Update a DAE [PUT]
+
+Allows updating of a DAE by its ID.
+
++ Parameters
+    + id: `5f6a4f2d3e8b891234567890` (required, string) - The ID of the DAE.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "latitude": "Latitude",
+                "longitude": "Longitude",
+                "id": "ID",
+                "codvia": "Codvia",
+                "desvia": "Desvia",
+                "fumetto": "Fumetto"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // DAE details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "No DAE ID provided"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid DAE ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "DAE not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Delete a DAE [DELETE]
+
+Allows deletion of a DAE by its ID.
+
++ Parameters
+    + id: `5f6a4f2d3e8b891234567890` (required, string) - The ID of the DAE.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // details of the delete operation...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "DAE ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid DAE ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "DAE not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## Hospitals [/hospitals]
+
+### Create a Hospital [POST]
+
+Allows creation of a new hospital.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "latitude": 1,
+                "longitude": 1,
+                "id": "ID",
+                "codvia": "Codvia",
+                "desvia": "Desvia",
+                "fumetto": 1
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                // Hospital details...
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Error message"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Identical active hospital already exists"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Get All Hospitals [GET]
+
+Allows retrieval of all hospitals.
+
++ Response 200 (application/json)
+    + Body
+
+            [
+                // array of hospital details...
+            ]
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Error message"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+## Password Reset [/password-reset/{token}]
+
+### Validate Password Reset Token [GET]
+
+Validates the password reset token.
+
++ Parameters
+    + token (required, string) - The password reset token.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "token": "Token"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Token is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Password reset token is invalid."
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Password reset token has expired."
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+### Reset Password [POST]
+
+Resets the user's password.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "password": "New Password"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "Password reset successfully",
+                "redirectTo": "/"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Token is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Password reset token is invalid or has expired."
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Error message"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
             }

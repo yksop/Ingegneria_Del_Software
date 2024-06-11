@@ -89,51 +89,6 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-// RETURN ALL ALERTS NEAR A GIVEN USER
-router.get(
-  "/:idUser/alerts",
-  verifyToken((authData) => {
-    if (authData.isVolunteer) return true;
-    return false;
-  }),
-  async (req, res) => {
-    try {
-      if (!req) return res.status(400).send("Request is null");
-
-      const user = await User.findById(req.params.idUser);
-
-      if (!user) return res.status(404).send("User not found");
-      if (user.volunteer.isAvailable === false)
-        return res.status(400).send("User is not available");
-      const userLatitude = user.latitude;
-      const userLongitude = user.longitude;
-
-      // Fetch all active alerts from the database
-      const allActiveAlerts = await Alert.find({ isActive: true });
-
-      // Filter the alerts based on their radius
-      const availableAlerts = allActiveAlerts.filter((alert) => {
-        const distance = Math.sqrt(
-          Math.pow(alert.latitude - userLatitude, 2) +
-            Math.pow(alert.longitude - userLongitude, 2)
-        );
-
-        return distance <= alert.radius * 0.01; // 0.01 of latitude (or longitude) is approximately 1.1 km
-      });
-
-      if (availableAlerts === null)
-        return res.status(404).send("List of availableAlert is null");
-
-      if (availableAlerts.length === 0)
-        return res.status(404).send("No alerts are in the radius of the user");
-
-      return res.send(availableAlerts);
-    } catch (err) {
-      return res.status(501).send(err);
-    }
-  }
-);
-
 // MODIFY AVAILABILITY OF A VOLUNTEER, CHANGE CREDENTIALS, AGREE TO AN ALERT, UPGRADE/DOWNGRADE USER FROM/TO ROLE VOLUNTEER
 router.patch("/:userId", async (req, res) => {
   try {
@@ -272,7 +227,7 @@ router.get(
       const availableAlerts = allActiveAlerts.filter((alert) => {
         const distance = Math.sqrt(
           Math.pow(alert.latitude - userLatitude, 2) +
-            Math.pow(alert.longitude - userLongitude, 2)
+          Math.pow(alert.longitude - userLongitude, 2)
         );
 
         return distance <= alert.radius;
