@@ -14,7 +14,7 @@ It allows volunteers to register and take part to emergencies near them.
 
 ## Features
 
-- Refistration
+- Registration
 - Various useful maps
 - User-friendly interface
 - Cross-platform support
