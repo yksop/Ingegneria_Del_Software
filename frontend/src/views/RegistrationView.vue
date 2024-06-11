@@ -127,7 +127,7 @@ export default {
 
       axios
         .post(
-          axios.defaults.baseURL + "api/v2/users",
+          axios.defaults.baseURL + "/api/v2/users",
           registerNewUserCredentials
         )
         .then(
