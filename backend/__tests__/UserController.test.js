@@ -3,11 +3,43 @@ const mongoose = require("mongoose");
 const faker = require("faker");
 const url = "localhost:3000/api/v1/users";
 require("dotenv").config();
+const User = require("../app/models/User");
 
 jest.setTimeout(10000);
+let testUserId;
 let userId;
 
 describe("POST /api/v1/users", () => {
+
+  beforeAll(async () => {
+
+    const registrationResponse = await request(url)
+      .post("")
+      .send({
+        name: "John",
+        surname: "Doe",
+        username: "johndoe",
+        email: "prova@gmail.com",
+        password: "Password123!",
+        latitude: 12.34,
+        longitude: 56.78,
+        volunteer: {
+          isVolunteer: false,
+        },
+        certifier: {
+          isCertifier: false,
+        },
+        operator118: {
+          isOperator118: false,
+        },
+      })
+      .set("Content-Type", "application/json")
+      .expect(200);
+
+    userId = registrationResponse.body._id;
+
+  });
+
   test("POST /api/v1/users with a valid user should return 200", async () => {
     const response = await request(url)
       .post("")
@@ -31,8 +63,6 @@ describe("POST /api/v1/users", () => {
       })
       .set("Content-Type", "application/json")
       .expect(200);
-
-    userId = response.body._id;
 
     return response;
   });

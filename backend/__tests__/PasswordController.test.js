@@ -43,8 +43,6 @@ describe("PasswordController", () => {
       .post(`/${token}`)
       .send({ password: newPassword });
 
-    console.log(response.text);
-
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       message: "Password reset successfully",
