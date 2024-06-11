@@ -1,0 +1,505 @@
+FORMAT: 1A
+HOST: http://localhost:3000/api/v1
+
+# Sprint 1
+
+## Register a new user [/users]
+
+### Register a new user [POST]
+
+Permette all'utente di registrarsi al sistema
+
++ Request (application/json)
+    + Attributes
+        - latitude (number, required): 'The latitude of the user's location.'
+        - longitude (number, required): The longitude of the user's location.
+        - name (string, required): The user's name.
+        - surname (string, required): The user's surname.
+        - username (string, required): The user's username.
+        - email (string, required): The user's email address.
+        - password (string, required): The user's password.
+        - volunteer (object): An object representing volunteer information.
+            - isVolunteer (boolean, optional): Indicates if the user is a volunteer. Defaults to false.
+            - acceptedAlert (string, optional): The ID of the alert the user has accepd.
+            - certificateCode (string, optional): The certificate code for the volunteer.
+        - certifier (object): An object representing certifier information.
+            - isCertifier (boolean, optional): Indicates if the user is a certifier. Defaults to false.
+        - operator118 (object): An object representing operator118 information.
+            - isOperator118 (boolean, optional): Indicates if the user is an operator118. Defaults to false.
+
++ Response 200 (application/json)
+    + Attributes
+        - savedUser (object): The saved user object.
+
++ Response 400 (application/json)
+    + Attributes
+        - message (string): Error message.
+
++ Response 500 (application/json)
+    + Attributes
+        - message (string): Internal server error message.
+
+
+## Agree to Alert [/users/{userId}]
+
+### Agree to Alert [PUT]
+
+Permette ad un utente di accettare uno specifico Alert
+
++ Parameters
+    + userId: `66449dddecdc9582d4f9025c` (required, string) - The ID of the user.
+
++ Request (application/json)
+    + Body
+
+            {
+                "alertId": "6645d66553d1d51820f80be4"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "User assigned to alert successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Request is null"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Invalid User ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Alert ID is required"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Invalid Alert ID"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User is not a volunteer"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User has already accepted the alert"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "User is already busy with another alert"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Alert does not exist"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "message": "Alert is not active anymore"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "message": "The given user does not exist"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "message": "User not found"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "message": "Internal Server Error"
+            }
+            
+
+## Alerts Near User [/users/{idUser}/alerts]
+
+### Alerts Near a User [GET]
+
+Restituisce gli Alert che sono vicini ad un dato utente
+
++ Parameters
+    + idUser: `663cb4448d36442c68bb4989` (required) - The ID of the user.
+
++ Response 200 (application/json)
+    + Body
+
+            [
+                {
+                    "id": "60d0fe4f532f9a11f65c74b5",
+                    "latitude": 40.712776,
+                    "longitude": -74.005974,
+                    "isActive": true,
+                    "radius": 10
+                },
+                {
+                    "id": "60d0fe4f532f9a11f65c74b6",
+                    "latitude": 40.712776,
+                    "longitude": -74.005974,
+                    "isActive": true,
+                    "radius": 5
+                }
+            ]
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Request is null"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "User not found"
+            }
+
++ Response 501 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+            
+
+
+## Upgrade/Downgrade User Role [/users/volunteers/{volunteerId}]
+
+### Upgrade/Downgrade User Role [PUT]
+
+Aumenta il grado di un utente normale a volontario o viceversa.
+
++ Parameters
+    + volunteerId: `663cb4448d36442c68bb4989` (required) - The ID of the user.
+
++ Request (application/json)
+    + Body
+
+            {
+                "isVolunteer": true,
+                "certificateCode": "CERT1234"
+            }
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "message": "User updated successfully"
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid User ID"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "The given user does not exist"
+            }
+
++ Response 500 (application/json)
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+           
+
+
+## Get Alert [/alerts/{id}]
+
+### Get an Alert [GET /alerts]
+
+Restituisce le informazioni di un alert datogli l'id
+
++ Parameters
+    + id: `60d0fe4f532f9a11f65c74b4` (required) - The ID of the alert.
+
++ Response 200 (application/json)
+    + Body
+
+            {
+                "id": "60d0fe4f532f9a11f65c74b4",
+                "latitude": 40.712776,
+                "longitude": -74.005974,
+                "isActive": true,
+                "radius": 10
+            }
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "error": "Invalid Alert ID"
+            }
+
++ Response 404 (application/json)
+    + Body
+
+            {
+                "error": "Alert does not exist"
+            }
+            
+
+## Autenticazione Utente [/tokens]
+
+### Effettua il login [POST]
+
+Permette agli utenti di effettuare l'accesso al sistema e ricevere un token JWT valido per le successive richieste.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "username": "string",
+                "password": "string"
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "token": "string"
+            }
+
++ Response 401 (application/json)
+
+    + Body
+
+            {
+                "error": "Authentication Failed: User not Found"
+            }
+
+    Oppure
+
+    + Body
+
+            {
+                "error": "Authentication Failed: Password incorrect"
+            }
+
++ Response 500 (application/json)
+
+    + Body
+
+            {
+                "error": "Internal Server Error"
+            }
+
+
+
+## Creazione di un nuovo Alert [/alerts]
+
+### Crea un nuovo Alert [POST]
+
+Permette di creare un nuovo alert nel sistema.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "latitude": 12.3456,
+                "longitude": 78.91011,
+                "triage": 2,
+                "radius": 100,
+                "expiresIn": "2024-05-16T12:00:00Z",
+                "isActive": true,
+                "description": "string",
+                "timeForAmbulance": 15
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "latitude": 12.3456,
+                "longitude": 78.91011,
+                "triage": 2,
+                "radius": 100,
+                "expiresIn": "2024-05-16T12:00:00Z",
+                "isActive": true,
+                "description": "string",
+                "timeForAmbulance": 15,
+                "_id": "string",
+                "createdAt": "string",
+                "updatedAt": "string",
+            }
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+            
+            
+            
+## Utenti all'interno del Raggio di un Alert [/alerts/{id}/users]
+
+### Ottieni Utenti nel Raggio [GET]
+
+Restituisce tutti gli utenti che si trovano nel raggio di un avviso specifico.
+
++ Parameters
+    + id (required, string, `123456`) ... ID univoco dell'avviso
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                {
+                    "_id": "string",
+                    "username": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "isVolunteer": true,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                {
+                    "_id": "string",
+                    "username": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "isVolunteer": true,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                ...
+            ]
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+
++ Response 404 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+
++ Response 501 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
+            
+
+
+## Alert attivi [/alerts]
+
+### Ottieni Alert attivi [GET]
+
+Ritorna le informazioni su tutti gli alert attivi
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                {
+                    "_id": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "triage": "string",
+                    "radius": 100,
+                    "expiresIn": "2024-05-16T12:00:00Z",
+                    "isActive": true,
+                    "description": "string",
+                    "timeForAmbulance": 15,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                {
+                    "_id": "string",
+                    "latitude": 12.3456,
+                    "longitude": 78.91011,
+                    "triage": "string",
+                    "radius": 100,
+                    "expiresIn": "2024-05-16T12:00:00Z",
+                    "isActive": true,
+                    "description": "string",
+                    "timeForAmbulance": 15,
+                    "createdAt": "string",
+                    "updatedAt": "string",
+                },
+                ...
+            ]
+
++ Response 404 (application/json)
+
+    + Body
+
+            {
+                "error": "No active alerts found"
+            }
+
++ Response 400 (application/json)
+
+    + Body
+
+            {
+                "error": "string"
+            }
