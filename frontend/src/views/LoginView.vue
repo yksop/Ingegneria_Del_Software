@@ -84,7 +84,7 @@ export default {
 
       // verify if user exists
       axios
-        .post(axios.defaults.baseURL + "/api/v1/tokens", loginUserCredentials)
+        .post(axios.defaults.baseURL + "/api/v2/tokens", loginUserCredentials)
         .then(
           (response) => {
             console.log("Login successful:", response.data);
@@ -109,7 +109,7 @@ export default {
             axios
               .patch(
                 axios.defaults.baseURL +
-                  `/api/v1/users/${decodeToken(getToken()).userId}`,
+                  `/api/v2/users/${decodeToken(getToken()).userId}`,
                 {
                   latitude: this.credentials.latitude,
                   longitude: this.credentials.longitude,

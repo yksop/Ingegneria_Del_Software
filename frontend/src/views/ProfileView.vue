@@ -77,7 +77,7 @@ export default {
     axios
       .get(
         axios.defaults.baseURL +
-          `/api/v1/users/${decodeToken(getToken()).userId}`,
+          `/api/v2/users/${decodeToken(getToken()).userId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -103,7 +103,7 @@ export default {
       axios
         .patch(
           axios.defaults.baseURL +
-            `/api/v1/users/${decodeToken(getToken()).userId}`,
+            `/api/v2/users/${decodeToken(getToken()).userId}`,
           modifyAvailability,
           {
             headers: {
@@ -128,7 +128,7 @@ export default {
       axios
         .delete(
           axios.defaults.baseURL +
-            `/api/v1/users/${decodeToken(getToken()).userId}`,
+            `/api/v2/users/${decodeToken(getToken()).userId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

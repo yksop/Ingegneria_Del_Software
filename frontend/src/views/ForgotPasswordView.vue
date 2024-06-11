@@ -29,12 +29,12 @@ export default {
     checkEmail() {
       axios
         .get(axios.defaults.baseURL +
-                  `/api/v1/users/email/${this.email}`)
+                  `/api/v2/users/email/${this.email}`)
         .then((response) => {
           if (response.status === 200) {
             axios
               .post(axios.defaults.baseURL +
-          "/api/v1/emails/reset-password", {
+          "/api/v2/emails/reset-password", {
                 email: this.email,
                 frontendBaseUrl: window.location.origin,
               })

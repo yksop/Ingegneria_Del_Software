@@ -60,11 +60,11 @@ export default {
         password: this.credentials.newPassword,
       };
 
-      // Do a patch request to http://localhost:3000/api/v1/users/:userId with newUserCredentials
+      // Do a patch request to http://localhost:3000/api/v2/users/:userId with newUserCredentials
       axios
         .patch(
           axios.defaults.baseURL +
-          `/api/v1/users/${
+          `/api/v2/users/${
             decodeToken(getToken()).userId
           }`,
           {

@@ -1,7 +1,7 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
 const faker = require("faker");
-const url = "localhost:3000/api/v1";
+const url = "localhost:3000/api/v2";
 require("dotenv").config();
 
 jest.setTimeout(30000);
